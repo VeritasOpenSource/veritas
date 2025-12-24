@@ -30,13 +30,21 @@ class VrtsSourceFunctionCall {
         ///if not defined
         string name;
         ///if defined and is in ecosystem
-        VrtsSourceFunctionDef   called;
+        VrtsSourceFunctionDef   target;
     }
 
     Calling calling;
+    alias calling this;
 
     this(string name) {
         this.calling.name = name;
+    }
+
+    string getCallName() {
+        if(isDefined)
+            return target.name;
+
+        return calling.name;
     }
 }
 
@@ -51,7 +59,6 @@ class VrtsSourceFile {
 	}
 }
 
-
 //Main DB  
 class VrtsEcosystem {
     VrtsSourceFunctionDef[]  functions;
@@ -61,7 +68,6 @@ class VrtsEcosystem {
         auto func = functions
             .find!((a) => cmp(a.name, name) == 0);
 
-        // VrtsSourceFunctionDef newDef; 
         if(func.empty) { 
             auto newDef = new VrtsSourceFunctionDef(name); 
             functions ~= newDef; 
@@ -70,4 +76,32 @@ class VrtsEcosystem {
 
         return func.front();
     }
+
+    void relinkCallings() {
+        foreach(func; functions) {
+            relinkFunctionCall(func);
+        }
+    }
+
+    void relinkFunctionCall(VrtsSourceFunctionDef def) {
+        foreach(call; def.calls) {
+            foreach(needle; functions) {
+                if(!call.isDefined && call.name == needle.name) {
+                    call.isDefined = true;
+                    call.target = needle;
+
+                    auto caller = new VrtsSourceFunctionCall(def.name);
+                    caller.isDefined = true;
+                    caller.target = def;
+                    needle.callers ~= caller;
+
+                    break;
+                }
+            }
+        }
+    }
+
+    auto getFunctionsWithoutCalls() {
+        return functions.filter!((a) => a.calls.length == 0);
+    }    
 }

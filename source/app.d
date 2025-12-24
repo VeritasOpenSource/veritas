@@ -11,6 +11,7 @@ import std.conv;
 import veritas.ecosystem;
 import veritas.clang;
 import veritas.sourceVisitor;
+import std.range;
 
 VrtsSourceFile createSourceFile(string path, string filename) {
 	return new VrtsSourceFile(path, filename);
@@ -18,27 +19,50 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 
 void main(string[] args)
 {
+    string path = args[1];
 	VrtsEcosystem ecosystem = new VrtsEcosystem;
 
-	auto sources = dirEntries("../bash-5.3/","*.{h,c}",SpanMode.shallow)
+	auto sources = dirEntries(path,"*.{h,c}",SpanMode.shallow)
 		.filter!(a => a.isFile)
 		.map!((return a) => baseName(a.name))
 		// .array
-        .map!((a) => createSourceFile("../bash-5.3/", a));
+        .map!((a) => createSourceFile(path, a));
 
 	
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
     analyzer.analyze(sources.array);
 
-    if(args[1] == "findCallingFor"){
+    if(args[2] == "--find-calls-inside"){
 
-        auto func = ecosystem.functions.find!(a => a.name == args[2])[].front;
+        auto func = ecosystem.functions.find!(a => a.name == args[3])[].front;
 
         func
             .calls
             .each!(a => writeln(a.calling.name));
     }
 
+    
+    if(args[2] == "--info-func") {
+        ecosystem.relinkCallings();
+        auto func = ecosystem.functions.find!(a => a.name == args[3])[].front;
+
+        writeln("Calls: ");
+        func
+            .calls
+            .each!(a => writeln("   ", a.getCallName));
+
+        writeln("Called by: ");
+        func
+            .callers
+            .each!(a => writeln("   ", a.getCallName));
+    }
+
+    if(args[2] == "--funcs-of-first-ring") {
+        ecosystem.relinkCallings();
+        auto funcs = ecosystem.getFunctionsWithoutCalls();
+        funcs.each!(a => writeln("      ", a.name));
+        writeln("Total: ", funcs.walkLength, " funcs");
+    }
 }
 
 class VrtsSourceAnalyzer {
@@ -54,7 +78,5 @@ class VrtsSourceAnalyzer {
         foreach(ref source; sources) {
 		    visitor.visitSourceFile(ecosystem, source);
 	    }
-
-    
     }
 }
