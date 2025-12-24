@@ -16,6 +16,11 @@ extern(C) {
     CXIndex clang_createIndex(int, int);
     void clang_disposeIndex(CXIndex);
     CXTranslationUnit clang_createTranslationUnitFromSourceFile(CXIndex, const(char)*, int, const(char)**, uint, void*);
+    CXTranslationUnit clang_parseTranslationUnit(
+        CXIndex CIdx, const (char )*source_filename,
+        const (char** )command_line_args, int num_command_line_args,
+        void *unsaved_files, uint num_unsaved_files,
+        uint options);
     void clang_disposeTranslationUnit(CXTranslationUnit);
     CXCursor clang_getTranslationUnitCursor(CXTranslationUnit);
     int clang_getCursorKind(CXCursor);
