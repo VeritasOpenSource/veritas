@@ -20,6 +20,17 @@ class VrtsSourceFunctionCall {
 }
 
 
+class VrtsSourceFile {
+	string path;
+	string filename;
+
+	this(string path, string filename) {
+		this.path = path;
+		this.filename = filename;
+	}
+}
+
+
 //Main DB  
 class Ecosystem {
     VrtsSourceFunctionDef[]  functions;

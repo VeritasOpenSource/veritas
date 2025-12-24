@@ -14,23 +14,7 @@ import std.string;
 import std.conv;
 import veritas.ecosystem;
 import veritas.clang;
-// import ecosystem;
-
-string cxToStr(CXCursor cursor) {
-    CXString str = clang_getCursorSpelling(cursor);
-    const(char)* cstr = clang_getCString(str);
-    return cstr.to!string ? cstr.to!string : "";
-}
-
-class VrtsSourceFile {
-	string path;
-	string filename;
-
-	this(string path, string filename) {
-		this.path = path;
-		this.filename = filename;
-	}
-}
+import veritas.sourceVisitor;
 
 VrtsSourceFile createSourceFile(string path, string filename) {
 	return new VrtsSourceFile(path, filename);
@@ -43,6 +27,7 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 void main()
 {
 	Ecosystem ecosystem = new Ecosystem;
+    VrtsSourceVisitor visitor;
 	// VrtsPackage bash = new VrtsPackage();
 	auto sources = dirEntries("../bash-5.3/","*.{h,c}",SpanMode.shallow)
 		.filter!(a => a.isFile)
@@ -51,86 +36,36 @@ void main()
         .map!((a) => createSourceFile("../bash-5.3/", a));
 
 	
-    auto analyzer = new VrtsSourceAnalyzer;
-    auto eco = new Ecosystem;
-    analyzer.ecosystem = eco;
+    auto analyzer = new VrtsSourceAnalyzer(ecosystem);
+    // auto eco = new Ecosystem;
+    // analyzer.ecosystem = eco;
 	// auto source = new VrtsSourceFile("../bash-5.3/", "execute_cmd.c");
 	// writeln(analyzer.extractFunctions(null));
 	// auto srange = sources.each!((a) => extractFunctions(a).initFunction());
 
-	foreach(source; sources) {
-		analyzer.extractFunctions(source);
-	}
+    analyzer.analyze(sources.array);
+	// foreach(source; sources) {
+	// 	analyzer.extractFunctions(source);
+	// }
 
 	writeln(ecosystem.functions.length);
 
 }
 
+
+
 class VrtsSourceAnalyzer {
     Ecosystem ecosystem;
+    VrtsSourceVisitor visitor;
 
-    void extractFunctions(VrtsSourceFile file) {
-        // Strings strings;
-        writeln("Extracting file ", file.filename);
-
-        CXIndex index = clang_createIndex(0, 1);
-
-        CXTranslationUnit tu;
-        
-        if (tu is null) {
-            const char* arg1 = "-nostdinc".toStringz;
-            const char* arg2 = "-nostdlib".toStringz;
-            const(char)*[2] args = [arg1, arg2];
-
-            tu = clang_createTranslationUnitFromSourceFile(index, (file.path ~ file.filename).toStringz, 2, args.ptr, 0, null);
-        }
-        CXCursor root = clang_getTranslationUnitCursor(tu);
-
-        int[2] counts = [0, 0];
-        writeln(cxToStr(root));
-        clang_visitChildren(root, &sourceFileVisitor, cast(CXClientData)this);
-        
-        writeln("Functions found: ", this.ecosystem.functions.length);
-
-        clang_disposeTranslationUnit(tu);
-        clang_disposeIndex(index);
-
-
-        // return strings.strings;
+    this(Ecosystem ecosystem) {
+        this.ecosystem = ecosystem;
+        this.visitor = new VrtsSourceVisitor;
     }
 
-
-    extern(C) static uint sourceFileVisitor(CXCursor cursor, CXCursor parent, CXClientData data) {
-        VrtsSourceAnalyzer context = cast(VrtsSourceAnalyzer)data;
-        
-        int kind = clang_getCursorKind(cursor);
-
-        if (kind == 8) { // FunctionDecl
-            string name = cxToStr(cursor);
-			context.ecosystem.functions ~= new VrtsSourceFunctionDef(name);
-            clang_visitChildren(cursor, &functionVisitor, cast(CXClientData)context);
-            return 1;
-        }
-       
-        return 1; // Continue
-    }
-
-    extern(C) static uint functionVisitor(CXCursor cursor, CXCursor parent, CXClientData data) {
-        VrtsSourceAnalyzer context = cast(VrtsSourceAnalyzer)data;
-        
-        auto refCur = clang_getCursorReferenced(cursor);
-        auto refkind = clang_getCursorKind(refCur);
-
-        if (refkind == 8) { // CallExpr;
-            // CXCursor curRef = clang_getCursorReferenced(cursor);
-            // int refkind = clang_getCursorKind(curRef);
-            string name = cxToStr(refCur);
-            writeln(name);
-			// context.ecosystem.functions ~= new VrtsSourceFunctionDef(name);
-            
-            return 2;
-        }
-       
-        return 1; // Continue
+    void analyze(VrtsSourceFile[] sources) {
+        foreach(source; sources) {
+		    visitor.visitSourceFile(ecosystem, source);
+	    }
     }
 }

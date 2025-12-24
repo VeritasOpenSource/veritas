@@ -1,5 +1,7 @@
 module veritas.clang;
 
+import std.conv;
+
 extern(C) {
     alias CXIndex = void*;
     alias CXTranslationUnit = void*;
@@ -24,4 +26,10 @@ extern(C) {
     int clang_Location_isInSystemHeader(CXSourceLocation location);
     CXSourceLocation clang_getCursorLocation(CXCursor cursor);
     CXCursor clang_getCursorReferenced(CXCursor cursor);
+}
+
+string cxToStr(CXCursor cursor) {
+    CXString str = clang_getCursorSpelling(cursor);
+    const(char)* cstr = clang_getCString(str);
+    return cstr.to!string ? cstr.to!string : "";
 }
