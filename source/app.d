@@ -16,10 +16,10 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 	return new VrtsSourceFile(path, filename);
 }
 
-void main()
+void main(string[] args)
 {
 	Ecosystem ecosystem = new Ecosystem;
-    
+
 	auto sources = dirEntries("../bash-5.3/","*.{h,c}",SpanMode.shallow)
 		.filter!(a => a.isFile)
 		.map!((return a) => baseName(a.name))
@@ -28,10 +28,16 @@ void main()
 
 	
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
-
     analyzer.analyze(sources.array);
 
-	writeln(ecosystem.functions.length);
+    if(args[1] == "findCallingFor"){
+
+        auto func = ecosystem.functions.find!(a => a.name == args[2])[].front;
+
+        func
+            .calls
+            .each!(a => writeln(a.calling.name));
+    }
 
 }
 
@@ -45,8 +51,10 @@ class VrtsSourceAnalyzer {
     }
 
     void analyze(VrtsSourceFile[] sources) {
-        foreach(source; sources) {
+        foreach(ref source; sources) {
 		    visitor.visitSourceFile(ecosystem, source);
 	    }
+
+    
     }
 }
