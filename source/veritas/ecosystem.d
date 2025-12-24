@@ -53,7 +53,7 @@ class VrtsSourceFile {
 
 
 //Main DB  
-class Ecosystem {
+class VrtsEcosystem {
     VrtsSourceFunctionDef[]  functions;
     // VrtsFunction[]  undefined;
 

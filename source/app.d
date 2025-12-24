@@ -18,7 +18,7 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 
 void main(string[] args)
 {
-	Ecosystem ecosystem = new Ecosystem;
+	VrtsEcosystem ecosystem = new VrtsEcosystem;
 
 	auto sources = dirEntries("../bash-5.3/","*.{h,c}",SpanMode.shallow)
 		.filter!(a => a.isFile)
@@ -42,10 +42,10 @@ void main(string[] args)
 }
 
 class VrtsSourceAnalyzer {
-    Ecosystem ecosystem;
+    VrtsEcosystem ecosystem;
     VrtsSourceVisitor visitor;
 
-    this(Ecosystem ecosystem) {
+    this(VrtsEcosystem ecosystem) {
         this.ecosystem = ecosystem;
         this.visitor = new VrtsSourceVisitor;
     }
