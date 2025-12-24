@@ -1,0 +1,13 @@
+{
+	"authors": [
+		"Roman Vlasov aka Doctor"
+	],
+	"copyright": "Copyright © 2025, Roman Vlasov aka Doctor",
+	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
+	"license": "MIT",
+	"name": "veritas",
+	"targetType": "executable",
+	"dflags" : [
+		"-L-lclang"
+	]
+}
