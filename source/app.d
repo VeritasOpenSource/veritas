@@ -1,9 +1,5 @@
 import std.stdio;
 
-// import veritas.pkg;
-// import veritas.db;
-// import veritas.analyzer.language;
-// import veritas.analyzer.funcdecomposer;
 import std.process;
 import std.algorithm;
 import std.array;
@@ -20,15 +16,10 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 	return new VrtsSourceFile(path, filename);
 }
 
-// VrtsFunction initFunction(string name) {
-// 	return new VrtsFunction(name);
-// }
-
 void main()
 {
 	Ecosystem ecosystem = new Ecosystem;
-    VrtsSourceVisitor visitor;
-	// VrtsPackage bash = new VrtsPackage();
+    
 	auto sources = dirEntries("../bash-5.3/","*.{h,c}",SpanMode.shallow)
 		.filter!(a => a.isFile)
 		.map!((return a) => baseName(a.name))
@@ -37,22 +28,12 @@ void main()
 
 	
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
-    // auto eco = new Ecosystem;
-    // analyzer.ecosystem = eco;
-	// auto source = new VrtsSourceFile("../bash-5.3/", "execute_cmd.c");
-	// writeln(analyzer.extractFunctions(null));
-	// auto srange = sources.each!((a) => extractFunctions(a).initFunction());
 
     analyzer.analyze(sources.array);
-	// foreach(source; sources) {
-	// 	analyzer.extractFunctions(source);
-	// }
 
 	writeln(ecosystem.functions.length);
 
 }
-
-
 
 class VrtsSourceAnalyzer {
     Ecosystem ecosystem;
