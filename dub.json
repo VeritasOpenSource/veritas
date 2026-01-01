@@ -9,5 +9,8 @@
 	"targetType": "executable",
 	"dflags" : [
 		"-L-lclang"
-	]
+	],
+	"dependencies": {
+		"dxml" : "~master"
+	}
 }

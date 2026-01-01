@@ -12,6 +12,7 @@ import veritas.ecosystem;
 import veritas.clang;
 import veritas.sourceVisitor;
 import std.range;
+import veritas.reportparser;
 
 VrtsSourceFile createSourceFile(string path, string filename) {
 	return new VrtsSourceFile(path, filename);
@@ -19,19 +20,35 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 
 void main(string[] args)
 {
+    VrtsReportsParser reportParser = new VrtsReportsParser();
+
     if(args.length < 2) {
         writeln("Nothing to do.");
         return;
     }
+
     string path = args[1];
-	VrtsEcosystem ecosystem = new VrtsEcosystem;
 
 	auto sources = dirEntries(path,"*.{h,c}",SpanMode.shallow)
 		.filter!(a => a.isFile)
 		.map!((return a) => baseName(a.name))
 		// .array
         .map!((a) => createSourceFile(path, a));
+        
+    VrtsReportsFiles reportFiles; 
 
+    if(args[2] == "reports") {
+        reportParser.parseMetadata(path ~ "reports/metadata.json");
+        auto sourcesArray = sources.array;
+        reportFiles = reportParser.linkReportsFilesWithSources(sourcesArray);
+
+        foreach(item; reportFiles.filesAndReports.byPair) {
+            writeln(item.key.fullname, " ", item.value);
+        }
+        return;
+    }
+
+	VrtsEcosystem ecosystem = new VrtsEcosystem;
 	
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
     analyzer.analyze(sources.array);
