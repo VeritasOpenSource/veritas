@@ -13,7 +13,7 @@
             "program": "${command:dubTarget}",
             "args": [
                 "../bash-5.3/",
-                "reports"
+                "--info-func array_concat"
             ]
         }
     ]

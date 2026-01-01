@@ -36,22 +36,22 @@ void main(string[] args)
         .map!((a) => createSourceFile(path, a));
         
     VrtsReportsFiles reportFiles; 
-
-    if(args[2] == "reports") {
-        reportParser.parseMetadata(path ~ "reports/metadata.json");
-        auto sourcesArray = sources.array;
-        reportFiles = reportParser.linkReportsFilesWithSources(sourcesArray);
-
-        foreach(item; reportFiles.filesAndReports.byPair) {
-            writeln(item.key.fullname, " ", item.value);
-        }
-        return;
-    }
-
 	VrtsEcosystem ecosystem = new VrtsEcosystem;
-	
+
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
+    
     analyzer.analyze(sources.array);
+
+    // if(args[2] == "reports") {
+    //     reportParser.parseMetadata(path ~ "reports/metadata.json");
+    //     auto sourcesArray = sources.array;
+    //     reportFiles = reportParser.linkReportsFilesWithSources(sourcesArray);
+
+    //     foreach(item; reportFiles.filesAndReports.byPair) {
+    //         writeln(item.key.fullname, " ", item.value);
+    //     }
+    //     return;
+    // }
 
     if(args[2] == "--find-calls-inside"){
 
@@ -76,6 +76,11 @@ void main(string[] args)
         func
             .callers
             .each!(a => writeln("   ", a.getCallName));
+
+        writeln("Position in source file: ");
+        writeln("   Start line: ", func.startLine);
+        writeln("   End line: ", func.endLine);
+
     }
 
     if(args[2] == "--funcs-of-first-ring") {
@@ -84,6 +89,15 @@ void main(string[] args)
         funcs.each!(a => writeln("      ", a.name));
         writeln("Total: ", funcs.walkLength, " funcs");
     }
+
+    // reportParser.parseMetadata(path ~ "/reports/metadata.json");
+    // auto sourcesArray = sources.array;
+    // reportFiles = reportParser.linkReportsFilesWithSources(sourcesArray);
+
+    // foreach(item; reportFiles.filesAndReports.byPair) {
+    //     writeln(item.key.fullname, " ", item.value);
+    // }
+        // return;
 }
 
 class VrtsSourceAnalyzer {
