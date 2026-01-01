@@ -60,10 +60,22 @@ class VrtsSourceVisitor {
         
         int kind = clang_getCursorKind(cursor);
 
-
-        if (kind == 8) {
+        if (kind == 8 && clang_isCursorDefinition(cursor)) {
             string name = cxToStr(cursor);
-			auto funcDecl = context.ecosystem.addFunction(name);
+
+            auto funcDecl = context.ecosystem.addFunction(name);
+
+            CXSourceRange range = clang_getCursorExtent(cursor);
+            CXSourceLocation start = clang_getRangeStart(range);
+            CXSourceLocation end = clang_getRangeEnd(range);
+            
+            CXFile file;
+            uint start_line, end_line;
+            
+            clang_getFileLocation(start, file, &start_line, null, null);
+            clang_getFileLocation(end, file, &end_line, null, null);
+            funcDecl.setLocation(name, start_line, end_line);
+
             context.funcContext = funcDecl;
             clang_visitChildren(cursor, &functionVisitor, data);
             return 1;
@@ -75,7 +87,7 @@ class VrtsSourceVisitor {
     extern(C) static uint functionVisitor(CXCursor cursor, CXCursor parent, CXClientData data) {
         VrtsSourceVisitor context = cast(VrtsSourceVisitor)data;
         auto funcDecl = context.funcContext;
-        string nameCursor = cxToStr(cursor);
+        // string nameCursor = cxToStr(cursor);
         
         auto refCur = clang_getCursorReferenced(cursor);
         auto refkind = clang_getCursorKind(refCur);
