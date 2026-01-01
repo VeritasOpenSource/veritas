@@ -12,11 +12,25 @@ class VrtsSourceFunctionDef {
     //Source filename
     string filename;
 
+    uint startLine;
+    uint endLine;
+    // uint startColumn;
+    // uint endColumn;
+
+
     VrtsSourceFunctionCall[] calls;
     VrtsSourceFunctionCall[] callers;
 
     this(string name) {
         this.name = name;
+    }
+
+    void setLocation(string filename, uint startLine, uint endLine /*, uint startColumn, uint endColumn*/) {
+        this.filename = filename;
+        this.startLine = startLine;
+        this.endLine = endLine;
+        // this.startColumn = startColumn;
+        // this.endColumn = endColumn;
     }
 }
 
