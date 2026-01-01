@@ -19,6 +19,10 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 
 void main(string[] args)
 {
+    if(args.length < 2) {
+        writeln("Nothing to do.");
+        return;
+    }
     string path = args[1];
 	VrtsEcosystem ecosystem = new VrtsEcosystem;
 
