@@ -129,7 +129,7 @@ class VrtsEcosystem {
         return func.front();
     }
 
-    void relinkCallings() {
+    void relinkCalls() {
         foreach(func; functions) {
             relinkFunctionCall(func);
         }
