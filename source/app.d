@@ -18,6 +18,13 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 	return new VrtsSourceFile(path, filename);
 }
 
+auto scanForSourceFiles(string path) {
+    return dirEntries(path,"*.{h,c}",SpanMode.shallow)
+		.filter!(a => a.isFile)
+		.map!((return a) => baseName(a.name))
+        .map!((a) => createSourceFile(path, a));
+}
+
 void main(string[] args)
 {
     VrtsReportsParser reportParser = new VrtsReportsParser();
@@ -28,30 +35,16 @@ void main(string[] args)
     }
 
     string path = args[1];
-
-	auto sources = dirEntries(path,"*.{h,c}",SpanMode.shallow)
-		.filter!(a => a.isFile)
-		.map!((return a) => baseName(a.name))
-		// .array
-        .map!((a) => createSourceFile(path, a));
+	auto sources = scanForSourceFiles(path);
         
-    VrtsReportsFiles reportFiles; 
 	VrtsEcosystem ecosystem = new VrtsEcosystem;
-
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
-    
     analyzer.analyze(sources.array);
-
-    // if(args[2] == "reports") {
-    //     reportParser.parseMetadata(path ~ "reports/metadata.json");
-    //     auto sourcesArray = sources.array;
-    //     reportFiles = reportParser.linkReportsFilesWithSources(sourcesArray);
-
-    //     foreach(item; reportFiles.filesAndReports.byPair) {
-    //         writeln(item.key.fullname, " ", item.value);
-    //     }
-    //     return;
-    // }
+    ecosystem.relinkCallings();
+    VrtsReportsFiles reportFiles; 
+    reportParser.parseMetadata(path ~ "reports/metadata.json");
+    auto sourcesArray = sources.array;
+    reportFiles = reportParser.linkReportsFilesWithSources(sourcesArray);
 
     if(args[2] == "--find-calls-inside"){
 
@@ -64,7 +57,6 @@ void main(string[] args)
 
     
     if(args[2] == "--info-func") {
-        ecosystem.relinkCallings();
         auto func = ecosystem.functions.find!(a => a.name == args[3])[].front;
 
         writeln("Calls: ");
@@ -84,20 +76,10 @@ void main(string[] args)
     }
 
     if(args[2] == "--funcs-of-first-ring") {
-        ecosystem.relinkCallings();
         auto funcs = ecosystem.getFunctionsWithoutCalls();
         funcs.each!(a => writeln("      ", a.name));
         writeln("Total: ", funcs.walkLength, " funcs");
     }
-
-    // reportParser.parseMetadata(path ~ "/reports/metadata.json");
-    // auto sourcesArray = sources.array;
-    // reportFiles = reportParser.linkReportsFilesWithSources(sourcesArray);
-
-    // foreach(item; reportFiles.filesAndReports.byPair) {
-    //     writeln(item.key.fullname, " ", item.value);
-    // }
-        // return;
 }
 
 class VrtsSourceAnalyzer {

@@ -51,17 +51,8 @@ class VrtsReportsParser {
         VrtsReportsFiles files = new VrtsReportsFiles;
         foreach (ref sourceFile; sources) {
             string aPath = sourceFile.fullname.asAbsolutePath.array.buildNormalizedPath;
-            if(aPath in filesAndReports) {
-                // try {
-                    // auto sf = sourceFile;
-                    // auto name = this.filesAndReports[aPath];
-                    files.filesAndReports[sourceFile] = this.filesAndReports[aPath];
-                // }
-                // catch(Exception e) {
-                //     sysio.writeln(e);
-                // }
-            }
-            // sysio.writeln(item.key, " ", item.value);
+            if(aPath in filesAndReports) 
+                files.filesAndReports[sourceFile] = this.filesAndReports[aPath];
         }
 
         return files;

@@ -5,12 +5,20 @@ import std.algorithm;
 import std.array;
 import std.stdio;
 import veritas.plist;
+import std.string;
+
+class VrtsProblem {
+    string desc;
+    // uint line;
+    // strib
+}
 
 class VrtsSourceFunctionDef {
     //Name of function
     string name;
     //Source filename
     string filename;
+    // VrtsSourceFile file;
 
     uint startLine;
     uint endLine;
@@ -91,10 +99,22 @@ class VrtsSourceFile {
     }
 }
 
+class VrtsRing {
+    uint level;
+    VrtsSourceFunctionDef[]     functions; 
+} 
+
 //Main DB  
 class VrtsEcosystem {
-    VrtsSourceFunctionDef[]  functions;
+    VrtsRing[]                  rings;
+    VrtsSourceFunctionDef[]     functions;
+    VrtsSourceFile[]            sourceFiles;
+    // VrtsSourceFunctionDef[]     
     // VrtsFunction[]  undefined;
+
+    void addSourceFile(VrtsSourceFile file) {
+        sourceFiles ~= file;
+    }
 
     VrtsSourceFunctionDef addFunction(string name) {
         auto func = functions
@@ -135,5 +155,24 @@ class VrtsEcosystem {
 
     auto getFunctionsWithoutCalls() {
         return functions.filter!((a) => a.calls.length == 0);
+    }
+
+    void createFirstRing() {
+        VrtsRing ring0 = new VrtsRing();
+
+        ring0.functions = functions.filter!((a) => a.calls.length == 0).array;
+    }
+
+    bool isFunctionInRing(int ringLevel, VrtsSourceFunctionDef func) {
+        return rings[ringLevel]
+            .functions
+            .canFind!((a) =>
+                a == func
+            );
     }    
+
+    bool isAllCallingsinRing(int ringLevel, VrtsSourceFunctionDef[] funcs) {
+        return funcs
+            .all!((a) => this.isFunctionInRing(ringLevel, a));
+    }
 }
