@@ -8,6 +8,7 @@ import veritas.ecosystem;
 import std.algorithm;
 import std.range;
 import std.array;
+import std.path;
 
 
 class VrtsSourceVisitor {
@@ -17,7 +18,7 @@ class VrtsSourceVisitor {
 
     void visitSourceFile(VrtsEcosystem ecosystem, VrtsSourceFile file) {
         this.ecosystem = ecosystem;
-        writeln("Extracting file: ", file.filename);
+        // writeln("Extracting file: ", file.filename);
 
         CXIndex index = clang_createIndex(0, 0);
 
@@ -74,7 +75,7 @@ class VrtsSourceVisitor {
             
             clang_getFileLocation(start, file, &start_line, null, null);
             clang_getFileLocation(end, file, &end_line, null, null);
-            funcDecl.setLocation(name, start_line, end_line);
+            funcDecl.setLocation(parent.cxToStr().baseName, start_line, end_line);
 
             context.funcContext = funcDecl;
             clang_visitChildren(cursor, &functionVisitor, data);

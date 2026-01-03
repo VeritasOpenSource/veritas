@@ -1,60 +1,52 @@
 module veritas.reportparser;
 
-import veritas.ecosystem;
 import std.file;
 import std.json;
 import sysio = std.stdio;
 import std.path;
 import std.array;
+import std.file;
+import std.path;
+import std.algorithm;
+import std.range;
+import std.conv;
 
+import dxml.parser;
 
-class VrtsReportItem {
+import veritas.ecosystem;
+
+class VrtsReport {
+    string filename;
     string description;
+
     uint line;
     uint column;
-    
-    string filename;
-}
-
-class VrtsReportsFiles {
-    string[VrtsSourceFile] filesAndReports;
-
-    this() {
-        filesAndReports = new string[VrtsSourceFile];
-    }
 }
 
 class VrtsReportsParser {
-    VrtsReportItem[] reports;
-    // string toolName;
-    // uint actionCount;
-    // string[] commands;
-    // string wd;
-    // string outputPath;
-    string[string]  filesAndReports;
+    VrtsReport[] reports;
 
-    void parseMetadata(string metadataFileName) {
-        string fileContent = readText(metadataFileName);
+    VrtsReport[] parseResultFile(string path) {
+        string jsonContent = readText(path);
+        JSONValue jsonFile = parseJSON(jsonContent);
+        auto jsonReports = jsonFile["reports"];
 
-        auto jsonValue = parseJSON(fileContent); 
+        foreach(jsonReport; jsonReports.arrayNoRef()) {
+            auto file = jsonReport["file"];
 
-        auto tools = jsonValue["tools"][0];
+            VrtsReport report = new VrtsReport();
 
-        auto resultSourceFiles = tools["result_source_files"];
+            report.filename = file["original_path"]
+                .str()
+                .baseName();
 
-        foreach (key, value; resultSourceFiles.object) {
-            filesAndReports[value.str] = key;
-        }
-    }
+            report.line = jsonReport["line"].get!uint;
+            report.column = jsonReport["column"].get!uint;
+            report.description = jsonReport["message"].get!string;
 
-    VrtsReportsFiles linkReportsFilesWithSources(VrtsSourceFile[] sources) {
-        VrtsReportsFiles files = new VrtsReportsFiles;
-        foreach (ref sourceFile; sources) {
-            string aPath = sourceFile.fullname.asAbsolutePath.array.buildNormalizedPath;
-            if(aPath in filesAndReports) 
-                files.filesAndReports[sourceFile] = this.filesAndReports[aPath];
+            reports ~= report;
         }
 
-        return files;
+        return reports;
     }
 }

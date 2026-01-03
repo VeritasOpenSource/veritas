@@ -39,7 +39,19 @@ void main(string[] args)
         
 	VrtsEcosystem ecosystem = new VrtsEcosystem;
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
+
+    analyzer.analyze(sourcesArray);
+
     ecosystem.relinkCalls();
+    
+    reportParser.parseResultFile(path ~ "reports.json");
+
+    auto reports = reportParser.reports;
+
+    ecosystem.processReports(reports);
+
+    if(args.length < 3)
+        return;
 
     if(args[2] == "--find-calls-inside"){
 

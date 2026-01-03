@@ -6,6 +6,7 @@ import std.array;
 import std.stdio;
 import veritas.plist;
 import std.string;
+import veritas.reportparser;
 
 class VrtsProblem {
     string desc;
@@ -24,6 +25,8 @@ class VrtsSourceFunctionDef {
     uint endLine;
     // uint startColumn;
     // uint endColumn;
+    ///Reports about function
+    VrtsReport[] reports;
 
 
     VrtsSourceFunctionCall[] calls;
@@ -174,5 +177,17 @@ class VrtsEcosystem {
     bool isAllCallingsinRing(int ringLevel, VrtsSourceFunctionDef[] funcs) {
         return funcs
             .all!((a) => this.isFunctionInRing(ringLevel, a));
+    }
+
+    void processReports(VrtsReport[] reports) {
+        foreach(report; reports) {
+            foreach(function_; functions) {
+                if( report.filename == function_.filename &&
+                    report.line > function_.startLine &&
+                    report.line < function_.endLine)
+
+                    function_.reports ~= report;
+            }
+        }
     }
 }
