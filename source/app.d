@@ -36,6 +36,7 @@ void main(string[] args)
 
     string path = args[1];
 	auto sources = scanForSourceFiles(path);
+    auto sourcesArray = sources.array;
         
 	VrtsEcosystem ecosystem = new VrtsEcosystem;
     auto analyzer = new VrtsSourceAnalyzer(ecosystem);
