@@ -80,6 +80,14 @@ void main(string[] args)
         writeln("   Start line: ", func.startLine);
         writeln("   End line: ", func.endLine);
 
+        writeln("Reports: ");
+        foreach(report; func.reports) {
+            writeln("   Line: ", report.line, ":", report.column);
+            writeln("   Description: ", report.description);
+
+            writeln();
+        }
+
     }
 
     if(args[2] == "--funcs-of-first-ring") {
