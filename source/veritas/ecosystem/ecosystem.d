@@ -1,4 +1,4 @@
-module veritas.ecosystem;
+module veritas.ecosystem.ecosystem;
 
 import std.compiler;
 import std.algorithm;
@@ -7,42 +7,12 @@ import std.stdio;
 import veritas.plist;
 import std.string;
 import veritas.reportparser;
+import veritas.ecosystem.func;
 
 class VrtsProblem {
     string desc;
     // uint line;
     // strib
-}
-
-class VrtsSourceFunctionDef {
-    //Name of function
-    string name;
-    //Source filename
-    string filename;
-    // VrtsSourceFile file;
-
-    uint startLine;
-    uint endLine;
-    // uint startColumn;
-    // uint endColumn;
-    ///Reports about function
-    VrtsReport[] reports;
-
-
-    VrtsSourceFunctionCall[] calls;
-    VrtsSourceFunctionCall[] callers;
-
-    this(string name) {
-        this.name = name;
-    }
-
-    void setLocation(string filename, uint startLine, uint endLine /*, uint startColumn, uint endColumn*/) {
-        this.filename = filename;
-        this.startLine = startLine;
-        this.endLine = endLine;
-        // this.startColumn = startColumn;
-        // this.endColumn = endColumn;
-    }
 }
 
 ///Both-direction call entity 
@@ -73,7 +43,6 @@ class VrtsSourceFunctionCall {
         return calling.name;
     }
 }
-
 
 class VrtsSourceFile {
 	string path;
