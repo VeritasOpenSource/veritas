@@ -6,8 +6,9 @@ class VrtsSourceLocation {
     uint column;
 
     this(string filename, uint line, uint column) {
-        this.line = column;
-        this.line = column;
+        this.filename = filename;
+        this.line = line;
+        this.column = column;
     }
 }
 

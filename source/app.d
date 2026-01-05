@@ -29,10 +29,7 @@ void main(string[] args)
 {
     VrtsReportsParser reportParser = new VrtsReportsParser();
 
-    if(args.length < 2) {
-        writeln("Nothing to do.");
-        return;
-    }
+  
 
     string path = args[1];
 	auto sources = scanForSourceFiles(path);
@@ -45,11 +42,18 @@ void main(string[] args)
 
     ecosystem.relinkCalls();
     
-    reportParser.parseResultFile(path ~ "reports.json");
+    // reportParser.parseResultFile(path ~ "reports.json");
 
-    auto reports = reportParser.reports;
+    // auto reports = reportParser.reports;
 
-    ecosystem.processReports(reports);
+    // ecosystem.processReports(reports);
+
+    ecosystem.buildRingsIerarchy();
+
+    if(args.length < 2) {
+        writeln("Nothing to do.");
+        // return;
+    }
 
     if(args.length < 3)
         return;
@@ -95,6 +99,26 @@ void main(string[] args)
         auto funcs = ecosystem.getFunctionsWithoutCalls();
         funcs.each!(a => writeln("      ", a.name));
         writeln("Total: ", funcs.walkLength, " funcs");
+    }
+
+    if(args[2] == "--stat-rings") {
+        // auto funcs = ecosystem.getFunctionsWithoutCalls();
+        ecosystem
+            .rings
+            .each!((a) {
+                    writeln("Ring ", a.level, ":");
+                    a.functions.each!(f => writeln("     ", f.name));
+                }
+            );
+    }
+
+    if(args[2] == "--ring") {
+        // auto funcs = ecosystem.getFunctionsWithoutCalls();
+        auto ring = ecosystem
+            .rings[args[3].to!uint];
+
+            ring.functions.each!(a => writeln("Func ", a.name));
+        // writeln("Total: ", funcs.walkLength, " funcs");
     }
 }
 

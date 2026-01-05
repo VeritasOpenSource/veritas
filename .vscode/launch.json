@@ -12,8 +12,8 @@
             "cwd": "${command:dubWorkingDirectory}",
             "program": "${command:dubTarget}",
             "args": [
-                "../bash-5.3/",
-                "--info-func array_concat"
+                "../sed/sed/",
+                "--stat-rings"
             ]
         }
     ]

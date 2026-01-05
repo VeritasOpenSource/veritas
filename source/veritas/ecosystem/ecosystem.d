@@ -74,6 +74,10 @@ class VrtsSourceFile {
 class VrtsRing {
     uint level;
     VrtsSourceFunctionDef[]     functions; 
+
+    bool isFunctionInRing(VrtsSourceFunctionDef func) {
+        return functions.canFind!(a => a == func);
+    }
 } 
 
 //Main DB  
@@ -148,9 +152,52 @@ class VrtsEcosystem {
             .all!((a) => this.isFunctionInRing(ringLevel, a));
     }
 
+    void buildRingsIerarchy() {
+        auto funcs = functions.dup;
+
+        // writeln("Functs: ", funcs.length);
+
+        VrtsRing ring0 = new VrtsRing();
+
+        foreach(func; functions) {
+            if(func.isAllCallsUndefined) {
+                ring0.functions ~= func;
+            }
+        }
+
+        rings ~= ring0;
+
+        funcs = funcs.removeElements(ring0.functions);
+
+        // writeln("Ring 0: ", ring0.functions.length);
+
+        uint level = 1;
+        while(funcs.length > 0) {
+            VrtsRing ring = new VrtsRing;
+
+            foreach(func_; funcs) {
+                auto calls = func_.calls.filter!(a => a.isDefined).array;
+
+                if(checkAllCallsInRings(calls)) {
+                    ring.functions ~= func_;
+                }
+            }
+
+            if(ring.functions.length == 0)
+                break;
+
+            ring.level = level;
+            rings ~= ring;
+
+            level++;
+
+            funcs = funcs.removeElements(ring.functions);
+        }
+    }
+
     void processReports(VrtsReport[] reports) {
         foreach(report; reports) {
-            foreach(function_; functions) {
+            foreach(function_; functions.filter!(a => a.definitionLocation !is null)) {
                 if( report.filename == function_.definitionLocation.filename &&
                     report.line > function_.definitionLocation.start.line &&
                     report.line < function_.definitionLocation.end.line)
@@ -159,4 +206,42 @@ class VrtsEcosystem {
             }
         }
     }
+
+    bool checkAllCallsInRings (VrtsSourceFunctionCall[] calls) {
+        bool allCallsInRings = true;
+        foreach(call; calls) {
+            bool isCallInRing = false;
+            foreach(ring; rings) {  
+               if(ring.isFunctionInRing(call.target))
+                    isCallInRing = true;
+            }
+
+            if(!isCallInRing)
+                allCallsInRings = false;
+        }
+
+        return allCallsInRings;
+    }
+}
+
+T[] removeElements(T)(ref T[] array, T[] needles) {
+    T[] newArray;
+
+    foreach(elem; array) {
+        if(needles.canFind!(a => a == elem)) {
+            continue;
+        }
+
+        newArray ~= elem;
+    }
+
+    return newArray;
+}
+
+unittest {
+    auto arr = [1, 2, 3, 4, 5];
+
+    arr = arr.removeElements([2, 4]);
+
+    writeln(arr);
 }
