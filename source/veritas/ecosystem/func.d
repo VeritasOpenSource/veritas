@@ -15,8 +15,8 @@ class VrtsSourceFunctionDef {
     VrtsReport[] reports;
 
 
-    VrtsSourceFunctionCall[] calls;
-    VrtsSourceFunctionCall[] callers;
+    VrtsFunctionCall[] calls;
+    VrtsFunctionCall[] callers;
 
     this(string name) {
         this.name = name;

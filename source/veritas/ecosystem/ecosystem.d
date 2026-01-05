@@ -44,7 +44,7 @@ class VrtsEcosystem {
                     call.isDefined = true;
                     call.target = needle;
 
-                    auto caller = new VrtsSourceFunctionCall(def.name);
+                    auto caller = new VrtsFunctionCall(def.name);
                     caller.isDefined = true;
                     caller.target = def;
                     needle.callers ~= caller;
@@ -149,7 +149,7 @@ class VrtsEcosystem {
         }
     }
 
-    bool checkAllCallsInRings (VrtsSourceFunctionCall[] calls) {
+    bool checkAllCallsInRings (VrtsFunctionCall[] calls) {
         bool allCallsInRings = true;
         foreach(call; calls) {
             bool isCallInRing = false;

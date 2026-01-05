@@ -3,7 +3,7 @@ module veritas.ecosystem.call;
 import veritas.ecosystem;
 
 ///Both-direction call entity 
-class VrtsSourceFunctionCall {
+class VrtsFunctionCall {
     ///is called function already defined before?
     bool isDefined = false;
 
