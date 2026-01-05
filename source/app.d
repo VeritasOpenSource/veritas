@@ -50,14 +50,10 @@ class Veritas {
             } else
 
             if(commands[0] == "info") {
-                // string project = command[4..$];
-                // writeln(project);
                 writeln(ecosystem.functions.length);
             } else
 
             if(commands[0] == "ringsCount") {
-                // string project = command[4..$];
-                // writeln(project);
                 writeln(ecosystem.rings.length);
             }
         }
