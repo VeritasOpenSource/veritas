@@ -151,9 +151,9 @@ class VrtsEcosystem {
     void processReports(VrtsReport[] reports) {
         foreach(report; reports) {
             foreach(function_; functions) {
-                if( report.filename == function_.filename &&
-                    report.line > function_.startLine &&
-                    report.line < function_.endLine)
+                if( report.filename == function_.definitionLocation.filename &&
+                    report.line > function_.definitionLocation.start.line &&
+                    report.line < function_.definitionLocation.end.line)
 
                     function_.reports ~= report;
             }

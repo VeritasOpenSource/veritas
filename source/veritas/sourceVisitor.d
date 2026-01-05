@@ -75,7 +75,7 @@ class VrtsSourceVisitor {
             
             clang_getFileLocation(start, file, &start_line, null, null);
             clang_getFileLocation(end, file, &end_line, null, null);
-            funcDecl.setLocation(parent.cxToStr().baseName, start_line, end_line);
+            funcDecl.setLocation(true, parent.cxToStr().baseName, start_line, 0, end_line, 0);
 
             context.funcContext = funcDecl;
             clang_visitChildren(cursor, &functionVisitor, data);

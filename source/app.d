@@ -78,8 +78,8 @@ void main(string[] args)
             .each!(a => writeln("   ", a.getCallName));
 
         writeln("Position in source file: ");
-        writeln("   Start line: ", func.startLine);
-        writeln("   End line: ", func.endLine);
+        writeln("   Start line: ", func.definitionLocation.start.line);
+        writeln("   End line: ", func.definitionLocation.end.line);
 
         writeln("Reports: ");
         foreach(report; func.reports) {

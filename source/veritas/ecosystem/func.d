@@ -2,16 +2,17 @@ module veritas.ecosystem.func;
 
 import veritas.ecosystem.ecosystem;
 import veritas.reportparser;
+import veritas.ecosystem.location;
 
 class VrtsSourceFunctionDef {
     //Name of function
     string name;
     //Source filename
-    string filename;
     // VrtsSourceFile file;
 
-    uint startLine;
-    uint endLine;
+    VrtsSourceLocation      declarationLocation;
+    VrtsSourceLocationRange definitionLocation;
+
     // uint startColumn;
     // uint endColumn;
     ///Reports about function
@@ -25,11 +26,12 @@ class VrtsSourceFunctionDef {
         this.name = name;
     }
 
-    void setLocation(string filename, uint startLine, uint endLine /*, uint startColumn, uint endColumn*/) {
-        this.filename = filename;
-        this.startLine = startLine;
-        this.endLine = endLine;
-        // this.startColumn = startColumn;
-        // this.endColumn = endColumn;
+    void setLocation(bool isDefinition, string filename,  uint startLine, uint endLine , uint startColumn, uint endColumn) {
+        if(isDefinition) {
+            definitionLocation = new VrtsSourceLocationRange(filename, startLine, startColumn, endLine, endColumn);
+        }
+        else {
+            declarationLocation = new VrtsSourceLocation(filename, startLine, startColumn);
+        }
     }
 }
