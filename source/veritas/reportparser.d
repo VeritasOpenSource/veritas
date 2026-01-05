@@ -2,16 +2,7 @@ module veritas.reportparser;
 
 import std.file;
 import std.json;
-import sysio = std.stdio;
 import std.path;
-import std.array;
-import std.file;
-import std.path;
-import std.algorithm;
-import std.range;
-import std.conv;
-
-import dxml.parser;
 
 import veritas.ecosystem;
 

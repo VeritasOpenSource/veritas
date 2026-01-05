@@ -1,14 +1,10 @@
 module veritas.sourceVisitor;
 
-import std.stdio;
 import std.string;
+import std.path;
 
 import veritas.clang;
 import veritas.ecosystem;
-import std.algorithm;
-import std.range;
-import std.array;
-import std.path;
 
 
 class VrtsSourceVisitor {

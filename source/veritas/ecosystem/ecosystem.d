@@ -1,11 +1,8 @@
 module veritas.ecosystem.ecosystem;
 
-import std.compiler;
 import std.algorithm;
 import std.array;
-import std.stdio;
-import veritas.plist;
-import std.string;
+
 import veritas.reportparser;
 import veritas.ecosystem;
 

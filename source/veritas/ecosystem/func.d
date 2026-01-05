@@ -2,9 +2,8 @@ module veritas.ecosystem.func;
 
 import std.algorithm;
 
-import veritas.ecosystem.ecosystem;
+import veritas.ecosystem;
 import veritas.reportparser;
-import veritas.ecosystem.location;
 
 class VrtsSourceFunctionDef {
     //Name of function
