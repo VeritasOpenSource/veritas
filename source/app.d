@@ -26,6 +26,9 @@ class Veritas {
     }
 
     void runLoop(File inputFile = stdin) {
+        if(inputFile != stdin) {
+            writeln("Using script mode...");
+        }
         string command;
         while(command != "exit") {
             char[] _command;
@@ -50,11 +53,11 @@ class Veritas {
             } else
 
             if(commands[0] == "info") {
-                writeln(ecosystem.functions.length);
+                writeln("Funcitons count: ", ecosystem.functions.length);
             } else
 
             if(commands[0] == "ringsCount") {
-                writeln(ecosystem.rings.length);
+                writeln("Call rings detected: ", ecosystem.rings.length);
             }
         }
     }
@@ -65,12 +68,12 @@ class Veritas {
         auto sourcesArray = sources.array;
         auto analyzer = new VrtsSourceAnalyzer(ecosystem);
 
-        writeln("analyzing...");
+        writeln("Analyzing package ", path, "...");
         analyzer.analyze(sourcesArray);
 
-        writeln(("linking..."));
+        writeln(("Linking functions..."));
         ecosystem.relinkCalls();
-        writeln(("building..."));
+        writeln(("Building rings ierarchy..."));
         ecosystem.buildRingsIerarchy();
     }
 }
