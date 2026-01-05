@@ -13,6 +13,54 @@ import veritas.clang;
 import veritas.sourceVisitor;
 import std.range;
 import veritas.reportparser;
+import veritas.sourceVisitor;
+import veritas.ecosystem.sourceAnalyzer;
+
+class Veritas {
+    VrtsEcosystem ecosystem;
+    VrtsSourceAnalyzer analyzer;
+
+    this() {
+        ecosystem = new VrtsEcosystem;
+        analyzer = new VrtsSourceAnalyzer(ecosystem);
+    }
+
+    void runLoop() {
+        string command;
+        while(command != "exit") {
+            char[] _command;
+
+            write(">>");
+            readln(_command);
+
+            command = _command[0..$-1].to!string;
+
+            if(command[0..3] == "add") {
+                string project = command[4..$];
+                writeln(project);
+                addProject(project);
+            }
+
+            if(command[0..4] == "info") {
+                string project = command[4..$];
+                // writeln(project);
+                writeln(ecosystem.functions.length);
+            }
+        }
+    }
+
+    void addProject(string path) {
+        auto sources = scanForSourceFiles(path);
+
+        auto sourcesArray = sources.array;
+        auto analyzer = new VrtsSourceAnalyzer(ecosystem);
+
+        analyzer.analyze(sourcesArray);
+
+        ecosystem.relinkCalls();
+        ecosystem.buildRingsIerarchy();
+    }
+}
 
 VrtsSourceFile createSourceFile(string path, string filename) {
 	return new VrtsSourceFile(path, filename);
@@ -25,115 +73,9 @@ auto scanForSourceFiles(string path) {
         .map!((a) => createSourceFile(path, a));
 }
 
-void main(string[] args)
-{
-    VrtsReportsParser reportParser = new VrtsReportsParser();
 
-  
+void main(string[] args) {
+    Veritas veritas = new Veritas;
 
-    string path = args[1];
-	auto sources = scanForSourceFiles(path);
-    auto sourcesArray = sources.array;
-        
-	VrtsEcosystem ecosystem = new VrtsEcosystem;
-    auto analyzer = new VrtsSourceAnalyzer(ecosystem);
-
-    analyzer.analyze(sourcesArray);
-
-    ecosystem.relinkCalls();
-    
-    // reportParser.parseResultFile(path ~ "reports.json");
-
-    // auto reports = reportParser.reports;
-
-    // ecosystem.processReports(reports);
-
-    ecosystem.buildRingsIerarchy();
-
-    if(args.length < 2) {
-        writeln("Nothing to do.");
-        // return;
-    }
-
-    if(args.length < 3)
-        return;
-
-    if(args[2] == "--find-calls-inside"){
-
-        auto func = ecosystem.functions.find!(a => a.name == args[3])[].front;
-
-        func
-            .calls
-            .each!(a => writeln(a.calling.name));
-    }
-
-    
-    if(args[2] == "--info-func") {
-        auto func = ecosystem.functions.find!(a => a.name == args[3])[].front;
-
-        writeln("Calls: ");
-        func
-            .calls
-            .each!(a => writeln("   ", a.getCallName));
-
-        writeln("Called by: ");
-        func
-            .callers
-            .each!(a => writeln("   ", a.getCallName));
-
-        writeln("Position in source file: ");
-        writeln("   Start line: ", func.definitionLocation.start.line);
-        writeln("   End line: ", func.definitionLocation.end.line);
-
-        writeln("Reports: ");
-        foreach(report; func.reports) {
-            writeln("   Line: ", report.line, ":", report.column);
-            writeln("   Description: ", report.description);
-
-            writeln();
-        }
-
-    }
-
-    if(args[2] == "--funcs-of-first-ring") {
-        auto funcs = ecosystem.getFunctionsWithoutCalls();
-        funcs.each!(a => writeln("      ", a.name));
-        writeln("Total: ", funcs.walkLength, " funcs");
-    }
-
-    if(args[2] == "--stat-rings") {
-        // auto funcs = ecosystem.getFunctionsWithoutCalls();
-        ecosystem
-            .rings
-            .each!((a) {
-                    writeln("Ring ", a.level, ":");
-                    a.functions.each!(f => writeln("     ", f.name));
-                }
-            );
-    }
-
-    if(args[2] == "--ring") {
-        // auto funcs = ecosystem.getFunctionsWithoutCalls();
-        auto ring = ecosystem
-            .rings[args[3].to!uint];
-
-            ring.functions.each!(a => writeln("Func ", a.name));
-        // writeln("Total: ", funcs.walkLength, " funcs");
-    }
-}
-
-class VrtsSourceAnalyzer {
-    VrtsEcosystem ecosystem;
-    VrtsSourceVisitor visitor;
-
-    this(VrtsEcosystem ecosystem) {
-        this.ecosystem = ecosystem;
-        this.visitor = new VrtsSourceVisitor;
-    }
-
-    void analyze(VrtsSourceFile[] sources) {
-        foreach(ref source; sources) {
-		    visitor.visitSourceFile(ecosystem, source);
-	    }
-    }
+    veritas.runLoop();
 }

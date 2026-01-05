@@ -7,7 +7,7 @@ import std.stdio;
 import veritas.plist;
 import std.string;
 import veritas.reportparser;
-import veritas.ecosystem.func;
+import veritas.ecosystem;
 
 class VrtsProblem {
     string desc;
@@ -44,33 +44,6 @@ class VrtsSourceFunctionCall {
     }
 }
 
-class VrtsSourceFile {
-	string path;
-	string filename;
-    // string reportFile;
-
-    @property
-    @trusted
-    nothrow
-    string fullname() const {
-        return path ~ filename;
-    }
-
-	this(string path, string filename) {
-		this.path = path;
-		this.filename = filename;
-	}
-
-    override size_t toHash() const @trusted nothrow {
-        return hashOf(this.filename); 
-    }
-
-    override bool opEquals(Object o) const {
-        VrtsSourceFile b = cast(VrtsSourceFile) o;
-        return this.fullname == b.fullname;
-    }
-}
-
 class VrtsRing {
     uint level;
     VrtsSourceFunctionDef[]     functions; 
@@ -82,11 +55,11 @@ class VrtsRing {
 
 //Main DB  
 class VrtsEcosystem {
+    VrtsPackage[]               packages;
+
     VrtsRing[]                  rings;
     VrtsSourceFunctionDef[]     functions;
     VrtsSourceFile[]            sourceFiles;
-    // VrtsSourceFunctionDef[]     
-    // VrtsFunction[]  undefined;
 
     void addSourceFile(VrtsSourceFile file) {
         sourceFiles ~= file;
@@ -155,8 +128,6 @@ class VrtsEcosystem {
     void buildRingsIerarchy() {
         auto funcs = functions.dup;
 
-        // writeln("Functs: ", funcs.length);
-
         VrtsRing ring0 = new VrtsRing();
 
         foreach(func; functions) {
@@ -168,8 +139,6 @@ class VrtsEcosystem {
         rings ~= ring0;
 
         funcs = funcs.removeElements(ring0.functions);
-
-        // writeln("Ring 0: ", ring0.functions.length);
 
         uint level = 1;
         while(funcs.length > 0) {
@@ -236,12 +205,4 @@ T[] removeElements(T)(ref T[] array, T[] needles) {
     }
 
     return newArray;
-}
-
-unittest {
-    auto arr = [1, 2, 3, 4, 5];
-
-    arr = arr.removeElements([2, 4]);
-
-    writeln(arr);
 }

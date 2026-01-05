@@ -9,14 +9,9 @@ import veritas.ecosystem.location;
 class VrtsSourceFunctionDef {
     //Name of function
     string name;
-    //Source filename
-    // VrtsSourceFile file;
 
     VrtsSourceLocation      declarationLocation;
     VrtsSourceLocationRange definitionLocation;
-
-    // uint startColumn;
-    // uint endColumn;
     ///Reports about function
     VrtsReport[] reports;
 
