@@ -69,9 +69,12 @@ class Veritas {
         auto sourcesArray = sources.array;
         auto analyzer = new VrtsSourceAnalyzer(ecosystem);
 
+        writeln("analyzing...");
         analyzer.analyze(sourcesArray);
 
+        writeln(("linking..."));
         ecosystem.relinkCalls();
+        writeln(("building..."));
         ecosystem.buildRingsIerarchy();
     }
 }

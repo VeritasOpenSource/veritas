@@ -14,7 +14,7 @@ class VrtsSourceVisitor {
 
     void visitSourceFile(VrtsEcosystem ecosystem, VrtsSourceFile file) {
         this.ecosystem = ecosystem;
-        // writeln("Extracting file: ", file.filename);
+        // writeln("Extracting file: ", file.fullname);
 
         CXIndex index = clang_createIndex(0, 0);
 
