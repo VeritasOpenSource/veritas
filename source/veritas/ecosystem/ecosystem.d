@@ -47,7 +47,7 @@ class VrtsEcosystem {
                     auto caller = new VrtsFunctionCall(def.name);
                     caller.isDefined = true;
                     caller.target = def;
-                    needle.callers ~= caller;
+                    needle.calledBy ~= caller;
 
                     break;
                 }

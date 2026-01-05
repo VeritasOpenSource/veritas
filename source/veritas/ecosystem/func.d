@@ -16,7 +16,7 @@ class VrtsFunction {
 
 
     VrtsFunctionCall[] calls;
-    VrtsFunctionCall[] callers;
+    VrtsFunctionCall[] calledBy;
 
     this(string name) {
         this.name = name;
