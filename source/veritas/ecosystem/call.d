@@ -13,7 +13,7 @@ class VrtsFunctionCall {
         ///if not defined
         string name;
         ///if defined and is in ecosystem
-        VrtsSourceFunctionDef   target;
+        VrtsFunction   target;
     }
 
     Calling calling;

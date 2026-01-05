@@ -11,19 +11,19 @@ class VrtsEcosystem {
     VrtsPackage[]               packages;
 
     VrtsRing[]                  rings;
-    VrtsSourceFunctionDef[]     functions;
+    VrtsFunction[]     functions;
     VrtsSourceFile[]            sourceFiles;
 
     void addSourceFile(VrtsSourceFile file) {
         sourceFiles ~= file;
     }
 
-    VrtsSourceFunctionDef addFunction(string name) {
+    VrtsFunction addFunction(string name) {
         auto func = functions
             .find!((a) => cmp(a.name, name) == 0);
 
         if(func.empty) { 
-            auto newDef = new VrtsSourceFunctionDef(name); 
+            auto newDef = new VrtsFunction(name); 
             functions ~= newDef; 
             return newDef;
         }
@@ -37,7 +37,7 @@ class VrtsEcosystem {
         }
     }
 
-    void relinkFunctionCall(VrtsSourceFunctionDef def) {
+    void relinkFunctionCall(VrtsFunction def) {
         foreach(call; def.calls) {
             foreach(needle; functions) {
                 if(!call.isDefined && call.name == needle.name) {
@@ -65,7 +65,7 @@ class VrtsEcosystem {
         ring0.functions = functions.filter!((a) => a.calls.length == 0).array;
     }
 
-    bool isFunctionInRing(int ringLevel, VrtsSourceFunctionDef func) {
+    bool isFunctionInRing(int ringLevel, VrtsFunction func) {
         return rings[ringLevel]
             .functions
             .canFind!((a) =>
@@ -73,7 +73,7 @@ class VrtsEcosystem {
             );
     }    
 
-    bool isAllCallingsinRing(int ringLevel, VrtsSourceFunctionDef[] funcs) {
+    bool isAllCallingsinRing(int ringLevel, VrtsFunction[] funcs) {
         return funcs
             .all!((a) => this.isFunctionInRing(ringLevel, a));
     }

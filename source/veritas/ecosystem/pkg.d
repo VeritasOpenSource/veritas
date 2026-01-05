@@ -6,6 +6,6 @@ class VrtsPackage {
     string name;
     string path;
 
-    VrtsSourceFunctionDef[] functions;
+    VrtsFunction[] functions;
     VrtsSourceFile[]        sourceFiles;
 }

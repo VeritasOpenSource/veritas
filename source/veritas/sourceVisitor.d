@@ -10,7 +10,7 @@ import veritas.ecosystem;
 class VrtsSourceVisitor {
     VrtsEcosystem ecosystem;
 
-    VrtsSourceFunctionDef funcContext;
+    VrtsFunction funcContext;
 
     void visitSourceFile(VrtsEcosystem ecosystem, VrtsSourceFile file) {
         this.ecosystem = ecosystem;

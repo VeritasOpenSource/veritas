@@ -5,7 +5,7 @@ import std.algorithm;
 import veritas.ecosystem;
 import veritas.reportparser;
 
-class VrtsSourceFunctionDef {
+class VrtsFunction {
     //Name of function
     string name;
 

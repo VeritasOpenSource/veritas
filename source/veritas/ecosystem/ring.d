@@ -6,9 +6,9 @@ import veritas.ecosystem;
 
 class VrtsRing {
     uint level;
-    VrtsSourceFunctionDef[]     functions; 
+    VrtsFunction[]     functions; 
 
-    bool isFunctionInRing(VrtsSourceFunctionDef func) {
+    bool isFunctionInRing(VrtsFunction func) {
         return functions.canFind!(a => a == func);
     }
 } 
