@@ -11,7 +11,7 @@ class VrtsEcosystem {
     VrtsPackage[]               packages;
 
     VrtsRing[]                  rings;
-    VrtsFunction[]     functions;
+    VrtsFunction[]              functions;
     VrtsSourceFile[]            sourceFiles;
 
     void addSourceFile(VrtsSourceFile file) {

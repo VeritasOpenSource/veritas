@@ -1,3 +1,5 @@
+module veritas.app;
+
 import std.stdio;
 
 import std.process;
