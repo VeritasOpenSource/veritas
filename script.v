@@ -1,4 +1,3 @@
-add ../bash-5.3/
-add ../sed/sed/
+add ../glibc-2.42/
 info
 ringsCount
