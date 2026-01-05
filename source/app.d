@@ -82,8 +82,11 @@ VrtsSourceFile createSourceFile(string path, string filename) {
 auto scanForSourceFiles(string path) {
     return dirEntries(path,"*.{h,c}",SpanMode.shallow)
 		.filter!(a => a.isFile)
-		.map!((return a) => baseName(a.name))
-        .map!((a) => createSourceFile(path, a));
+        ///ignoring test files for glibc
+        .filter!(a => a.baseName[0..4] != "tst-")
+        .filter!(a => a.baseName[0..4] != "test-");
+    return res
+        .map!((a) => createSourceFile(a.dirName~"/", a.baseName)).array;
 }
 
 
