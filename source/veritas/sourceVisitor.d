@@ -44,7 +44,7 @@ class VrtsSourceVisitor {
             cast(int)args.length,
             null,
             0,
-            0x4000);
+            0x4000 | 0x400);
         // }
         CXCursor root = clang_getTranslationUnitCursor(tu);
 
