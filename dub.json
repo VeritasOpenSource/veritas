@@ -11,6 +11,5 @@
 		"-L-lclang"
 	],
 	"dependencies": {
-		"dxml" : "~master"
 	}
 }
