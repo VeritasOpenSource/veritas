@@ -12,8 +12,7 @@
             "cwd": "${command:dubWorkingDirectory}",
             "program": "${command:dubTarget}",
             "args": [
-                "../sed/sed/",
-                "--stat-rings"
+                "./script.v",
             ]
         }
     ]

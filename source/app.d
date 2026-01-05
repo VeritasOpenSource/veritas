@@ -25,26 +25,40 @@ class Veritas {
         analyzer = new VrtsSourceAnalyzer(ecosystem);
     }
 
-    void runLoop() {
+    void runLoop(File inputFile = stdin) {
         string command;
         while(command != "exit") {
             char[] _command;
 
-            write(">>");
-            readln(_command);
+            write("");
+            inputFile.readln(_command);
 
-            command = _command[0..$-1].to!string;
-
-            if(command[0..3] == "add") {
-                string project = command[4..$];
-                writeln(project);
-                addProject(project);
+            if(_command.length == 0) {
+                inputFile = stdin;
+                continue;
             }
 
-            if(command[0..4] == "info") {
-                string project = command[4..$];
+            string[] commands = _command.to!string.split;
+
+            if(commands[0] == "exit")
+                break;
+
+            if(commands[0] == "add") {
+                string project = commands[1];
+                writeln(project);
+                addProject(project);
+            } else
+
+            if(commands[0] == "info") {
+                // string project = command[4..$];
                 // writeln(project);
                 writeln(ecosystem.functions.length);
+            } else
+
+            if(commands[0] == "ringsCount") {
+                // string project = command[4..$];
+                // writeln(project);
+                writeln(ecosystem.rings.length);
             }
         }
     }
@@ -76,6 +90,9 @@ auto scanForSourceFiles(string path) {
 
 void main(string[] args) {
     Veritas veritas = new Veritas;
-
-    veritas.runLoop();
+    
+    if(args.length > 1)
+        veritas.runLoop(File(args[1]));
+    else
+        veritas.runLoop();
 }
