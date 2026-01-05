@@ -125,10 +125,25 @@ class VrtsEcosystem {
             .all!((a) => this.isFunctionInRing(ringLevel, a));
     }
 
+    VrtsRing getNextRing(uint level) {
+        if(rings.length - 1 < level) {
+            return new VrtsRing();
+        }
+        else if(rings.length - 1 >= level) {
+            return rings[level];
+        }
+
+        assert(0);
+    }
+
     void buildRingsIerarchy() {
         auto funcs = functions.dup;
 
-        VrtsRing ring0 = new VrtsRing();
+        VrtsRing ring0;
+        if(rings.length == 0)
+            ring0 = new VrtsRing();
+        else
+            ring0 = rings[0];
 
         foreach(func; functions) {
             if(func.isAllCallsUndefined) {
@@ -136,13 +151,16 @@ class VrtsEcosystem {
             }
         }
 
-        rings ~= ring0;
+        if(rings.length == 0)
+            rings ~= ring0;
+        // else
+            // ring0 = rings[0];
 
         funcs = funcs.removeElements(ring0.functions);
 
         uint level = 1;
         while(funcs.length > 0) {
-            VrtsRing ring = new VrtsRing;
+            auto ring = this.getNextRing(level);
 
             foreach(func_; funcs) {
                 auto calls = func_.calls.filter!(a => a.isDefined).array;
@@ -156,7 +174,9 @@ class VrtsEcosystem {
                 break;
 
             ring.level = level;
-            rings ~= ring;
+
+            if(rings.length - 1 < level)
+                rings ~= ring;
 
             level++;
 
