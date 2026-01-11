@@ -10,24 +10,24 @@ class VrtsFunctionCall {
 
     ///Name used if its appered by caller to called
     ///Called can be used like a caller of function and called function
-    union Calling {
+    union CallImpl {
         ///if not defined
         string name;
-        ///if defined and is in ecosystem
+        ///if defined and in ecosystem
         VrtsFunction   target;
     }
 
-    Calling calling;
-    alias calling this;
+    CallImpl call;
+    alias call this;
 
     this(string name) {
-        this.calling.name = name;
+        this.call.name = name;
     }
 
     string getCallName() {
         if(isDefined)
             return target.name;
 
-        return calling.name;
+        return call.name;
     }
 }
