@@ -17,8 +17,11 @@ import std.range;
 import veritas.reportparser;
 import veritas.sourceVisitor;
 import veritas.ecosystem.sourceAnalyzer;
+import veritas.ecosystem.journal;
+
 
 class Veritas {
+    // VrtsJournal     journal;
     VrtsEcosystem ecosystem;
     VrtsSourceAnalyzer analyzer;
 

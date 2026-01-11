@@ -1,3 +1,4 @@
+///
 module veritas.ecosystem.ecosystem;
 
 import std.algorithm;
@@ -7,7 +8,7 @@ import veritas.reportparser;
 import veritas.ecosystem;
 // import veritas.ecosystem.scanner;
 
-//Main DB  
+/// 
 class VrtsEcosystem {
     VrtsPackage[]               packages;
 
@@ -16,19 +17,24 @@ class VrtsEcosystem {
     VrtsFunction[]              functions;
     VrtsSourceFile[]            sourceFiles;
 
+    /// 
     void addPackage(VrtsPackage pkg) {
         packages ~= pkg;
+        // Journal.addEvent(new VrtsEventEcosystemAddPackage(pkg));
         pkg.scanForSourceFiles();
     }
 
+    ///
     void recollectData() {
         sourceFiles = packages.map!(a => a.getSourceFiles).join.array;
     }
 
+    ///
     void addSourceFile(VrtsSourceFile file) {
         sourceFiles ~= file;
     }
 
+    ///
     VrtsFunction addFunction(string name) {
         auto func = functions
             .find!((a) => cmp(a.name, name) == 0);
@@ -42,12 +48,14 @@ class VrtsEcosystem {
         return func.front();
     }
 
+    ///
     void relinkCalls() {
         foreach(func; functions) {
             relinkFunctionCall(func);
         }
     }
 
+    ///
     void relinkFunctionCall(VrtsFunction def) {
         foreach(call; def.calls) {
             foreach(needle; functions) {
@@ -61,16 +69,19 @@ class VrtsEcosystem {
         }
     }
 
+    ///
     auto getFunctionsWithoutCalls() {
         return functions.filter!((a) => a.calls.length == 0);
     }
 
+    ///
     void createFirstRing() {
         VrtsRing ring0 = new VrtsRing();
 
         ring0.functions = functions.filter!((a) => a.calls.length == 0).array;
     }
 
+    ///
     bool isFunctionInRing(int ringLevel, VrtsFunction func) {
         return rings[ringLevel]
             .functions
@@ -79,11 +90,13 @@ class VrtsEcosystem {
             );
     }    
 
+    ///
     bool isAllCallingsinRing(int ringLevel, VrtsFunction[] funcs) {
         return funcs
             .all!((a) => this.isFunctionInRing(ringLevel, a));
     }
 
+    ///
     VrtsRing getNextRing(uint level) {
         if(rings.length - 1 < level) {
             return new VrtsRing();
@@ -95,6 +108,7 @@ class VrtsEcosystem {
         assert(0);
     }
 
+    ///
     void buildRingsIerarchy() {
         auto funcs = functions.dup;
 
@@ -143,6 +157,7 @@ class VrtsEcosystem {
         }
     }
 
+    ///
     void processReports(VrtsReport[] reports) {
         foreach(report; reports) {
             foreach(function_; functions.filter!(a => a.definitionLocation !is null)) {
@@ -155,6 +170,7 @@ class VrtsEcosystem {
         }
     }
 
+    ///
     bool checkAllCallsInRings (VrtsFunctionCall[] calls) {
         bool allCallsInRings = true;
         foreach(call; calls) {
@@ -172,6 +188,7 @@ class VrtsEcosystem {
     }
 }
 
+///
 T[] removeElements(T)(ref T[] array, T[] needles) {
     T[] newArray;
 
