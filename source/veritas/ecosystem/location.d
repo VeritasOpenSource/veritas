@@ -97,7 +97,7 @@ public:
      * Returns: 
      *   true if location placed inside location range
      */
-    bool isRawLocationInside(string filename, uint startLine, uint endLine) {
+    bool isLocationInsideRange(string filename, uint startLine, uint endLine) {
         return 
             this.filename == filename &&
             this.start.line < startLine &&
