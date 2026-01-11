@@ -64,7 +64,7 @@ class Veritas {
                 ecosystem.relinkCalls();
                 writeln(("Building rings ierarchy..."));
                 ecosystem.buildRingsIerarchy();
-            }
+            }else
 
             if(commands[0] == "info") {
                 writeln("Funcitons count: ", ecosystem.functions.length);
@@ -77,18 +77,8 @@ class Veritas {
     }
 
     void addProject(string path) {
-        auto analyzer = new VrtsSourceAnalyzer(ecosystem);
         VrtsPackage pkg = new VrtsPackage(path, path);
         ecosystem.addPackage(pkg);
-        ecosystem.recollectData();
-
-        writeln(ecosystem.sourceFiles.length);
-        analyzer.analyzeSourceFiles(ecosystem.sourceFiles);
-
-        writeln(("Linking functions..."));
-        ecosystem.relinkCalls();
-        writeln(("Building rings ierarchy..."));
-        ecosystem.buildRingsIerarchy();
     }
 }
 
