@@ -54,6 +54,18 @@ class Veritas {
                 addProject(project);
             } else
 
+            if(commands[0] == "analyze") {
+                ecosystem.recollectData();
+
+                writeln("Analyzing source files...");
+                analyzer.analyzeSourceFiles(ecosystem.sourceFiles);
+
+                writeln(("Linking functions..."));
+                ecosystem.relinkCalls();
+                writeln(("Building rings ierarchy..."));
+                ecosystem.buildRingsIerarchy();
+            }
+
             if(commands[0] == "info") {
                 writeln("Funcitons count: ", ecosystem.functions.length);
             } else
