@@ -35,7 +35,7 @@ class Veritas {
         while(command != "exit") {
             char[] _command;
 
-            write("");
+            write(">>");
             inputFile.readln(_command);
 
             if(_command.length == 0) {
@@ -65,7 +65,8 @@ class Veritas {
     }
 
     void addProject(string path) {
-        auto sources = scanForSourceFiles(path);
+        VrtsPackage pkg = new VrtsPackage(path, path);
+        auto sources = scanForSourceFiles(pkg);
 
         auto sourcesArray = sources.array;
         auto analyzer = new VrtsSourceAnalyzer(ecosystem);
@@ -80,18 +81,18 @@ class Veritas {
     }
 }
 
-VrtsSourceFile createSourceFile(string path, string filename) {
-	return new VrtsSourceFile(path, filename);
+VrtsSourceFile createSourceFile(VrtsPackage pkg, string filename) {
+	return new VrtsSourceFile(pkg, filename);
 }
 
-auto scanForSourceFiles(string path) {
-    auto res = dirEntries(path,"*.{h,c}",SpanMode.depth)
+auto scanForSourceFiles(VrtsPackage pkg) {
+    auto res = dirEntries(pkg.path,"*.{h,c}",SpanMode.depth)
 		.filter!(a => a.isFile)
         ///ignoring test files for glibc
         .filter!(a => a.baseName[0..4] != "tst-")
         .filter!(a => a.baseName[0..4] != "test-");
     return res
-        .map!((a) => createSourceFile(a.dirName~"/", a.baseName)).array;
+        .map!((a) => createSourceFile(pkg, a.baseName)).array;
 }
 
 

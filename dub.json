@@ -11,5 +11,7 @@
 		"-L-lclang"
 	],
 	"dependencies": {
-	}
+	},
+
+	"-ddoxTool": "scod"
 }

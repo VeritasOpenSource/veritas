@@ -6,8 +6,10 @@ import veritas.ecosystem;
 import veritas.reportparser;
 
 class VrtsFunction {
-    //Name of function
+    //Name of function in own package
     string name;
+
+    VrtsSourceFile file;
 
     VrtsSourceLocation      declarationLocation;
     VrtsSourceLocationRange definitionLocation;
@@ -20,6 +22,10 @@ class VrtsFunction {
 
     this(string name) {
         this.name = name;
+    }
+
+    string getTaggedName() {
+        return file.getTaggedName ~"."~name;
     }
 
     void setLocation(bool isDefinition, string filename,  uint startLine, uint startColumn, uint endLine, uint endColumn) {

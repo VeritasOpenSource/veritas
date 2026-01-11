@@ -15,13 +15,8 @@ protected:
     uint column_;
 
 public:
-    /** 
-     * Constructor
-     * Params:
-     *   filename = 
-     *   line = 
-     *   column = 
-     */
+
+    ///
     this(string filename, uint line, uint column) {
         this.filename_ = filename;
         this.line_ = line;
@@ -48,7 +43,6 @@ public:
 
     /** 
      * toString class overrided function
-     * String representation of location in source file of format 'filename[line:column]
      *
      * Returns: string represented location in source file of format 'filename[line:column]''
      */

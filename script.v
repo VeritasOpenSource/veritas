@@ -1,3 +1,3 @@
-add ../glibc-2.42/
+add ../bash-5.3/
 info
 ringsCount

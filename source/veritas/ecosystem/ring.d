@@ -1,3 +1,4 @@
+///
 module veritas.ecosystem.ring;
 
 import std.algorithm;

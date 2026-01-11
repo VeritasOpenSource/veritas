@@ -35,7 +35,7 @@ class VrtsSourceVisitor {
         args ~= "-nostdinc".toStringz;
 
         tu = clang_parseTranslationUnit(index, 
-            (file.path ~ file.filename).toStringz, 
+            file.getPathName.toStringz, 
             args.ptr, 
             cast(int)args.length,
             null,

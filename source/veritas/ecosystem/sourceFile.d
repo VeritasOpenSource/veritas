@@ -2,30 +2,41 @@ module veritas.ecosystem.sourceFile;
 
 import veritas.ecosystem;
 
+/** 
+ * Class for represenation source file of package
+ */
 class VrtsSourceFile {
-    
-	string path;
+private:
 	string filename;
-    // string reportFile;
+    VrtsPackage     pkg;
 
-    @property
-    @trusted
-    nothrow
-    string fullname() const {
-        return path ~ filename;
-    }
-
-	this(string path, string filename) {
-		this.path = path;
+public:
+ 
+	this(VrtsPackage pkg, string filename) {
+        this.pkg = pkg;
 		this.filename = filename;
 	}
-
-    override size_t toHash() const @trusted nothrow {
-        return hashOf(this.filename); 
+    ///
+    string getPathName() const {
+        return pkg.path ~ filename;
     }
 
+    ///
+    string getTaggedName() const nothrow {
+        return pkg.name ~ "." ~ filename;
+    }
+
+    ///
+
+    ///
+    @trusted
+    override size_t toHash() const {
+        return hashOf(this.getTaggedName); 
+    }
+
+    ///
     override bool opEquals(Object o) const {
         VrtsSourceFile b = cast(VrtsSourceFile) o;
-        return this.fullname == b.fullname;
+        return this.getTaggedName == b.getTaggedName;
     }
 }
