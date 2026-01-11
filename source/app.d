@@ -86,7 +86,7 @@ VrtsSourceFile createSourceFile(VrtsPackage pkg, string filename) {
 }
 
 auto scanForSourceFiles(VrtsPackage pkg) {
-    auto res = dirEntries(pkg.path,"*.{h,c}",SpanMode.depth)
+    auto res = dirEntries(pkg.getPath,"*.{h,c}",SpanMode.depth)
 		.filter!(a => a.isFile)
         ///ignoring test files for glibc
         .filter!(a => a.baseName[0..4] != "tst-")

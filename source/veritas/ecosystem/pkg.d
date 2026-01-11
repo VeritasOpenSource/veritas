@@ -9,6 +9,7 @@ import veritas.ecosystem;
  * Class for package representation  
  */
 class VrtsPackage {
+private:
     ///name of package
     string name;
 
@@ -20,11 +21,16 @@ class VrtsPackage {
     ///ditto
     VrtsSourceFile[]        sourceFiles;
 
+public:
     ///
     this(string path, string name) {
         this.path = path;
         this.name = name;
     }
+    ///
+    string getPath() const => this.path;
+    ///
+    string getName() const => this.name;
     
     ///
     void addFunction(VrtsFunction func) {

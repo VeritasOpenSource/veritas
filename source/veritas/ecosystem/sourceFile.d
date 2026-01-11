@@ -16,22 +16,21 @@ public:
         this.pkg = pkg;
 		this.filename = filename;
 	}
+    
     ///
     string getPathName() const {
-        return pkg.path ~ filename;
+        return pkg.getPath ~ filename;
     }
 
     ///
-    string getTaggedName() const nothrow {
-        return pkg.name ~ "." ~ filename;
+    string getTaggedName() const {
+        return pkg.getName ~ "." ~ filename;
     }
-
-    ///
 
     ///
     @trusted
     override size_t toHash() const {
-        return hashOf(this.getTaggedName); 
+        return 0;
     }
 
     ///
