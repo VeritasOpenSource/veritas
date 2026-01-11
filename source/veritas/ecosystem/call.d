@@ -8,6 +8,8 @@ class VrtsFunctionCall {
     ///is called function already defined before?
     bool isDefined = false;
 
+    VrtsFunction    source;
+
     ///Name used if its appered by caller to called
     ///Called can be used like a caller of function and called function
     union CallImpl {
@@ -29,5 +31,9 @@ class VrtsFunctionCall {
             return target.name;
 
         return call.name;
+    }
+
+    VrtsFunction    getSourceFunctionName() {
+        return this.source;
     }
 }
