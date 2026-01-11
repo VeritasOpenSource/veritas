@@ -97,7 +97,7 @@ class VrtsSourceVisitor {
 
         if (refkind == 8) { 
             string name = cxToStr(refCur);
-            funcDecl.calls ~= new VrtsFunctionCall(name);
+            funcDecl.calls ~= new VrtsFunctionCall(funcDecl, name);
             
             return 1;
         }

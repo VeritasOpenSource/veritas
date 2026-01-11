@@ -40,14 +40,9 @@ class VrtsEcosystem {
     void relinkFunctionCall(VrtsFunction def) {
         foreach(call; def.calls) {
             foreach(needle; functions) {
-                if(!call.isDefined && call.name == needle.name) {
-                    call.isDefined = true;
-                    call.target = needle;
-
-                    auto caller = new VrtsFunctionCall(def.name);
-                    caller.isDefined = true;
-                    caller.target = def;
-                    needle.calledBy ~= caller;
+                if(!call.isDefined && call.getCallName == needle.name) {
+                    call.defineTarget(needle);
+                    needle.calledBy ~= call;
 
                     break;
                 }
@@ -154,7 +149,7 @@ class VrtsEcosystem {
         foreach(call; calls) {
             bool isCallInRing = false;
             foreach(ring; rings) {  
-               if(ring.isFunctionInRing(call.target))
+               if(ring.isFunctionInRing(call.getTargetFunction))
                     isCallInRing = true;
             }
 

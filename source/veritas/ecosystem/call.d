@@ -5,8 +5,9 @@ import veritas.ecosystem;
 
 ///Both-direction call class 
 class VrtsFunctionCall {
+private:    
     ///is called function already defined before?
-    bool isDefined = false;
+    bool defined = false;
 
     VrtsFunction    source;
 
@@ -22,10 +23,21 @@ class VrtsFunctionCall {
     CallImpl call;
     alias call this;
 
-    this(string name) {
+public:
+    ///
+    this(VrtsFunction source, string name) {
         this.call.name = name;
     }
 
+    ///
+    bool isDefined() => defined;
+    ///
+    void defineTarget(VrtsFunction func) {
+        defined = true;
+        this.target = func;
+    }
+
+    ///
     string getCallName() {
         if(isDefined)
             return target.name;
@@ -33,7 +45,13 @@ class VrtsFunctionCall {
         return call.name;
     }
 
-    VrtsFunction    getSourceFunctionName() {
+    ///
+    VrtsFunction    getSourceFunction() {
         return this.source;
+    }
+
+    ///
+    VrtsFunction    getTargetFunction() {
+        return this.target;
     }
 }
