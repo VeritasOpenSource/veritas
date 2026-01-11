@@ -5,14 +5,25 @@ import std.array;
 
 import veritas.reportparser;
 import veritas.ecosystem;
+// import veritas.ecosystem.scanner;
 
 //Main DB  
 class VrtsEcosystem {
     VrtsPackage[]               packages;
 
     VrtsRing[]                  rings;
+    
     VrtsFunction[]              functions;
     VrtsSourceFile[]            sourceFiles;
+
+    void addPackage(VrtsPackage pkg) {
+        packages ~= pkg;
+        pkg.scanForSourceFiles();
+    }
+
+    void recollectData() {
+        sourceFiles = packages.map!(a => a.getSourceFiles).join.array;
+    }
 
     void addSourceFile(VrtsSourceFile file) {
         sourceFiles ~= file;

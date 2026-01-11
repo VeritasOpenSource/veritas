@@ -12,7 +12,7 @@ class VrtsSourceAnalyzer {
         this.visitor = new VrtsSourceVisitor;
     }
 
-    void analyze(VrtsSourceFile[] sources) {
+    void analyzeSourceFiles(ref VrtsSourceFile[] sources) {
         foreach(ref source; sources) {
 		    visitor.visitSourceFile(ecosystem, source);
 	    }

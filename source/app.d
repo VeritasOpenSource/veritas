@@ -65,14 +65,13 @@ class Veritas {
     }
 
     void addProject(string path) {
-        VrtsPackage pkg = new VrtsPackage(path, path);
-        auto sources = scanForSourceFiles(pkg);
-
-        auto sourcesArray = sources.array;
         auto analyzer = new VrtsSourceAnalyzer(ecosystem);
+        VrtsPackage pkg = new VrtsPackage(path, path);
+        ecosystem.addPackage(pkg);
+        ecosystem.recollectData();
 
-        writeln("Analyzing package ", path, "...");
-        analyzer.analyze(sourcesArray);
+        writeln(ecosystem.sourceFiles.length);
+        analyzer.analyzeSourceFiles(ecosystem.sourceFiles);
 
         writeln(("Linking functions..."));
         ecosystem.relinkCalls();
@@ -80,21 +79,6 @@ class Veritas {
         ecosystem.buildRingsIerarchy();
     }
 }
-
-VrtsSourceFile createSourceFile(VrtsPackage pkg, string filename) {
-	return new VrtsSourceFile(pkg, filename);
-}
-
-auto scanForSourceFiles(VrtsPackage pkg) {
-    auto res = dirEntries(pkg.getPath,"*.{h,c}",SpanMode.depth)
-		.filter!(a => a.isFile)
-        ///ignoring test files for glibc
-        .filter!(a => a.baseName[0..4] != "tst-")
-        .filter!(a => a.baseName[0..4] != "test-");
-    return res
-        .map!((a) => createSourceFile(pkg, a.baseName)).array;
-}
-
 
 void main(string[] args) {
     Veritas veritas = new Veritas;

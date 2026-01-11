@@ -3,6 +3,11 @@
 */
 module veritas.ecosystem.pkg;
 
+import std.path;
+import std.array;
+import std.algorithm;
+import std.file;
+
 import veritas.ecosystem;
 
 /** 
@@ -27,6 +32,16 @@ public:
         this.path = path;
         this.name = name;
     }
+
+    /// 
+    auto getSourceFiles() {
+        return sourceFiles;
+    }
+
+    auto setSourceFiles(VrtsSourceFile[] files) {
+        sourceFiles = files;
+    }
+
     ///
     string getPath() const => this.path;
     ///
@@ -40,5 +55,16 @@ public:
     ///
     void addSourceFile(VrtsSourceFile sf) {
         sourceFiles ~= sf;
+    }
+
+    ///
+    void scanForSourceFiles() {
+        auto res = dirEntries(path,"*.{h,c}",SpanMode.depth)
+            .filter!(a => a.isFile)
+            .filter!(a => a.baseName[0..4] != "tst-")
+            .filter!(a => a.baseName[0..4] != "test-")
+            .uniq
+            .map!((a) => new VrtsSourceFile(this, a))
+            .each!((a) => this.addSourceFile(a));
     }
 }
