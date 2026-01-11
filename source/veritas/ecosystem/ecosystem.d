@@ -6,6 +6,7 @@ import std.array;
 
 import veritas.reportparser;
 import veritas.ecosystem;
+import veritas.app;
 // import veritas.ecosystem.scanner;
 
 /// 

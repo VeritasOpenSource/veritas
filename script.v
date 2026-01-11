@@ -1,4 +1,4 @@
-add ../bash-5.3/
+add ../bash/
 analyze
 info
 ringsCount

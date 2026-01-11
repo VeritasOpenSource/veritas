@@ -19,7 +19,7 @@ public:
     
     ///
     string getPathName() const {
-        return pkg.getPath ~ filename;
+        return filename;
     }
 
     ///

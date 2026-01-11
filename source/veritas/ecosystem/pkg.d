@@ -9,7 +9,7 @@ import std.algorithm;
 import std.file;
 
 import veritas.ecosystem;
-
+import veritas.ecosystem.logger;
 /** 
  * Class for package representation  
  */
@@ -30,7 +30,7 @@ public:
     ///
     this(string path, string name) {
         this.path = path;
-        this.name = name;
+        this.name = "bash";
     }
 
     /// 
@@ -54,6 +54,7 @@ public:
 
     ///
     void addSourceFile(VrtsSourceFile sf) {
+        logger.log(sf.getPathName);
         sourceFiles ~= sf;
     }
 
@@ -63,7 +64,7 @@ public:
             .filter!(a => a.isFile)
             .filter!(a => a.baseName[0..4] != "tst-")
             .filter!(a => a.baseName[0..4] != "test-")
-            .uniq
+            // .uniq
             .map!((a) => new VrtsSourceFile(this, a))
             .each!((a) => this.addSourceFile(a));
     }
