@@ -61,8 +61,8 @@ public:
     void scanForSourceFiles() {
         auto res = dirEntries(path,"*.{h,c}",SpanMode.depth)
             .filter!(a => a.isFile)
-            .filter!(a => a.baseName[0..4] != "tst-")
-            .filter!(a => a.baseName[0..4] != "test-")
+            .filter!(a => !a.baseName.startsWith("tst-"))
+            .filter!(a => !a.baseName.startsWith("test-"))
             .map!((a) => new VrtsSourceFile(this, a))
             .each!((a) => this.addSourceFile(a));
     }
