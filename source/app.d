@@ -64,7 +64,7 @@ class Veritas {
             if(commands[0] == "analyze") {
                 ecosystem.recollectData();
 
-                analyzer.analyzeSourceFiles(ecosystem.sourceFiles);
+                analyzer.analyzeSourceFilesByPackages(ecosystem.packages);
 
                 writeln(("Linking functions..."));
                 ecosystem.relinkCalls();
