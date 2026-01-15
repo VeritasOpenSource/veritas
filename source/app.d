@@ -18,8 +18,6 @@ import veritas.reportparser;
 import veritas.sourceVisitor;
 import veritas.ecosystem.sourceAnalyzer;
 import veritas.ecosystem.journal;
-import veritas.ecosystem.logger;
-import arsd.terminal;
 
 class CommandInterpretator {
     void processCommand(string line) {
@@ -28,7 +26,6 @@ class CommandInterpretator {
 }
 
 class Veritas {
-    // VrtsJournal     journal;
     VrtsEcosystem ecosystem;
     VrtsSourceAnalyzer analyzer;
 
@@ -67,7 +64,6 @@ class Veritas {
             if(commands[0] == "analyze") {
                 ecosystem.recollectData();
 
-                logger.log("Analyzing source files...");
                 analyzer.analyzeSourceFiles(ecosystem.sourceFiles);
 
                 writeln(("Linking functions..."));
@@ -87,17 +83,14 @@ class Veritas {
     }
 
     void addProject(string path) {
-        VrtsPackage pkg = new VrtsPackage(path, path);
+        VrtsPackage pkg = new VrtsPackage(absolutePath(path), path);
         ecosystem.addPackage(pkg);
     }
 }
 
 void main(string[] args) {
     Veritas veritas = new Veritas;
-    Terminal* term = new Terminal(ConsoleOutputType.linear);
 
-    // Logger logger = new Logger(term);
-    logger.setTerminal(term);
     CommandInterpretator ci = new CommandInterpretator();
     
     if(args.length > 1)
