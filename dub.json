@@ -5,7 +5,6 @@
 	],
 	"copyright": "Copyright © 2025, Roman Vlasov aka Doctor",
 	"dependencies": {
-		"arsd-official:terminal": "~>12.1.0"
 	},
 	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
 	"dflags": [
