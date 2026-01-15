@@ -1,0 +1,10 @@
+add ./veritas-test/glibc/
+add ./veritas-test/bash/
+add ./veritas-test/coreutils/
+add ./veritas-test/pacman/
+add ./veritas-test/systemd/
+add ./veritas-test/util-linux/
+analyze
+info
+ringsCount
+exit
