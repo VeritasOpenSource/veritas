@@ -14,6 +14,7 @@ private:
 
 public:
  
+    ///
 	this(VrtsPackage pkg, DirEntry fileEntry) {
         this.pkg = pkg;
 		this.fileEntry = fileEntry;
