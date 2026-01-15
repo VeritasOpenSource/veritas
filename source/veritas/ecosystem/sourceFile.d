@@ -1,5 +1,7 @@
 module veritas.ecosystem.sourceFile;
 
+import std.file;
+
 import veritas.ecosystem;
 
 /** 
@@ -7,24 +9,19 @@ import veritas.ecosystem;
  */
 class VrtsSourceFile {
 private:
-	string filename;
+	DirEntry         fileEntry;
     VrtsPackage     pkg;
 
 public:
  
-	this(VrtsPackage pkg, string filename) {
+	this(VrtsPackage pkg, DirEntry fileEntry) {
         this.pkg = pkg;
-		this.filename = filename;
+		this.fileEntry = fileEntry;
 	}
     
     ///
-    string getPathName() const {
-        return filename;
-    }
-
-    ///
-    string getTaggedName() const {
-        return pkg.getName ~ "." ~ filename;
+    string getPath() const {
+        return fileEntry.name;
     }
 
     ///
@@ -36,6 +33,6 @@ public:
     ///
     override bool opEquals(Object o) const {
         VrtsSourceFile b = cast(VrtsSourceFile) o;
-        return this.getTaggedName == b.getTaggedName;
+        return this.getPath == b.getPath;
     }
 }

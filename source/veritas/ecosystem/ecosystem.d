@@ -3,6 +3,7 @@ module veritas.ecosystem.ecosystem;
 
 import std.algorithm;
 import std.array;
+import std.path;
 
 import veritas.reportparser;
 import veritas.ecosystem;
@@ -36,17 +37,32 @@ class VrtsEcosystem {
     }
 
     ///
-    VrtsFunction addFunction(string name) {
+    bool checkFunctionEdentity(VrtsFunction func1, VrtsSourceFile sourceFile2, string name) {
+        auto pathFile = func1.file.getPath.dirName;
+
+        auto pathCheckingFile = sourceFile2.getPath().dirName;
+        return  pathFile == pathCheckingFile &&
+                 name == func1.name;
+    }
+
+    ///
+    VrtsFunction addFunction(VrtsSourceFile sourceFile, string name) {
         auto func = functions
-            .find!((a) => cmp(a.name, name) == 0);
+            .find!((a) => checkFunctionEdentity(a, sourceFile, name));
+
+        VrtsFunction def;
 
         if(func.empty) { 
-            auto newDef = new VrtsFunction(name); 
-            functions ~= newDef; 
-            return newDef;
+            def = new VrtsFunction(name); 
+            def.file = sourceFile;
+            functions ~= def; 
+        }
+        else {
+            def = func.front();
+            def.file = sourceFile;
         }
 
-        return func.front();
+        return def;
     }
 
     ///

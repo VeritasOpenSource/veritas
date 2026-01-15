@@ -25,7 +25,7 @@ class VrtsFunction {
     }
 
     string getTaggedName() {
-        return file.getTaggedName ~"."~name;
+        return file.getPath ~":"~name;
     }
 
     void setLocation(bool isDefinition, string filename,  uint startLine, uint startColumn, uint endLine, uint endColumn) {

@@ -9,7 +9,6 @@ import std.algorithm;
 import std.file;
 
 import veritas.ecosystem;
-import veritas.ecosystem.logger;
 /** 
  * Class for package representation  
  */
@@ -19,7 +18,8 @@ private:
     string name;
 
     ///absolute path to package dir
-    string path;
+    /// Example: /home/x/project/
+    DirEntry path;
     
     ///Provided lists
     VrtsFunction[]          functions;
@@ -29,8 +29,8 @@ private:
 public:
     ///
     this(string path, string name) {
-        this.path = path;
-        this.name = "bash";
+        this.path = DirEntry(path);
+        this.name = path.baseName;
     }
 
     /// 
@@ -54,7 +54,6 @@ public:
 
     ///
     void addSourceFile(VrtsSourceFile sf) {
-        logger.log(sf.getPathName);
         sourceFiles ~= sf;
     }
 
@@ -64,7 +63,6 @@ public:
             .filter!(a => a.isFile)
             .filter!(a => a.baseName[0..4] != "tst-")
             .filter!(a => a.baseName[0..4] != "test-")
-            // .uniq
             .map!((a) => new VrtsSourceFile(this, a))
             .each!((a) => this.addSourceFile(a));
     }
