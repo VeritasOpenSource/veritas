@@ -12,7 +12,6 @@
             "cwd": "${command:dubWorkingDirectory}",
             "program": "${command:dubTarget}",
             "args": [
-                "./script.v",
             ]
         }
     ]

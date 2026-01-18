@@ -1,5 +1,3 @@
-add ../glibc/
+add ./veritas-test/bash/
 analyze
-info
-ringsCount
 exit

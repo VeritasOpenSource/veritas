@@ -1,16 +1,17 @@
 {
-	"-ddoxTool": "scod",
 	"authors": [
 		"Roman Vlasov aka Doctor"
 	],
+	"license": "MIT",
+	"dflags": [
+		"-L-lclang",
+		"-L./libtermbox2.a"
+	],
 	"copyright": "Copyright © 2025, Roman Vlasov aka Doctor",
+	"name": "veritas",
+	"-ddoxTool": "scod",
+	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
 	"dependencies": {
 	},
-	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
-	"dflags": [
-		"-L-lclang"
-	],
-	"license": "MIT",
-	"name": "veritas",
 	"targetType": "executable"
 }

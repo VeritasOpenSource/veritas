@@ -18,6 +18,9 @@ import veritas.reportparser;
 import veritas.sourceVisitor;
 import veritas.ecosystem.sourceAnalyzer;
 import veritas.ecosystem.journal;
+import tb2;
+
+import ui;
 
 class CommandInterpretator {
     void processCommand(string line) {
@@ -91,10 +94,13 @@ class Veritas {
 void main(string[] args) {
     Veritas veritas = new Veritas;
 
-    CommandInterpretator ci = new CommandInterpretator();
-    
-    if(args.length > 1)
-        veritas.runLoop(File(args[1]));
-    else
-        veritas.runLoop();
+    // CommandInterpretator ci = new CommandInterpretator();
+
+    VrtsTUI tui = new VrtsTUI(veritas);
+
+    tui.update();    
+
+    tui.loop();
+
+    scope(exit) tui.destroy;
 }
