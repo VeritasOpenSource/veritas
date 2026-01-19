@@ -5,6 +5,7 @@
 	],
 	"copyright": "Copyright © 2025, Roman Vlasov aka Doctor",
 	"dependencies": {
+		":veritas-ipc":"*"
 	},
 	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
 	"dflags": [
@@ -12,5 +13,8 @@
 	],
 	"license": "MIT",
 	"name": "veritas",
-	"targetType": "executable"
+	"targetType": "executable",
+	"subPackages": [
+		"./veritas-ipc/"
+	]
 }

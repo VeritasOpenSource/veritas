@@ -1,4 +1,4 @@
-module veritas.ecosystem.events;
+module veritas.ipc.events;
 
 enum CommandType {
     AddProject

@@ -19,6 +19,9 @@ import veritas.sourceVisitor;
 import veritas.ecosystem.sourceAnalyzer;
 import veritas.ecosystem.journal;
 import std.socket;
+// import veritas.ipc;
+import veritas.ipc;
+
 
 class Veritas {
     VrtsEcosystem ecosystem;
