@@ -3,12 +3,8 @@ module ui;
 import std.algorithm;
 import std.array;
 import std.stdio;
-import std.conv;
 
-import veritas;
-import veritas.ecosystem;
-import veritas.app;
-
+import veritas.ipc;
 
 import tb2;
 
@@ -134,22 +130,22 @@ class Context {
 }
 
 class VrtsTUI {
-    Veritas veritas;
+    VrtsIPC ipc;
+
     Panel packagesPanel;
     Panel ringsPanel;
-
     List packageList;
     List ringsList;
-    VrtsPackage[uint] packageId;
-    VrtsRing[uint] ringId;
+    // VrtsPackage[uint] packageId;
+    // VrtsRing[uint] ringId;
     // Focus focus;
     string command;
 
     Mode mode;
 
-    this(Veritas veritas) {
+    this(VrtsIPC ipc) {
         tb_init();
-        this.veritas = veritas;
+        this.ipc = ipc;
 
         packagesPanel = new Panel(0, 0, 20, 40, "PACKAGES");
         ringsPanel = new Panel(20, 0, 20, 40, "RINGS");
@@ -175,23 +171,23 @@ class VrtsTUI {
     }
 
     void update() {
-        packageId.clear();
+        // packageId.clear();
         packageList.items.length = 0;
         packageList.childs.length = 0;
-        foreach(uint i, pkg; veritas.ecosystem.packages) {
-            // write(veritas.ecosystem.packages.length);
-            packageId[i] = pkg;
-            packageList.addItem(pkg.getName, i);
-        }
+        // foreach(uint i, pkg; veritas.ecosystem.packages) {
+        //     // write(veritas.ecosystem.packages.length);
+        //     packageId[i] = pkg;
+        //     packageList.addItem(pkg.getName, i);
+        // }
 
-        ringId.clear();
+        // ringId.clear();
         ringsList.items.length = 0;
         ringsList.childs.length = 0;
 
-        foreach(uint i, ring; veritas.ecosystem.rings) {
-            ringId[i] = ring;
-            ringsList.addItem("Ring " ~ ring.level.to!string, i);
-        }
+        // foreach(uint i, ring; veritas.ecosystem.rings) {
+        //     ringId[i] = ring;
+        //     ringsList.addItem("Ring " ~ ring.level.to!string, i);
+        // }
     }
 
     void render() {
@@ -251,36 +247,9 @@ class VrtsTUI {
         }
     }
 
-    bool processCommands(string[] commands) {
-        if(commands[0] == "exit")
-            return true;
-
-        if(commands[0] == "add") {
-            string project = commands[1];
-            // writeln(project);
-            veritas.addProject(project);
-        } else
-
-        if(commands[0] == "analyze") {
-            veritas.ecosystem.recollectData();
-
-            veritas.analyzer.analyzeSourceFilesByPackages(veritas.ecosystem.packages);
-
-            // writeln(("Linking functions..."));
-            veritas.ecosystem.relinkCalls();
-            // writeln(("Building rings ierarchy..."));
-            veritas.ecosystem.buildRingsIerarchy();
-            // writeln("ENDED");
-        }else
-
-        if(commands[0] == "info") {
-            // writeln("Funcitons count: ", ecosystem.functions.length);
-        } else
-
-        if(commands[0] == "ringsCount") {
-            // writeln("Call rings detected: ", ecosystem.rings.length);
+    void processCommands(string[] commands) {
+        if(commands[0] == "exit") {
+            ipc.sendCommand("exit");
         }
-
-        return false;
     }
 }

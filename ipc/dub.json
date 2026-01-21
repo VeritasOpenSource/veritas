@@ -6,6 +6,6 @@
 	],
 	"copyright": "Copyright © 2026, Roman Vlasov aka Doctor",
 	"name": "ipc",
-	"sourcePaths": ["./veritas/"],
-	"importPaths": ["./veritas/"]
+	"sourcePaths": ["./"],
+	"importPaths": ["./"]
 }

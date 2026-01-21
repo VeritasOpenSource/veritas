@@ -1,30 +1,13 @@
 import std.socket;
 import std.stdio;
 
-
-
-enum SOCKET_PATH = "/tmp/veritas.sock";
+import tb2;
+import ui; 
+import veritas.ipc;
 
 void main() {
-    auto sock = new Socket(AddressFamily.UNIX, SocketType.STREAM);
-    sock.connect(new UnixAddress(SOCKET_PATH));
+    VrtsIPC ipc = new VrtsIPC(VrtsIPCType.Client);
+    VrtsTUI tui = new VrtsTUI(ipc);
 
-    bool exit;
-
-    // sock.send("analyze\n");
-    while(!exit) {
-	    char[] command;
-	    readln(command);
-
-        exit = command == "exit";
-
-        sock.send(command);
-	    // if(!exit) {
-        // }
-    }
-    // ubyte[128] buf;
-    // auto n = sock.receive(buf[]);
-    // writeln("Reply: ", cast(string)buf[0 .. n]);
-
-    sock.close();
+    tui.loop();
 }

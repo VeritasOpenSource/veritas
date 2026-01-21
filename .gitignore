@@ -5,5 +5,5 @@ skeleton.html
 docs.json
 veritas-test
 /test/
-./veritas-ipc/*.a
-veritas-ipc/libveritas_veritas-ipc.a
+*.a
+tui/tui

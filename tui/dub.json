@@ -5,12 +5,16 @@
 		"Роман"
 	],
 	"copyright": "Copyright © 2026, Роман",
-	"name": "tui-veritas",
-		"dflags": [
-		"-L-lclang",
+	"name": "tui",
+	"dflags": [
 		"-L./libtermbox2.a"
-
 	],
 	"dependencies": {
+		"veritas": {
+			"path": "../"
+		},
+		"ipc": {
+			"path": "../ipc/"
+		}
 	}
 }

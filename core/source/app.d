@@ -1,5 +1,7 @@
 import veritas.veritas;
 
+import std.stdio;
+
 import std.socket;
 import std.file;
 
@@ -32,8 +34,7 @@ bool handleClient(Veritas veritas, Socket client) {
     while (true) {
         auto n = client.receive(buf[]);
         if (n > 0) {
-            string command = cast(string)buf[0 .. n-1];
-
+            string command = cast(string)buf[0 .. n];
             if(command == "exit") {
                 client.send("Shutdown...\n");
                 return true;
