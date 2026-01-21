@@ -18,12 +18,10 @@ import veritas.reportparser;
 import veritas.sourceVisitor;
 import veritas.ecosystem.sourceAnalyzer;
 import veritas.ecosystem.journal;
+import std.socket;
+// import veritas.ipc;
+import veritas.ipc;
 
-class CommandInterpretator {
-    void processCommand(string line) {
-        
-    }
-}
 
 class Veritas {
     VrtsEcosystem ecosystem;
@@ -34,51 +32,32 @@ class Veritas {
         analyzer = new VrtsSourceAnalyzer(ecosystem);
     }
 
-    void runLoop(File inputFile = stdin) {
-        if(inputFile != stdin) {
-            writeln("Using script mode...");
-        }
-        string command;
-        while(command != "exit") {
-            char[] _command;
+    void processCommand(string _command) {
+        string[] commands = _command.to!string.split;
 
-            write(">>");
-            inputFile.readln(_command);
+        if(commands[0] == "add") {
+            string project = commands[1];
+            writeln(project);
+            addProject(project);
+        } else
 
-            if(_command.length == 0) {
-                inputFile = stdin;
-                continue;
-            }
+        if(commands[0] == "analyze") {
+            ecosystem.recollectData();
 
-            string[] commands = _command.to!string.split;
+            analyzer.analyzeSourceFilesByPackages(ecosystem.packages);
 
-            if(commands[0] == "exit")
-                break;
+            writeln(("Linking functions..."));
+            ecosystem.relinkCalls();
+            writeln(("Building rings ierarchy..."));
+            ecosystem.buildRingsIerarchy();
+        }else
 
-            if(commands[0] == "add") {
-                string project = commands[1];
-                writeln(project);
-                addProject(project);
-            } else
+        if(commands[0] == "info") {
+            writeln("Funcitons count: ", ecosystem.functions.length);
+        } else
 
-            if(commands[0] == "analyze") {
-                ecosystem.recollectData();
-
-                analyzer.analyzeSourceFilesByPackages(ecosystem.packages);
-
-                writeln(("Linking functions..."));
-                ecosystem.relinkCalls();
-                writeln(("Building rings ierarchy..."));
-                ecosystem.buildRingsIerarchy();
-            }else
-
-            if(commands[0] == "info") {
-                writeln("Funcitons count: ", ecosystem.functions.length);
-            } else
-
-            if(commands[0] == "ringsCount") {
-                writeln("Call rings detected: ", ecosystem.rings.length);
-            }
+        if(commands[0] == "ringsCount") {
+            writeln("Call rings detected: ", ecosystem.rings.length);
         }
     }
 
@@ -88,13 +67,49 @@ class Veritas {
     }
 }
 
+enum string SOCKET_PATH = "/tmp/veritas.sock"; 
+
 void main(string[] args) {
     Veritas veritas = new Veritas;
 
-    CommandInterpretator ci = new CommandInterpretator();
-    
-    if(args.length > 1)
-        veritas.runLoop(File(args[1]));
-    else
-        veritas.runLoop();
+    auto server = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+
+    if(exists(SOCKET_PATH))
+        std.file.remove(SOCKET_PATH);
+
+    auto addr = new UnixAddress(SOCKET_PATH);
+
+    server.bind(addr);
+    server.listen(10);
+
+    bool exit = false;
+
+    auto client = server.accept();
+    while (!exit) {
+        exit = handleClient(veritas, client);
+    }
+
+    server.close();
+}
+
+bool handleClient(Veritas veritas, Socket client) {
+    ubyte[1024] buf;
+
+    while (true) {
+        auto n = client.receive(buf[]);
+        if (n > 0) {
+            string command = cast(string)buf[0 .. n-1];
+
+            if(command == "exit") {
+                client.send("Shutdown...\n");
+                return true;
+            }
+            else 
+                veritas.processCommand(command);
+        }
+            
+    }
+
+    return false;
+    // client.close();
 }
