@@ -17,15 +17,27 @@ void main(string[] args) {
 
     server.bind(addr);
     server.listen(10);
-
     bool exit = false;
+    Socket client;
 
-    auto client = server.accept();
     while (!exit) {
-        exit = handleClient(veritas, client);
-    }
+        if (client is null) {
+            client = server.accept();
+            if (client !is null)
+                client.blocking = false;
+        }
 
-    server.close();
+        if (client !is null) {
+            exit = handleClient(veritas, client);
+            if (exit)
+                break;
+
+            if (!client.isAlive) {
+                client.close();
+                client = null;
+            }
+        }
+    }
 }
 
 bool handleClient(Veritas veritas, Socket client) {
