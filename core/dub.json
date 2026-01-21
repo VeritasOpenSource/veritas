@@ -1,0 +1,15 @@
+{
+	"description": "A minimal D application.",
+	"license": "proprietary",
+	"authors": [
+		"Роман"
+	],
+	"copyright": "Copyright © 2026, Роман",
+	"name": "core",
+	"dependencies": {
+		"veritas" : {
+			"path": "../"
+		}
+	},
+	"targetType": "executable"
+}

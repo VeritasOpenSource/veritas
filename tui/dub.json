@@ -1,0 +1,16 @@
+{
+	"description": "A minimal D application.",
+	"license": "proprietary",
+	"authors": [
+		"Роман"
+	],
+	"copyright": "Copyright © 2026, Роман",
+	"name": "tui-veritas",
+		"dflags": [
+		"-L-lclang",
+		"-L./libtermbox2.a"
+
+	],
+	"dependencies": {
+	}
+}

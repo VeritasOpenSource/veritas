@@ -4,18 +4,12 @@
 	],
 	"license": "MIT",
 	"dflags": [
-		"-L-lclang",
-		"-L./libtermbox2.a"
+		"-L-lclang"
 	],
 	"copyright": "Copyright © 2025, Roman Vlasov aka Doctor",
 	"name": "veritas",
 	"-ddoxTool": "scod",
 	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
 	"dependencies": {
-		":veritas-ipc":"*"
-	},
-	"targetType": "executable",
-	"subPackages": [
-		"./veritas-ipc/"
-	]
+	}
 }

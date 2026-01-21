@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/core
+core.so
+core.dylib
+core.dll
+libcore.a
+core.a
+core.lib
+core-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
