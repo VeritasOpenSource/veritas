@@ -7,3 +7,4 @@ veritas-test
 /test/
 *.a
 tui/tui
+libveritas.a

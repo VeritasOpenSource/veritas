@@ -229,7 +229,7 @@ class VrtsTUI {
                         mode = Mode.Navigation;
 
                     if(ev.key == TB_KEY_ENTER) {
-                        this.processCommands(command.split);
+                        this.processCommands(command);
                         command = "";
                         continue;
                     }
@@ -247,9 +247,11 @@ class VrtsTUI {
         }
     }
 
-    void processCommands(string[] commands) {
-        if(commands[0] == "exit") {
+    void processCommands(string command) {
+        if(command.split[0] == "exit") {
             ipc.sendCommand("exit");
         }
+        else 
+            ipc.sendCommand(command);
     }
 }
