@@ -8,6 +8,7 @@ import std.path;
 import veritas.reportparser;
 import veritas.ecosystem;
 import veritas.app;
+// import veritas.ecosystem.event;
 // import veritas.ecosystem.scanner;
 
 /// 
@@ -19,9 +20,13 @@ class VrtsEcosystem {
     VrtsFunction[]              functions;
     VrtsSourceFile[]            sourceFiles;
 
+    // VrtsEvent[] events;
+
     /// 
     void addPackage(VrtsPackage pkg) {
         packages ~= pkg;
+        // events ~= new VrtsEventAddingPackage();
+        // packag
         // Journal.addEvent(new VrtsEventEcosystemAddPackage(pkg));
         pkg.scanForSourceFiles();
     }

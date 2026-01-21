@@ -1,22 +1,22 @@
 module veritas.ecosystem.journal;
 
-abstract class VrtsEvent {
-    abstract ubyte[] serialize();
-}
+// abstract class VrtsEvent {
+//     abstract ubyte[] serialize();
+// // }
 
-synchronized class VrtsJournal {
-private:
-    VrtsEvent[]     events;
+// synchronized class VrtsJournal {
+// private:
+//     VrtsEvent[]     events;
 
-public:
+// public:
 
-    void addEvent(shared VrtsEvent event) {
-        events ~= event;
-    }
-}
+//     void addEvent(shared VrtsEvent event) {
+//         events ~= event;
+//     }
+// }
 
-VrtsJournal Journal;
+// VrtsJournal Journal;
 
-static this() {
-    Journal  = new VrtsJournal;
-}
+// static this() {
+//     Journal  = new VrtsJournal;
+// }

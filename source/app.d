@@ -22,6 +22,15 @@ import std.socket;
 // import veritas.ipc;
 import veritas.ipc;
 
+import tb2;
+
+import ui;
+
+class CommandInterpretator {
+    void processCommand(string line) {
+        
+    }
+}
 
 class Veritas {
     VrtsEcosystem ecosystem;
@@ -72,44 +81,10 @@ enum string SOCKET_PATH = "/tmp/veritas.sock";
 void main(string[] args) {
     Veritas veritas = new Veritas;
 
-    auto server = new Socket(AddressFamily.UNIX, SocketType.STREAM);
-
-    if(exists(SOCKET_PATH))
-        std.file.remove(SOCKET_PATH);
-
-    auto addr = new UnixAddress(SOCKET_PATH);
-
-    server.bind(addr);
-    server.listen(10);
-
-    bool exit = false;
-
-    auto client = server.accept();
-    while (!exit) {
-        exit = handleClient(veritas, client);
-    }
-
-    server.close();
-}
-
-bool handleClient(Veritas veritas, Socket client) {
-    ubyte[1024] buf;
-
-    while (true) {
-        auto n = client.receive(buf[]);
-        if (n > 0) {
-            string command = cast(string)buf[0 .. n-1];
-
-            if(command == "exit") {
-                client.send("Shutdown...\n");
-                return true;
-            }
-            else 
-                veritas.processCommand(command);
-        }
-            
-    }
-
-    return false;
-    // client.close();
+    CommandInterpretator ci = new CommandInterpretator();
+    
+    if(args.length > 1)
+        veritas.runLoop(File(args[1]));
+    else
+        veritas.runLoop();
 }

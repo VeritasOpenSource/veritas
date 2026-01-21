@@ -22,19 +22,19 @@ class VrtsSourceAnalyzer {
 
     void analyzeSourceFilesByPackages(ref VrtsPackage[] packages) {
         foreach(package_; packages) {
-            writeln("Scanning package:", package_.getName);
-            ulong size = package_.getSourceFiles.length;
-            writeln("Sources count:", package_.getSourceFiles.length);
+            // writeln("Scanning package:", package_.getName);
+            // ulong size = package_.getSourceFiles.length;
+            // writeln("Sources count:", package_.getSourceFiles.length);
 
             int i = 0;
             foreach(ref source; package_.getSourceFiles) {
-                writeln(" (", i, "/", size, ")      Scanning source file: ", source.getPath);
+                // writeln(" (", i, "/", size, ")      Scanning source file: ", source.getPath);
                 visitor.visitSourceFile(ecosystem, source);
-                stdout.flush();
+                // stdout.flush();
 
-                write("\033[1A");   
-                write("\033[2K");   
-                i++;
+                // write("\033[1A");   
+                // write("\033[2K");   
+                // i++;
             }
         }
     }
