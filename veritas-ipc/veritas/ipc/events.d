@@ -1,23 +1,9 @@
 module veritas.ipc.events;
 
-enum CommandType {
-    AddProject
-}
-
-interface VrtsCommand {
-    CommandType getType();
-}
-
-class ComAddProject : VrtsCommand {
-    string path;
-
-    override CommandType getType() {
-        return CommandType.AddProject;
-    }
-}
-
 enum EventType {
-    ProjectAdded
+    ProjectAdded,
+    SourceFileAnalized,
+    ProjectSourceFilesProcess
 }
 
 interface VrtsEvent {
@@ -32,3 +18,18 @@ class EventProjectAdded : VrtsEvent {
     } 
 }
 
+class EventSourceFileAnalized : VrtsEvent {
+    string path;
+
+    override EventType getType() {
+        return EventType.SourceFileAnalized;
+    } 
+}
+
+class EventProjectSourceFilesProcess : VrtsEvent {
+    uint percentage;
+
+    override EventType getType() {
+        return EventType.ProjectSourceFilesProcess;
+    } 
+}
