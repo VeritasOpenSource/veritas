@@ -1,5 +1,11 @@
 module veritas.ipc.events;
 
+enum IPCState {
+    Ready,
+    Processing,
+    Waiting
+}
+
 enum EventType {
     ProjectAdded,
     SourceFileAnalized,
