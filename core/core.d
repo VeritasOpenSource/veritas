@@ -1,4 +1,4 @@
-module veritas.app;
+module core;
 
 import std.stdio;
 
@@ -19,18 +19,7 @@ import veritas.sourceVisitor;
 import veritas.ecosystem.sourceAnalyzer;
 import veritas.ecosystem.journal;
 import std.socket;
-// import veritas.ipc;
 import veritas.ipc;
-
-// import tb2;
-
-// import ui;
-
-class CommandInterpretator {
-    void processCommand(string line) {
-        
-    }
-}
 
 class Veritas {
     VrtsEvent[] fifo;
