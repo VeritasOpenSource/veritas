@@ -12,6 +12,13 @@
 	"-ddoxTool": "scod",
 	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
 	"dependencies": {
+		":veritas-ipc":"*"
 	},
+	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
+	"dflags": [
+		"-L-lclang"
+	],
+	"license": "MIT",
+	"name": "veritas",
 	"targetType": "executable"
 }
