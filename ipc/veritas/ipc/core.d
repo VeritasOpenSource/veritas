@@ -3,7 +3,9 @@ module veritas.ipc.core;
 import std.socket;
 import core.stdc.errno : EAGAIN, EWOULDBLOCK;
 import std.stdio;
-
+import std.array;
+import std.algorithm;
+import std.string;
 
 enum VrtsIPCType {
     Core,
@@ -14,8 +16,10 @@ class VrtsIPC {
     VrtsIPCType type;
     enum SOCKET_PATH = "/tmp/veritas.sock";
     Socket socket;
+    string[] raws;
 
     bool exit;
+    string inputBuffer;
 
     this(VrtsIPCType type) {
         this.type = type;
@@ -33,14 +37,32 @@ class VrtsIPC {
         socket.send(command);
     }
 
-    bool pollEvent(ref string event){
-        char[1024] buff;
-        auto n = socket.receive(buff);
-        if (n <= 0)
-            return false; 
+    void pollEvent() {
+        char[1024] tmp;
 
+        while (true) {
+            auto n = socket.receive(tmp);
+            if (n <= 0) break;
 
-        event = cast(string)buff[0..n].idup;
-        return true;
+            inputBuffer ~= cast(string)tmp[0..n];
+
+            while (true) {
+                auto pos = inputBuffer.indexOf('\n');
+                if (pos == -1) break;
+
+                auto raw = inputBuffer[0..pos];
+                inputBuffer = inputBuffer[pos+1..$];
+
+                raws ~= raw;
+            }
+        }
+    }
+
+    bool hasEvent() { return raws.length > 0; }
+
+    string pop() {
+        auto e = raws[0];
+        raws = raws[1..$];
+        return e;
     }
 }
