@@ -1,12 +1,36 @@
 import veritas.veritas;
 
 import std.stdio;
-
 import std.socket;
 import std.file;
 
+import veritas.ipc.events;
+
+class VrtsLogger : VrtsEventHandler {
+    override void processEvent(VrtsEvent event) {
+        writeln(event.getString());
+    }
+}
+
+class ClientBus : VrtsEventHandler {
+    Socket client;
+
+    override void processEvent(VrtsEvent event) {
+        client.send(event.compileString);
+    }   
+}
+
+enum string SOCKET_PATH = "/tmp/veritas.sock"; 
+
+
 void main(string[] args) {
-    Veritas veritas = new Veritas;
+    VrtsEventBus eventBus = new VrtsEventBus();
+    Veritas veritas = new Veritas(eventBus);
+
+    eventBus.events ~= new VrtsLogger;
+    
+    auto clientBus = new ClientBus;
+    eventBus.events ~= clientBus;
 
     auto server = new Socket(AddressFamily.UNIX, SocketType.STREAM);
 
@@ -23,8 +47,11 @@ void main(string[] args) {
     while (!exit) {
         if (client is null) {
             client = server.accept();
-            if (client !is null)
+            if (client !is null) {
                 client.blocking = false;
+            }
+
+            clientBus.client = client;
         }
 
         if (client !is null) {
@@ -51,6 +78,7 @@ bool handleClient(Veritas veritas, Socket client) {
                 client.send("Shutdown...\n");
                 return true;
             }
+            // else(command == "getPackage")
             else 
                 veritas.processCommand(command);
         }

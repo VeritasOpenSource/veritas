@@ -4,10 +4,16 @@ import veritas.ecosystem;
 import veritas.sourceVisitor;
 import std.stdio;
 
+import veritas.ipc.events;
 
 class VrtsSourceAnalyzer {
+    VrtsEventBus eventBus;
     VrtsEcosystem ecosystem;
     VrtsSourceVisitor visitor;
+
+    void setEventsBus(VrtsEventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 
     this(VrtsEcosystem ecosystem) {
         this.ecosystem = ecosystem;
@@ -22,19 +28,10 @@ class VrtsSourceAnalyzer {
 
     void analyzeSourceFilesByPackages(ref VrtsPackage[] packages) {
         foreach(package_; packages) {
-            // writeln("Scanning package:", package_.getName);
-            // ulong size = package_.getSourceFiles.length;
-            // writeln("Sources count:", package_.getSourceFiles.length);
-
             int i = 0;
             foreach(ref source; package_.getSourceFiles) {
-                // writeln(" (", i, "/", size, ")      Scanning source file: ", source.getPath);
                 visitor.visitSourceFile(ecosystem, source);
-                // stdout.flush();
-
-                // write("\033[1A");   
-                // write("\033[2K");   
-                // i++;
+                eventBus.publish(new EventSourceFileAnalized(source.getPath));
             }
         }
     }

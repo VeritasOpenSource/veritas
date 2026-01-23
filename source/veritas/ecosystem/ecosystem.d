@@ -7,12 +7,12 @@ import std.path;
 
 import veritas.reportparser;
 import veritas.ecosystem;
-// import veritas.app;
-// import veritas.ecosystem.event;
-// import veritas.ecosystem.scanner;
+import veritas.ipc.events;
 
 /// 
 class VrtsEcosystem {
+    VrtsEventBus eventBus;
+
     VrtsPackage[]               packages;
 
     VrtsRing[]                  rings;
@@ -20,14 +20,15 @@ class VrtsEcosystem {
     VrtsFunction[]              functions;
     VrtsSourceFile[]            sourceFiles;
 
-    // VrtsEvent[] events;
+    void setEventBus(VrtsEventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 
     /// 
     void addPackage(VrtsPackage pkg) {
         packages ~= pkg;
-        // events ~= new VrtsEventAddingPackage();
-        // packag
-        // Journal.addEvent(new VrtsEventEcosystemAddPackage(pkg));
+
+        eventBus.publish(new EventProjectAdded(pkg.getPath));
         pkg.scanForSourceFiles();
     }
 
@@ -121,6 +122,7 @@ class VrtsEcosystem {
     ///
     VrtsRing getNextRing(uint level) {
         if(rings.length - 1 < level) {
+            eventBus.publish(new EventAddRing(cast(uint)rings.length - 1));
             return new VrtsRing();
         }
         else if(rings.length - 1 >= level) {
@@ -146,10 +148,10 @@ class VrtsEcosystem {
             }
         }
 
-        if(rings.length == 0)
+        if(rings.length == 0) {
             rings ~= ring0;
-        // else
-            // ring0 = rings[0];
+            eventBus.publish(new EventAddRing(cast(uint)rings.length - 1));
+        }
 
         funcs = funcs.removeElements(ring0.functions);
 

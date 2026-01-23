@@ -23,7 +23,6 @@ class VrtsIPC {
         socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
         socket.connect(new UnixAddress(SOCKET_PATH));
         socket.blocking = false;
-        socket.send("SUCCESSS");
     }
 
     bool needUpdae() {
@@ -32,5 +31,16 @@ class VrtsIPC {
 
     void sendCommand(string command) {
         socket.send(command);
+    }
+
+    bool pollEvent(ref string event){
+        char[1024] buff;
+        auto n = socket.receive(buff);
+        if (n <= 0)
+            return false; 
+
+
+        event = cast(string)buff[0..n].idup;
+        return true;
     }
 }

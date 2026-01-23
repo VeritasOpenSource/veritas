@@ -3,10 +3,12 @@ module ui;
 import std.algorithm;
 import std.array;
 import std.stdio;
+import std.conv;
 
 import veritas.ipc;
 
 import tb2;
+import std.path;
 
 class Widget {
     Widget[] childs;
@@ -205,11 +207,11 @@ class VrtsTUI {
 
     void loop() {
         while (true) {
-            update();
+            pollEvent();
             render();
 
             tb_event ev;
-            tb_poll_event(&ev);
+            tb_peek_event(&ev, 10);
 
             if (ev.type == TB_EVENT_KEY) {
                 // update();
@@ -253,5 +255,28 @@ class VrtsTUI {
         }
         else 
             ipc.sendCommand(command);
+    }
+
+    void pollEvent() {
+        string eventString = "";
+        if(!ipc.pollEvent(eventString))
+            return;
+        else {
+            parseAndDispatch(eventString);
+        }
+    }
+
+    void parseAndDispatch(string event) {
+        string[] eventStrings = event.split;
+
+        if(eventStrings[1] == "addedPackage") {
+            string name = eventStrings[2].baseName;
+            packageList.addItem(name, cast(int)packageList.items.length);
+        }
+
+        if(eventStrings[1] == "newRing") {
+            int id = eventStrings[2].to!int;
+            ringsList.addItem("Ring "~ eventStrings[2], id);
+        }
     }
 }

@@ -1,5 +1,20 @@
 module veritas.ipc.events;
 
+import std.algorithm;
+import std.conv;
+
+class VrtsEventHandler {
+    abstract void processEvent(VrtsEvent event);
+}
+
+class VrtsEventBus {
+    VrtsEventHandler[] events;
+
+    void publish(VrtsEvent event) {
+        events.each!(a => a.processEvent(event));
+    }
+}
+
 enum IPCState {
     Ready,
     Processing,
@@ -14,22 +29,50 @@ enum EventType {
 
 interface VrtsEvent {
     EventType getType();
+
+    string getString();
+
+    string compileString();
 }
 
 class EventProjectAdded : VrtsEvent {
+    this(string path) {
+        this.path = path;
+    }
+
     string path;
 
     override EventType getType() {
         return EventType.ProjectAdded;
     } 
+
+    override string getString() {
+        return "Added project: " ~ path;
+    }
+
+    override string compileString() {
+        return "E addedPackage " ~ path ~ "\n";
+    }
 }
 
 class EventSourceFileAnalized : VrtsEvent {
     string path;
 
+    this(string path) {
+        this.path = path;
+    }
+
     override EventType getType() {
         return EventType.SourceFileAnalized;
     } 
+
+    override string getString() {
+        return "File analyzed: " ~ path ~ "\n";
+    }
+
+    override string compileString() {
+        return "E fileAnalyzed " ~ path ~ "\n";
+    }
 }
 
 class EventProjectSourceFilesProcess : VrtsEvent {
@@ -38,4 +81,32 @@ class EventProjectSourceFilesProcess : VrtsEvent {
     override EventType getType() {
         return EventType.ProjectSourceFilesProcess;
     } 
+
+    override string getString() {
+        return "Processed: " ~ percentage.to!string ~ "\n";
+    }
+
+    override string compileString() {
+        return "E percentage " ~ percentage.to!string ~ "\n";
+    }
+}
+
+class EventAddRing : VrtsEvent {
+    uint id;
+
+    this(uint id) {
+        this.id = id;
+    }
+
+    override EventType getType() {
+        return EventType.ProjectSourceFilesProcess;
+    } 
+
+    override string getString() {
+        return "Ring: " ~ id.to!string ~ "\n";
+    }
+
+    override string compileString() {
+        return "E newRing " ~ id.to!string ~ "\n";
+    }
 }

@@ -1,7 +1,7 @@
 module veritas.ipc.responce;
 
 enum Responce {
-    AddProject
+    ProjectList
 }
 
 interface VrtsResponce {
