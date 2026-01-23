@@ -11,5 +11,9 @@
 	"-ddoxTool": "scod",
 	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
 	"dependencies": {
-	}
+		":ipc" : "*"
+	},
+	"subPackages": [
+		"./ipc/" 
+	]
 }
