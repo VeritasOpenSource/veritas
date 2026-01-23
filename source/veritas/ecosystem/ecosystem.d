@@ -122,7 +122,7 @@ class VrtsEcosystem {
     ///
     VrtsRing getNextRing(uint level) {
         if(rings.length - 1 < level) {
-            eventBus.publish(new EventAddRing(cast(uint)rings.length - 1));
+            eventBus.publish(new EventAddRing(level));
             return new VrtsRing();
         }
         else if(rings.length - 1 >= level) {
@@ -145,12 +145,17 @@ class VrtsEcosystem {
         foreach(func; functions) {
             if(func.isAllCallsUndefined) {
                 ring0.functions ~= func;
+                // eventBus.publish(new EventFuncToRing(0, func.getTaggedName.baseName));
             }
         }
 
         if(rings.length == 0) {
             rings ~= ring0;
-            eventBus.publish(new EventAddRing(cast(uint)rings.length - 1));
+            eventBus.publish(new EventAddRing(0));
+        }
+
+        foreach(func; rings[0].functions) {
+            eventBus.publish(new EventFuncToRing(0, func.getTaggedName.baseName));
         }
 
         funcs = funcs.removeElements(ring0.functions);
@@ -164,6 +169,8 @@ class VrtsEcosystem {
 
                 if(checkAllCallsInRings(calls)) {
                     ring.functions ~= func_;
+                    // writeln(func_.getTaggedName);
+                    eventBus.publish(new EventFuncToRing(level, func_.getTaggedName.baseName));
                 }
             }
 

@@ -103,10 +103,32 @@ class EventAddRing : VrtsEvent {
     } 
 
     override string getString() {
-        return "Ring: " ~ id.to!string ~ "\n";
+        return "New ring: " ~ id.to!string ~ "\n";
     }
 
     override string compileString() {
         return "E newRing " ~ id.to!string ~ "\n";
+    }
+}
+
+class EventFuncToRing : VrtsEvent {
+    uint ringId;
+    string funcName;
+
+    this(uint id, string funcName) {
+        this.ringId = id;
+        this.funcName = funcName;
+    }
+
+    override EventType getType() {
+        return EventType.ProjectSourceFilesProcess;
+    } 
+
+    override string getString() {
+        return "";
+    }
+
+    override string compileString() {
+        return "E addFuncToRing " ~ ringId.to!string ~ " " ~ funcName ~ "\n";
     }
 }

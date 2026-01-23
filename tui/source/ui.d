@@ -89,6 +89,10 @@ class Panel : Widget {
     } 
 }
 
+struct Ring {
+    int id;
+    string[] funcs;
+}
 class List : Widget {
     ListItem[] items;
 
@@ -127,6 +131,7 @@ enum Mode {
 
 class Context {
     int selectedPackage;
+    int showedRing = -1;
     int selectedFunction;
     // int selecte
 }
@@ -136,8 +141,13 @@ class VrtsTUI {
 
     Panel packagesPanel;
     Panel ringsPanel;
+    Panel funcPanel;
     List packageList;
     List ringsList;
+    List funcList;
+    Ring[] rings;
+
+    // Context context;
     // VrtsPackage[uint] packageId;
     // VrtsRing[uint] ringId;
     // Focus focus;
@@ -151,6 +161,7 @@ class VrtsTUI {
 
         packagesPanel = new Panel(0, 0, 20, 40, "PACKAGES");
         ringsPanel = new Panel(20, 0, 20, 40, "RINGS");
+        funcPanel = new Panel(40, 0, 20, 40, "FUNCTIONS");
 
 
         // focus = new Focus();
@@ -164,6 +175,10 @@ class VrtsTUI {
         ringsPanel.addChild(ringsList);
         ringsList.fillParent;
 
+        funcList = new List;
+        funcPanel.addChild(funcList);
+        funcList.fillParent;
+
 
         mode = Mode.Navigation;
     }
@@ -173,22 +188,15 @@ class VrtsTUI {
     }
 
     void update() {
-        // packageId.clear();
-        packageList.items.length = 0;
-        packageList.childs.length = 0;
-        // foreach(uint i, pkg; veritas.ecosystem.packages) {
-        //     // write(veritas.ecosystem.packages.length);
-        //     packageId[i] = pkg;
-        //     packageList.addItem(pkg.getName, i);
+        // if(context.showedRing == -1) {
+        //     return;
         // }
+        // funcList.items.length = 0;
 
-        // ringId.clear();
-        ringsList.items.length = 0;
-        ringsList.childs.length = 0;
+        // uint showedRing = context.showedRing;
 
-        // foreach(uint i, ring; veritas.ecosystem.rings) {
-        //     ringId[i] = ring;
-        //     ringsList.addItem("Ring " ~ ring.level.to!string, i);
+        // foreach (i, funName; rings[showedRing].funcs) {
+        //     funcList.addItem(funName, cast(int)i);
         // }
     }
 
@@ -201,6 +209,8 @@ class VrtsTUI {
         packagesPanel.draw();
         // packageList.draw(focus.widget);
         ringsPanel.draw();
+
+        funcPanel.draw();
 
         tb_present();
     }
@@ -253,16 +263,18 @@ class VrtsTUI {
         if(command.split[0] == "exit") {
             ipc.sendCommand("exit");
         }
+        else if(command.split[0] == "ring") {
+            switchContextRing(command.split[1].to!int);
+        }
         else 
             ipc.sendCommand(command);
     }
 
     void pollEvent() {
-        string eventString = "";
-        if(!ipc.pollEvent(eventString))
-            return;
-        else {
-            parseAndDispatch(eventString);
+        ipc.pollEvent();
+
+        while(ipc.hasEvent) {
+            parseAndDispatch(ipc.pop);
         }
     }
 
@@ -277,6 +289,24 @@ class VrtsTUI {
         if(eventStrings[1] == "newRing") {
             int id = eventStrings[2].to!int;
             ringsList.addItem("Ring "~ eventStrings[2], id);
+            rings ~= Ring(id);
+        }
+
+        if(eventStrings[1] == "addFuncToRing") {
+            uint ringId = eventStrings[2].to!int;
+            rings[ringId].funcs ~= eventStrings[3];
+
+            switchContextRing(eventStrings[2].to!int);
+        }
+
+        update();
+    }
+
+    void switchContextRing(int ring) {
+        funcList.items.length = 0;
+
+        foreach(int i, func; rings[ring].funcs) {
+            funcList.addItem(func, i); 
         }
     }
 }
