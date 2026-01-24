@@ -10,4 +10,6 @@ void main() {
     VrtsTUI tui = new VrtsTUI(ipc);
 
     tui.loop();
+
+    ipc.disconnect();
 }
