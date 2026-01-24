@@ -19,6 +19,8 @@ class Widget {
 
     bool focused;
 
+    void delegate() onFocus; 
+
     void addChild(Widget widget) {
         childs ~= widget;
         widget.setParent(this);
@@ -39,6 +41,17 @@ class Widget {
     ushort colorBack = TB_BLACK;
 
     abstract void draw();
+
+    abstract bool processEvent(tb_event* event);
+
+    bool handleEvent(tb_event* event) {
+        bool handled = childs.map!(a => a.handleEvent(event)).any; 
+
+        if(!handled)
+            handled = processEvent(event);
+
+        return handled;
+    }
 }
 
 class Panel : Widget {
@@ -87,6 +100,10 @@ class Panel : Widget {
 
         drawBox();
     } 
+
+    override bool processEvent(tb_event* event) {
+        return false;
+    }
 }
 
 struct Ring {
@@ -96,20 +113,51 @@ struct Ring {
 class List : Widget {
     ListItem[] items;
 
+    uint selected;
+
     override void draw() {
-        items.each!(a => drawItem(a));
+        int i = 0;
+        items.each!((a) => drawItem(a, i++ == selected));
     }
 
-    void drawItem(ListItem item) {
+    void drawItem(ListItem item, bool selected) {
+        if(selected) 
+            invertColor;
+
         foreach(int i; 0 .. cast(int)item.text.length)
-            tb_change_cell(x + 1 + i, y + item.index, item.text[i], TB_BOLD | colorText, TB_BLACK);
+            tb_change_cell(x + 1 + i, y + item.index, item.text[i], TB_BOLD | colorText, colorBack);
+
+        if(selected)
+            invertColor;
     }
 
     void addItem(string text, int libId) {
         auto item = ListItem(text, libId, cast(int)items.length);
         items ~= item;
-        // addChild(item);
     }
+
+    void invertColor() {
+        swap(colorText, colorBack);
+    }
+
+    override bool processEvent(tb_event* event) {
+        if(event.key != TB_KEY_ARROW_UP && event.key != TB_KEY_ARROW_DOWN)
+            return false;
+
+        if (event.key == TB_KEY_ARROW_UP) {
+            if(selected > 0)
+                selected--;
+        }
+        if(event.key == TB_KEY_ARROW_DOWN) {
+            selected++;
+            if(selected >= items.length)
+                selected = cast(uint)items.length - 1;
+        }
+
+        return true;
+    }
+
+    // void 
 }
 
 struct ListItem {
@@ -130,10 +178,16 @@ enum Mode {
 }
 
 class Context {
-    int selectedPackage;
+    UIState state;
+    int selectedPackage = -1;
     int showedRing = -1;
-    int selectedFunction;
-    // int selecte
+    int selectedFunction = -1;
+}
+
+enum UIState {
+    Package,
+    Ring,
+    Func
 }
 
 class VrtsTUI {
@@ -146,6 +200,8 @@ class VrtsTUI {
     List ringsList;
     List funcList;
     Ring[] rings;
+
+    Context context;
 
     // Context context;
     // VrtsPackage[uint] packageId;
@@ -162,7 +218,9 @@ class VrtsTUI {
         packagesPanel = new Panel(0, 0, 20, 40, "PACKAGES");
         ringsPanel = new Panel(20, 0, 20, 40, "RINGS");
         funcPanel = new Panel(40, 0, 20, 40, "FUNCTIONS");
-
+        context = new Context;
+        context.state = UIState.Package;
+        packagesPanel.focused = true;
 
         // focus = new Focus();
         // focus.widget = packagesPanel;
@@ -188,6 +246,7 @@ class VrtsTUI {
     }
 
     void update() {
+
         // if(context.showedRing == -1) {
         //     return;
         // }
@@ -215,6 +274,11 @@ class VrtsTUI {
         tb_present();
     }
 
+    void navMode(tb_event* event) {
+        if(context.state == UIState.Package)
+            packagesPanel.handleEvent(event);
+    }
+
     void loop() {
         while (true) {
             pollEvent();
@@ -233,6 +297,7 @@ class VrtsTUI {
                     if(ev.ch == cast(uint)'c')
                         mode = Mode.Command;
 
+                    navMode(&ev);
                     continue;
                 }
 
