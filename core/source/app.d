@@ -2,6 +2,7 @@ import veritas.veritas;
 import veritas.ecosystem.ring;
 
 import std.stdio;
+import std.path;
 import std.socket;
 import std.file;
 
@@ -75,17 +76,16 @@ void main(string[] args) {
                 clientBus.processEvent(new EventSnapshotStart());
 
                 foreach (pkg; veritas.ecosystem.packages) {     
-                    clientBus.processEvent(new EventProjectAdded(pkg.getPath));
+                    clientBus.processEvent(new EventProjectAdded(pkg.getPath.baseName));
                 }
 
-                foreach (ring; veritas.ecosystem.rings) {     
+                foreach (ring; veritas.ecosystem.rings) { 
                     clientBus.processEvent(new EventAddRing(ring.level));
                 }
 
                 foreach (pkg; veritas.ecosystem.packages) {
                     foreach(func; pkg.getFunctions()) {     
-                        VrtsRing ring = veritas.ecosystem.findRingByFunction(func);
-                        clientBus.processEvent(new EventAddFunc(ring.level, func.name, pkg.getPath));
+                        clientBus.processEvent(new EventAddFunc(0, func.name, pkg.getPath.baseName));
                     }
                 }
 
