@@ -66,4 +66,8 @@ public:
             .map!((a) => new VrtsSourceFile(this, a))
             .each!((a) => this.addSourceFile(a));
     }
+
+    auto getFunctions() {
+        return functions;
+    }
 }
