@@ -38,7 +38,7 @@ class EventSnapshotStart : VrtsEvent {
     string getString() {return "";}
 
     string compileString() {
-        return "E snapshotStart";
+        return "E snapshotStart" ~ "\n";
     }
 }
 
@@ -52,7 +52,7 @@ class EventSnapshotEnd : VrtsEvent {
     string getString() {return "";}
 
     string compileString() {
-        return "E snapshotEnd";
+        return "E snapshotEnd" ~ "\n";
     }
 }
 interface VrtsEvent {
@@ -182,6 +182,6 @@ class EventAddFunc : VrtsEvent {
     }
 
     override string compileString() {
-        return "E addFunc " ~ ringId.to!string ~ " " ~ funcName ~ " " ~ packageName ~ "\n";
+        return "E addFunc " ~ funcName ~ "\n";
     }
 }
