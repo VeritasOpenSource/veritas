@@ -215,6 +215,8 @@ class VrtsTUI {
         tb_init();
         this.ipc = ipc;
 
+        ipc.connect();
+
         packagesPanel = new Panel(0, 0, 20, 40, "PACKAGES");
         ringsPanel = new Panel(20, 0, 20, 40, "RINGS");
         funcPanel = new Panel(40, 0, 20, 40, "FUNCTIONS");

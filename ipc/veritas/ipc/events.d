@@ -27,6 +27,34 @@ enum EventType {
     ProjectSourceFilesProcess
 }
 
+
+class EventSnapshotStart : VrtsEvent {
+    // string name;
+
+    override EventType getType() {
+        return EventType.ProjectAdded;
+    }
+
+    string getString() {return "";}
+
+    string compileString() {
+        return "E snapshotStart";
+    }
+}
+
+class EventSnapshotEnd : VrtsEvent {
+    // string name;
+
+    override EventType getType() {
+        return EventType.ProjectAdded;
+    }
+
+    string getString() {return "";}
+
+    string compileString() {
+        return "E snapshotEnd";
+    }
+}
 interface VrtsEvent {
     EventType getType();
 
@@ -130,5 +158,30 @@ class EventFuncToRing : VrtsEvent {
 
     override string compileString() {
         return "E addFuncToRing " ~ ringId.to!string ~ " " ~ funcName ~ "\n";
+    }
+}
+
+class EventAddFunc : VrtsEvent {
+    // uint ringId;
+    string funcName;
+    string packageName;
+    uint ringId;
+
+    this(uint id, string funcName, string packageName) {
+        this.ringId = id;
+        this.funcName = funcName;
+        this.packageName = packageName;
+    }
+
+    override EventType getType() {
+        return EventType.ProjectSourceFilesProcess;
+    } 
+
+    override string getString() {
+        return "";
+    }
+
+    override string compileString() {
+        return "E addFunc " ~ ringId.to!string ~ " " ~ funcName ~ " " ~ packageName ~ "\n";
     }
 }

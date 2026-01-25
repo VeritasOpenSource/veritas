@@ -23,7 +23,9 @@ class VrtsIPC {
 
     this(VrtsIPCType type) {
         this.type = type;
+    }
 
+    void connect() {
         socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
         socket.connect(new UnixAddress(SOCKET_PATH));
         socket.blocking = false;

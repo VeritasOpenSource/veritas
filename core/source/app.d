@@ -1,4 +1,5 @@
 import veritas.veritas;
+import veritas.ecosystem.ring;
 
 import std.stdio;
 import std.socket;
@@ -70,6 +71,25 @@ void main(string[] args) {
             if (!client.isDisconnected) {
                 client.socket.blocking = false;
                 clientBus.client = client.socket;
+
+                clientBus.processEvent(new EventSnapshotStart());
+
+                foreach (pkg; veritas.ecosystem.packages) {     
+                    clientBus.processEvent(new EventProjectAdded(pkg.getPath));
+                }
+
+                foreach (ring; veritas.ecosystem.rings) {     
+                    clientBus.processEvent(new EventAddRing(ring.level));
+                }
+
+                foreach (pkg; veritas.ecosystem.packages) {
+                    foreach(func; pkg.getFunctions()) {     
+                        VrtsRing ring = veritas.ecosystem.findRingByFunction(func);
+                        clientBus.processEvent(new EventAddFunc(ring.level, func.name, pkg.getPath));
+                    }
+                }
+
+                clientBus.processEvent(new EventSnapshotEnd());
             }
         }
 
