@@ -20,18 +20,21 @@ enum Mode {
     Navigation
 }
 
-class Context {
-    UIState state;
-    int selectedPackage = -1;
-    int showedRing = -1;
-    int selectedFunction = -1;
+class UIState {
+    Context context;
+    // int selectedPackage = -1;
+    // int showedRing = -1;
+    // int selectedFunction = -1;
 }
 
-enum UIState {
-    Package,
-    Ring,
-    Func
+struct Context {
+
 }
+// enum UIState {
+//     Package,
+//     Ring,
+//     Func
+// }
 
 class VrtsTUI {
     VrtsIPC ipc;
@@ -85,6 +88,7 @@ class VrtsTUI {
 
 
         mode = Mode.Navigation;
+        model = new CoreModel;
     }
 
     ~this() {
@@ -92,6 +96,16 @@ class VrtsTUI {
     }
 
     void update() {
+        packageList.items.length = 0;
+        ringsList.items.length = 1;
+
+        foreach(pkg; model.packages) {
+            packageList.addItem(pkg.name, pkg.localId);
+        }
+
+        foreach(ring; model.rings) {
+            ringsList.addItem(ring.veritasId.to!string, ring.localId);
+        }
 
         // if(context.showedRing == -1) {
         //     return;
@@ -152,6 +166,9 @@ class VrtsTUI {
                         mode = Mode.Navigation;
 
                     if(ev.key == TB_KEY_ENTER) {
+                        if(command == "analyze") {
+                            model.rings.length = 0;
+                        }
                         this.processCommands(command);
                         command = "";
                         continue;
@@ -174,9 +191,6 @@ class VrtsTUI {
         if(command.split[0] == "exit") {
             ipc.sendCommand("exit");
         }
-        else if(command.split[0] == "ring") {
-            switchContextRing(command.split[1].to!int);
-        }
         else 
             ipc.sendCommand(command);
     }
@@ -193,31 +207,48 @@ class VrtsTUI {
         string[] eventStrings = event.split;
 
         if(eventStrings[1] == "addedPackage") {
-            string name = eventStrings[2].baseName;
-            packageList.addItem(name, cast(int)packageList.items.length);
+            model.addPackage(eventStrings[2].baseName, 0);
+            if(!isSnapshot) {
+                update();
+            }
         }
 
         if(eventStrings[1] == "newRing") {
             int id = eventStrings[2].to!int;
-            ringsList.addItem("Ring "~ eventStrings[2], id);
-            rings ~= Ring(id);
+            model.addRing(id);
+
+            if(!isSnapshot) {
+                update();
+            }
         }
 
-        if(eventStrings[1] == "addFuncToRing") {
-            uint ringId = eventStrings[2].to!int;
-            rings[ringId].funcs ~= eventStrings[3];
+        if(eventStrings[1] == "addedFunction") {
+            int id = eventStrings[2].to!int;
+            model.addRing(id);
 
-            switchContextRing(eventStrings[2].to!int);
+            if(!isSnapshot) {
+                update();
+            }
         }
 
-        update();
+        if(eventStrings[1] == "snapshotStart") {
+            isSnapshot = true;
+        }
+        if(eventStrings[1] == "snapshotEnd") {
+            isSnapshot = false;
+            update();
+        }
+
+        if(!isSnapshot) {
+            update();
+        }
     }
 
-    void switchContextRing(int ring) {
-        funcList.items.length = 0;
+    // void switchContextRing(int ring) {
+    //     funcList.items.length = 0;
 
-        foreach(int i, func; rings[ring].funcs) {
-            funcList.addItem(func, i); 
-        }
-    }
+    //     foreach(int i, func; rings[ring].funcs) {
+    //         funcList.addItem(func, i); 
+    //     }
+    // }
 }

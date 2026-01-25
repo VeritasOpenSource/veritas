@@ -136,6 +136,8 @@ class VrtsEcosystem {
     void buildRingsIerarchy() {
         auto funcs = functions.dup;
 
+        rings.length = 0;
+
         VrtsRing ring0;
         if(rings.length == 0)
             ring0 = new VrtsRing();
