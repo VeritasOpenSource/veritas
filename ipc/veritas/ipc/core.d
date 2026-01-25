@@ -67,4 +67,9 @@ class VrtsIPC {
         raws = raws[1..$];
         return e;
     }
+
+    void disconnect() {
+        socket.close();
+        socket = null;
+    }
 }
