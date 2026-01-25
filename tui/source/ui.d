@@ -42,14 +42,13 @@ class VrtsTUI {
     List packageList;
     List ringsList;
     List funcList;
-    Ring[] rings;
+
+    CoreModel model;
+
+    bool isSnapshot;
 
     Context context;
 
-    // Context context;
-    // VrtsPackage[uint] packageId;
-    // VrtsRing[uint] ringId;
-    // Focus focus;
     string command;
 
     Mode mode;
@@ -77,6 +76,8 @@ class VrtsTUI {
         ringsList = new List;
         ringsPanel.addChild(ringsList);
         ringsList.fillParent;
+        // ringsList.startIndex = -1;
+        ringsList.addItem("[all]", -1);
 
         funcList = new List;
         funcPanel.addChild(funcList);
