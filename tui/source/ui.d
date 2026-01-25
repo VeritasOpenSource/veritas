@@ -21,15 +21,13 @@ enum Mode {
 }
 
 class UIState {
-    Context context;
-    // int selectedPackage = -1;
-    // int showedRing = -1;
-    // int selectedFunction = -1;
+    Panel current;
+    int focusedPanel = 0;
+    int selectedPackage = -1;
+    int showedRing = -1;
+    int selectedFunction = -1;
 }
 
-struct Context {
-
-}
 // enum UIState {
 //     Package,
 //     Ring,
@@ -42,6 +40,7 @@ class VrtsTUI {
     Panel packagesPanel;
     Panel ringsPanel;
     Panel funcPanel;
+    Panel[] panels;
     List packageList;
     List ringsList;
     List funcList;
@@ -50,7 +49,7 @@ class VrtsTUI {
 
     bool isSnapshot;
 
-    Context context;
+    UIState state;
 
     string command;
 
@@ -62,19 +61,23 @@ class VrtsTUI {
 
         ipc.connect();
 
+        state = new UIState;
+
         packagesPanel = new Panel(0, 0, 20, 40, "PACKAGES");
         ringsPanel = new Panel(20, 0, 20, 40, "RINGS");
         funcPanel = new Panel(40, 0, 20, 40, "FUNCTIONS");
-        context = new Context;
-        context.state = UIState.Package;
-        packagesPanel.focused = true;
 
-        // focus = new Focus();
-        // focus.widget = packagesPanel;
+        panels ~= packagesPanel;
+        panels ~= ringsPanel;
+        panels ~= funcPanel;
+
+        state.current = panels[0];
+        panels[0].focused = true;
 
         packageList = new List;
         packagesPanel.addChild(packageList);
         packageList.fillParent;
+        packageList.addItem("[all]", -1);
 
         ringsList = new List;
         ringsPanel.addChild(ringsList);
@@ -96,7 +99,7 @@ class VrtsTUI {
     }
 
     void update() {
-        packageList.items.length = 0;
+        packageList.items.length = 1;
         ringsList.items.length = 1;
 
         foreach(pkg; model.packages) {
@@ -135,8 +138,26 @@ class VrtsTUI {
     }
 
     void navMode(tb_event* event) {
-        if(context.state == UIState.Package)
-            packagesPanel.handleEvent(event);
+        if(event.key == TB_KEY_ARROW_RIGHT) {
+            if(state.focusedPanel < panels.length - 1){
+                state.current.switchFocus();
+                state.focusedPanel++;
+                state.current = panels[state.focusedPanel];
+                state.current.switchFocus();
+            }
+        }
+
+        if(event.key == TB_KEY_ARROW_LEFT) {
+            if(state.focusedPanel > 0){
+                state.current.switchFocus();
+                state.focusedPanel--;
+                state.current = panels[state.focusedPanel];
+                state.current.switchFocus();
+            }
+        }
+
+        state.current.handleEvent(event);
+        // state.current.focused = true;
     }
 
     void loop() {

@@ -15,6 +15,19 @@ class Widget {
 
     void delegate() onFocus; 
 
+    void focus(bool focused) {
+        if(this.focused != focused)
+            swap(colorText, colorBack);
+
+        this.focused = focused;
+    }
+
+    void switchFocus() {
+        this.focused = !this.focused;
+
+        swap(colorText, colorBack);
+    }
+
     void addChild(Widget widget) {
         childs ~= widget;
         widget.setParent(this);
