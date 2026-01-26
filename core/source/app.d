@@ -61,7 +61,7 @@ void main(string[] args) {
     eventBus.events ~= new VrtsLogger;
     
     auto clientBus = new ClientBus;
-    eventBus.events ~= clientBus;
+    // eventBus.events ~= clientBus;
 
     auto server = new Socket(AddressFamily.UNIX, SocketType.STREAM);
     server.blocking = false;
@@ -76,50 +76,56 @@ void main(string[] args) {
     bool exit = false;
     ClientState client;
 
-    while (!client.exit) {
-        if (client.isDisconnected) {
-            try {
-                client.socket = server.accept();
-            }
-            catch(SocketException e) {}
 
-            if (!client.isDisconnected) {
-                client.socket.blocking = false;
-                clientBus.client = client.socket;
+    veritas.processCommand("add ../../veritas-test/bash");
+    writeln("Added");
+    veritas.processCommand("analyze");
+    // veritas.processCommand()
 
-                clientBus.snapshot = true;
+    // while (!client.exit) {
+    //     if (client.isDisconnected) {
+    //         try {
+    //             client.socket = server.accept();
+    //         }
+    //         catch(SocketException e) {}
 
-                clientBus.processEvent(new EventSnapshotStart());
+    //         if (!client.isDisconnected) {
+    //             client.socket.blocking = false;
+    //             clientBus.client = client.socket;
 
-                foreach (i, pkg; veritas.ecosystem.packages) {     
-                    clientBus.processEvent(new EventProjectAdded(pkg.getPath.baseName));
-                }
+    //             clientBus.snapshot = true;
 
-                foreach (i, ring; veritas.ecosystem.rings) { 
-                    clientBus.processEvent(new EventAddRing(ring.level));
-                }
+    //             clientBus.processEvent(new EventSnapshotStart());
 
-                foreach (ring; veritas.ecosystem.rings) {
-                    foreach(func; ring.functions) {
-                        auto e = new EventSendFunc(func.name, 0, ring.level);
-                        clientBus.processEvent(new EventSendFunc(func.name, 0, ring.level));
-                    }
-                }
+    //             foreach (i, pkg; veritas.ecosystem.packages) {     
+    //                 clientBus.processEvent(new EventProjectAdded(pkg.getPath.baseName));
+    //             }
 
-                clientBus.processEvent(new EventSnapshotEnd());
+    //             foreach (i, ring; veritas.ecosystem.rings) { 
+    //                 clientBus.processEvent(new EventAddRing(ring.level));
+    //             }
 
-                clientBus.snapshot = false;
-                clientBus.flush();
-            }
-        }
+    //             foreach (ring; veritas.ecosystem.rings) {
+    //                 foreach(func; ring.functions) {
+    //                     auto e = new EventSendFunc(func.name, 0, ring.level);
+    //                     clientBus.processEvent(new EventSendFunc(func.name, 0, ring.level));
+    //                 }
+    //             }
 
-        if (!client.isDisconnected) {
-            if(handleClient(veritas, client)) {
-                client.disconnect();
-                clientBus.client = null;
-            }
-        }
-    }
+    //             clientBus.processEvent(new EventSnapshotEnd());
+
+    //             clientBus.snapshot = false;
+    //             clientBus.flush();
+    //         }
+    //     }
+
+    //     if (!client.isDisconnected) {
+    //         if(handleClient(veritas, client)) {
+    //             client.disconnect();
+    //             clientBus.client = null;
+    //         }
+    //     }
+    // }
 }
 
 bool handleClient(Veritas veritas, ref ClientState client) {

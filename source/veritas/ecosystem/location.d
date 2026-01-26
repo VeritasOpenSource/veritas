@@ -15,6 +15,7 @@ protected:
     uint column_;
 
 public:
+    this() {}
 
     ///
     this(string filename, uint line, uint column) {

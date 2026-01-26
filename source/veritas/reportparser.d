@@ -3,40 +3,50 @@ module veritas.reportparser;
 import std.file;
 import std.json;
 import std.path;
+import std.stdio;
 
 import veritas.ecosystem;
 
 class VrtsReport {
-    string filename;
+    VrtsSourceLocation location;
     string description;
 
-    uint line;
-    uint column;
+    this() {
+        location = new VrtsSourceLocation();
+    }
 }
 
 class VrtsReportsParser {
     VrtsReport[] reports;
 
     VrtsReport[] parseResultFile(string path) {
+        // writeln("path");
         string jsonContent = readText(path);
+        // writeln("path");
+
         JSONValue jsonFile = parseJSON(jsonContent);
         auto jsonReports = jsonFile["reports"];
+        // writeln("path");
 
         foreach(jsonReport; jsonReports.arrayNoRef()) {
             auto file = jsonReport["file"];
+            //  writeln(file);
 
             VrtsReport report = new VrtsReport();
 
-            report.filename = file["original_path"]
+            report.location.filename = file["original_path"]
                 .str()
                 .baseName();
+            // writeln(report.location.filename);
+            
 
-            report.line = jsonReport["line"].get!uint;
-            report.column = jsonReport["column"].get!uint;
+            report.location.line = jsonReport["line"].get!uint;
+            report.location.column = jsonReport["column"].get!uint;
             report.description = jsonReport["message"].get!string;
 
             reports ~= report;
         }
+        // writeln("path");
 
         return reports;
     }

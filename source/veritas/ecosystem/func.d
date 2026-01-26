@@ -4,6 +4,7 @@ import std.algorithm;
 
 import veritas.ecosystem;
 import veritas.reportparser;
+import veritas.triggering;
 
 class VrtsFunction {
     //Name of function in own package
@@ -15,7 +16,7 @@ class VrtsFunction {
     VrtsSourceLocationRange definitionLocation;
     ///Reports about function
     VrtsReport[] reports;
-
+    Triggering[] triggers;
 
     VrtsFunctionCall[] calls;
     VrtsFunctionCall[] calledBy;
@@ -40,4 +41,29 @@ class VrtsFunction {
     bool isAllCallsUndefined() {
         return calls.all!(a => !a.isDefined);
     }
+
+    void collectTriggers() {
+        import std.stdio;
+        auto ownTrigger = new Triggering(this, cast(int)reports.length);
+
+        if(reports.length > 0) {
+            triggers ~= ownTrigger;
+        }
+
+        Triggering[] externalTriggers; 
+        foreach(call; calls) {
+            bool defined_ = call.isDefined;
+            if(defined_ == true) {
+                externalTriggers ~= call.getTargetFunction.triggers;
+            }
+        }
+
+        foreach(exTr; externalTriggers) {
+            exTr.count++;
+        }
+
+        triggers ~= externalTriggers;
+    }
+
+    auto reportsCount() => reports.length;
 }

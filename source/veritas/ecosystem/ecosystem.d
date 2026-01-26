@@ -8,6 +8,7 @@ import std.path;
 import veritas.reportparser;
 import veritas.ecosystem;
 import veritas.ipc.events;
+import veritas.triggering;
 
 /// 
 class VrtsEcosystem {
@@ -19,6 +20,8 @@ class VrtsEcosystem {
     
     VrtsFunction[]              functions;
     VrtsSourceFile[]            sourceFiles;
+
+    Triggering[] triggers;
 
     void setEventBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
@@ -194,9 +197,9 @@ class VrtsEcosystem {
     void processReports(VrtsReport[] reports) {
         foreach(report; reports) {
             foreach(function_; functions.filter!(a => a.definitionLocation !is null)) {
-                if( report.filename == function_.definitionLocation.filename &&
-                    report.line > function_.definitionLocation.start.line &&
-                    report.line < function_.definitionLocation.end.line)
+                if( report.location.filename == function_.definitionLocation.filename &&
+                    report.location.line > function_.definitionLocation.start.line &&
+                    report.location.line < function_.definitionLocation.end.line)
 
                     function_.reports ~= report;
             }
@@ -218,6 +221,27 @@ class VrtsEcosystem {
         }
 
         return allCallsInRings;
+    }
+
+    auto getPackages() {
+        return packages;
+    }
+
+    void collectTriggers() {
+        import std.stdio;
+        foreach(ring; rings) {
+            foreach(func; ring.functions) {
+                func.collectTriggers();
+
+                if(func.reportsCount > 0)
+                    triggers ~= func.triggers[0];
+
+            }
+        }
+
+        auto trig = triggers.sort!((a, b) => a.count < b.count);
+        
+        trig.each!(a => writeln(a.func.name, " ", a.count));
     }
 }
 

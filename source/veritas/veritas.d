@@ -25,6 +25,7 @@ class Veritas {
     VrtsEventBus eventsBus;
     VrtsEcosystem ecosystem;
     VrtsSourceAnalyzer analyzer;
+    VrtsReportsParser parser;
 
     this(VrtsEventBus bus) {
         this.eventsBus = bus;
@@ -32,6 +33,8 @@ class Veritas {
         ecosystem.setEventBus(eventsBus);
         analyzer = new VrtsSourceAnalyzer(ecosystem);
         analyzer.setEventsBus(eventsBus);
+
+        parser = new VrtsReportsParser;
     }
 
     void processCommand(string _command) {
@@ -49,7 +52,23 @@ class Veritas {
 
             ecosystem.relinkCalls();
             ecosystem.buildRingsIerarchy();
+
+            // ecosystem.processReports();
+
+            auto packages = ecosystem.getPackages();
+            auto reports = parser.parseResultFile("../../veritas-test/bash/res.json");
+            // writeln("Parsed");
+            ecosystem.processReports(reports);
+
+            // foreach(report; reports) {
+            //     writeln(report.location);
+            //     writeln(report.description);
+            // }
+
+            ecosystem.collectTriggers();
         }
+
+
     }
 
     void addProject(string path) {
