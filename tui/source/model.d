@@ -1,5 +1,8 @@
 module model;
 
+import std.algorithm;
+import std.array;
+
 struct Package {
     uint localId;
     uint veritasId;
@@ -11,14 +14,16 @@ struct Ring {
     uint localId;
     uint veritasId;
 
-    // uint level;
+    uint[] funcsId;
 }
 
 struct Function {
-    uint localId;
+    string name;
     uint veritasId;
 
-    string name;
+    // uint localId;
+    uint ringId;
+    
 }
 
 class CoreModel {
@@ -34,11 +39,14 @@ class CoreModel {
         rings ~= Ring(cast(uint)rings.length, veritasId);
     }
 
-    void addFunction(string name, uint veritasId) {
-        funcs ~= Function(cast(uint)funcs.length, veritasId, name);
+    void addFunction(string name, uint veritasId, uint ringId) {
+        funcs ~= Function(name, veritasId, ringId);
     }
 
-    void parseSnapshot(string[] res) {
-        
+    Function[] getFunctionsByRing(uint ringId) {
+        if(ringId == -1) {
+            return funcs;
+        }
+        return funcs.filter!(a => a.ringId == ringId).array;
     }
 }

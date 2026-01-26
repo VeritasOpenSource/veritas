@@ -13,7 +13,7 @@ class Widget {
 
     bool focused;
 
-    void delegate() onFocus; 
+    void delegate(int) onFocus; 
 
     void focus(bool focused) {
         if(this.focused != focused)
@@ -116,21 +116,16 @@ class Panel : Widget {
 class List : Widget {
     ListItem[] items;
 
-    // ListItem commonItem;
     bool hasCommonItem;
     uint selected = -1;
 
-    // uint startIndex = 0;
 
     override void draw() {
         int i = 0;
-        // if(hasCommonItem)
-        //     drawItem(commonItem, i++ == selected);
         items.each!((a) => drawItem(a, i++ == selected));
     }
 
     void drawItem(ListItem item, bool selected) {
-        // int dy = hasCommonItem ? 1 : 0;
 
         if(selected) 
             invertColor;
@@ -143,7 +138,6 @@ class List : Widget {
     }
 
     void setCommonItem(bool has) {
-        // commonItem = ListItem(itemText, -1, -1);
         hasCommonItem = has;
     }
 
@@ -160,7 +154,8 @@ class List : Widget {
         if(event.key != TB_KEY_ARROW_UP && event.key != TB_KEY_ARROW_DOWN)
             return false;
 
-        // int dy = hasCommonItem ? 1 :0 ;
+        if(items.length == 0)
+            return false;
 
         if (event.key == TB_KEY_ARROW_UP) {
             if(selected > 0)
@@ -171,6 +166,8 @@ class List : Widget {
             if(selected >= items.length)
                 selected = cast(uint)items.length - 1;
         }
+
+        onFocus(items[selected].libId);
 
         return true;
     }

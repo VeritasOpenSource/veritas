@@ -24,8 +24,20 @@ class UIState {
     Panel current;
     int focusedPanel = 0;
     int selectedPackage = -1;
-    int showedRing = -1;
+    int selectedRing = -1;
     int selectedFunction = -1;
+
+    void setPack(int i) {
+        selectedPackage = i;
+    }
+
+    void setRing(int i) {
+        selectedRing = i;
+    }
+
+    void setFunc(int i) {
+        selectedFunction = i;
+    }
 }
 
 // enum UIState {
@@ -78,24 +90,41 @@ class VrtsTUI {
         packagesPanel.addChild(packageList);
         packageList.fillParent;
         packageList.addItem("[all]", -1);
+        packageList.onFocus = &state.setPack;
 
         ringsList = new List;
         ringsPanel.addChild(ringsList);
         ringsList.fillParent;
-        // ringsList.startIndex = -1;
         ringsList.addItem("[all]", -1);
+        ringsList.onFocus = &switchRingContext;
 
         funcList = new List;
         funcPanel.addChild(funcList);
         funcList.fillParent;
+        funcList.onFocus = &state.setFunc;
 
 
         mode = Mode.Navigation;
         model = new CoreModel;
     }
 
+    void switchRingContext(int i) {
+        state.setRing(i);
+
+        updateFuncs();
+    }
+
     ~this() {
         tb_shutdown();
+    }
+
+    void updateFuncs() {
+        funcList.items.length = 0;
+
+        auto funcs = model.getFunctionsByRing(state.selectedRing);
+        foreach(func; funcs) {
+            funcList.addItem(func.name ~ " "~ func.ringId.to!string, 0);
+        }
     }
 
     void update() {
@@ -110,16 +139,7 @@ class VrtsTUI {
             ringsList.addItem(ring.veritasId.to!string, ring.localId);
         }
 
-        // if(context.showedRing == -1) {
-        //     return;
-        // }
-        // funcList.items.length = 0;
-
-        // uint showedRing = context.showedRing;
-
-        // foreach (i, funName; rings[showedRing].funcs) {
-        //     funcList.addItem(funName, cast(int)i);
-        // }
+        updateFuncs();
     }
 
     void render() {
@@ -237,19 +257,13 @@ class VrtsTUI {
         if(eventStrings[1] == "newRing") {
             int id = eventStrings[2].to!int;
             model.addRing(id);
-
-            if(!isSnapshot) {
-                update();
-            }
         }
 
-        if(eventStrings[1] == "addedFunction") {
-            int id = eventStrings[2].to!int;
-            model.addRing(id);
+        if(eventStrings[1] == "sendFunc") {
+            string name = eventStrings[2]; 
+            uint ringId = eventStrings[4].to!uint;
 
-            if(!isSnapshot) {
-                update();
-            }
+            model.addFunction(name, 0, ringId);
         }
 
         if(eventStrings[1] == "snapshotStart") {
@@ -257,19 +271,10 @@ class VrtsTUI {
         }
         if(eventStrings[1] == "snapshotEnd") {
             isSnapshot = false;
-            update();
         }
 
         if(!isSnapshot) {
             update();
         }
     }
-
-    // void switchContextRing(int ring) {
-    //     funcList.items.length = 0;
-
-    //     foreach(int i, func; rings[ring].funcs) {
-    //         funcList.addItem(func, i); 
-    //     }
-    // }
 }
