@@ -38,7 +38,7 @@ class EventSnapshotStart : VrtsEvent {
     string getString() {return "";}
 
     string compileString() {
-        return "E snapshotStart" ~ "\n";
+        return "E snapshotStart";
     }
 }
 
@@ -52,7 +52,7 @@ class EventSnapshotEnd : VrtsEvent {
     string getString() {return "";}
 
     string compileString() {
-        return "E snapshotEnd" ~ "\n";
+        return "E snapshotEnd";
     }
 }
 interface VrtsEvent {
@@ -79,7 +79,7 @@ class EventProjectAdded : VrtsEvent {
     }
 
     override string compileString() {
-        return "E addedPackage " ~ path ~ "\n";
+        return "E addedPackage " ~ path;
     }
 }
 
@@ -95,11 +95,11 @@ class EventSourceFileAnalized : VrtsEvent {
     } 
 
     override string getString() {
-        return "File analyzed: " ~ path ~ "\n";
+        return "File analyzed: " ~ path;
     }
 
     override string compileString() {
-        return "E fileAnalyzed " ~ path ~ "\n";
+        return "E fileAnalyzed " ~ path;
     }
 }
 
@@ -111,11 +111,11 @@ class EventProjectSourceFilesProcess : VrtsEvent {
     } 
 
     override string getString() {
-        return "Processed: " ~ percentage.to!string ~ "\n";
+        return "Processed: " ~ percentage.to!string;
     }
 
     override string compileString() {
-        return "E percentage " ~ percentage.to!string ~ "\n";
+        return "E percentage " ~ percentage.to!string;
     }
 }
 
@@ -131,11 +131,11 @@ class EventAddRing : VrtsEvent {
     } 
 
     override string getString() {
-        return "New ring: " ~ id.to!string ~ "\n";
+        return "New ring: " ~ id.to!string;
     }
 
     override string compileString() {
-        return "E newRing " ~ id.to!string ~ "\n";
+        return "E newRing " ~ id.to!string;
     }
 }
 
@@ -157,20 +157,22 @@ class EventFuncToRing : VrtsEvent {
     }
 
     override string compileString() {
-        return "E addFuncToRing " ~ ringId.to!string ~ " " ~ funcName ~ "\n";
+        return "E addFuncToRing " ~ ringId.to!string ~ " " ~ funcName;
     }
 }
 
-class EventAddFunc : VrtsEvent {
+class EventSendFunc : VrtsEvent {
     // uint ringId;
     string funcName;
-    string packageName;
+    uint localId;
+    // string packageName;
     uint ringId;
 
-    this(uint id, string funcName, string packageName) {
-        this.ringId = id;
+    this(string funcName, uint id, uint ringId) {
+        this.ringId = ringId;
+        this.localId = id;
         this.funcName = funcName;
-        this.packageName = packageName;
+        // this.packageName = packageName;
     }
 
     override EventType getType() {
@@ -182,6 +184,6 @@ class EventAddFunc : VrtsEvent {
     }
 
     override string compileString() {
-        return "E addFunc " ~ funcName ~ "\n";
+        return "E sendFunc " ~ funcName ~ " "~ localId.to!string ~" " ~ ringId.to!string;
     }
 }

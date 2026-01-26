@@ -5,6 +5,8 @@ import std.stdio;
 import std.path;
 import std.socket;
 import std.file;
+import std.algorithm;
+import std.array;
 
 import veritas.ipc.events;
 
@@ -16,11 +18,24 @@ class VrtsLogger : VrtsEventHandler {
 
 class ClientBus : VrtsEventHandler {
     Socket client;
+    bool snapshot = false;
+    string[] raws;
 
     override void processEvent(VrtsEvent event) {
-        client.send(event.compileString);
-    }   
-}
+
+        if(snapshot) {
+            raws ~= event.compileString ~ "|";
+        }
+        else
+            client.send(event.compileString() ~ "|"); 
+    }  
+
+    void flush() {
+        string res = raws.join;
+        client.send(res);
+        raws = [];
+    }
+    }
 
 struct ClientState {
     Socket socket;
@@ -38,7 +53,6 @@ struct ClientState {
 }
 
 enum string SOCKET_PATH = "/tmp/veritas.sock"; 
-
 
 void main(string[] args) {
     VrtsEventBus eventBus = new VrtsEventBus();
@@ -73,23 +87,29 @@ void main(string[] args) {
                 client.socket.blocking = false;
                 clientBus.client = client.socket;
 
+                clientBus.snapshot = true;
+
                 clientBus.processEvent(new EventSnapshotStart());
 
-                foreach (pkg; veritas.ecosystem.packages) {     
+                foreach (i, pkg; veritas.ecosystem.packages) {     
                     clientBus.processEvent(new EventProjectAdded(pkg.getPath.baseName));
                 }
 
-                foreach (ring; veritas.ecosystem.rings) { 
+                foreach (i, ring; veritas.ecosystem.rings) { 
                     clientBus.processEvent(new EventAddRing(ring.level));
                 }
 
-                foreach (pkg; veritas.ecosystem.packages) {
-                    foreach(func; pkg.getFunctions()) {     
-                        clientBus.processEvent(new EventAddFunc(0, func.name, pkg.getPath.baseName));
+                foreach (ring; veritas.ecosystem.rings) {
+                    foreach(func; ring.functions) {
+                        auto e = new EventSendFunc(func.name, 0, ring.level);
+                        clientBus.processEvent(new EventSendFunc(func.name, 0, ring.level));
                     }
                 }
 
                 clientBus.processEvent(new EventSnapshotEnd());
+
+                clientBus.snapshot = false;
+                clientBus.flush();
             }
         }
 
@@ -105,17 +125,19 @@ void main(string[] args) {
 bool handleClient(Veritas veritas, ref ClientState client) {
     ubyte[1024] buf;
 
-    auto n = client.socket.receive(buf[]);
-    if (n > 0) {
-        string command = cast(string)buf[0 .. n];
-        if(command == "exit") {
-            client.exit = true;
+    while(true) {
+        auto n = client.socket.receive(buf[]);
+        if (n > 0) {
+            string command = cast(string)buf[0 .. n];
+            if(command == "exit") {
+                client.exit = true;
+            }
+            else 
+                veritas.processCommand(command);
         }
-        else 
-            veritas.processCommand(command);
-    }
-    else if(n == 0) {
-        return true;
+        else if(n == 0) {
+            return true;
+        }
     }
 
     return false;

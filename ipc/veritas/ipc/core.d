@@ -6,6 +6,7 @@ import std.stdio;
 import std.array;
 import std.algorithm;
 import std.string;
+import std.conv;
 
 enum VrtsIPCType {
     Core,
@@ -40,16 +41,15 @@ class VrtsIPC {
     }
 
     void pollEvent() {
-        char[1024] tmp;
-
         while (true) {
+            char[1024] tmp;
             auto n = socket.receive(tmp);
             if (n <= 0) break;
 
             inputBuffer ~= cast(string)tmp[0..n];
 
             while (true) {
-                auto pos = inputBuffer.indexOf('\n');
+                auto pos = inputBuffer.indexOf('|');
                 if (pos == -1) break;
 
                 auto raw = inputBuffer[0..pos];
