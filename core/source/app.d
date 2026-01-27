@@ -80,6 +80,15 @@ void main(string[] args) {
     veritas.processCommand("add ../../veritas-test/bash");
     writeln("Added");
     veritas.processCommand("analyze");
+
+    auto funcCount = veritas.ecosystem.functions.length;
+    // auto trigCount = veritas.ecosystem.collectTriggers;
+    int sum;
+    auto trigCount = veritas.ecosystem.triggers.each!(a => sum += a.count);
+
+    writeln("Func count: ", funcCount);
+    writeln("Trig count: ", sum);
+    writeln("Validity: ", funcCount / sum);
     // veritas.processCommand()
 
     // while (!client.exit) {

@@ -1,0 +1,17 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/model
+model.so
+model.dylib
+model.dll
+libmodel.a
+model.a
+model.lib
+model-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
