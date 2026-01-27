@@ -3,9 +3,26 @@ module widgets;
 import std.algorithm;
 
 import tb2;
+import veritas.ipc.core;
+import model;
 
-class Screen {
-    
+class Screen : Widget {
+    VrtsIPC ipc;
+    CoreModel model;
+
+    bool isSnapshot;
+
+    this(VrtsIPC ipc, CoreModel model) {
+        this.ipc = ipc;
+        this.model = model;
+    }
+
+    void loop() {}
+    void update() {}
+
+    override void draw() {}
+
+    override bool processEvent(tb_event* event) {return false;}
 }
 
 class Widget {

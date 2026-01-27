@@ -39,16 +39,9 @@ class UIState {
         selectedFunction = i;
     }
 }
-
-// enum UIState {
-//     Package,
-//     Ring,
-//     Func
-// }
-
-class PackageScreen {
+class PackageScreen : Screen {
     VrtsIPC ipc;
-    
+
     Panel packagesPanel;
     Panel ringsPanel;
     Panel funcPanel;
@@ -67,9 +60,9 @@ class PackageScreen {
 
     Mode mode;
 
-    this(VrtsIPC ipc) {
+    this(VrtsIPC ipc, CoreModel model) {
+        super(ipc, model);
         tb_init();
-        this.ipc = ipc;
 
         ipc.connect();
 
@@ -127,7 +120,7 @@ class PackageScreen {
         }
     }
 
-    void update() {
+    override void update() {
         packageList.items.length = 1;
         ringsList.items.length = 1;
 
@@ -180,9 +173,8 @@ class PackageScreen {
         // state.current.focused = true;
     }
 
-    void loop() {
+    override void loop() {
         while (true) {
-            pollEvent();
             render();
 
             tb_event ev;
@@ -235,6 +227,38 @@ class PackageScreen {
         else 
             ipc.sendCommand(command);
     }
+}
+
+class ReportsScreen : Screen {
+    this(VrtsIPC ipc, CoreModel model) {
+        super(ipc, model);
+    }
+}
+
+class VrtsTUI {
+    VrtsIPC ipc;
+
+    PackageScreen packagesScreen;
+    ReportsScreen reportsScreen;
+    CoreModel model;
+
+    Screen currentScreen;
+
+    this(VrtsIPC ipc) {
+        this.ipc = ipc;
+        model = new CoreModel;
+        packagesScreen = new PackageScreen(ipc, model);
+        reportsScreen = new ReportsScreen(ipc, model);
+        // currentScreen = reportsScreen;
+        currentScreen = packagesScreen;
+    }
+
+    void loop() {
+        while(true) {
+            pollEvent();
+            currentScreen.loop();
+        }
+    }
 
     void pollEvent() {
         ipc.pollEvent();
@@ -244,50 +268,37 @@ class PackageScreen {
         }
     }
 
-    void parseAndDispatch(string event) {
+       void parseAndDispatch(string event) {
         string[] eventStrings = event.split;
 
         if(eventStrings[1] == "addedPackage") {
-            model.addPackage(eventStrings[2].baseName, 0);
-            if(!isSnapshot) {
-                update();
+            currentScreen.model.addPackage(eventStrings[2].baseName, 0);
+            if(!currentScreen.isSnapshot) {
+                currentScreen.update();
             }
         }
 
         if(eventStrings[1] == "newRing") {
             int id = eventStrings[2].to!int;
-            model.addRing(id);
+            currentScreen.model.addRing(id);
         }
 
         if(eventStrings[1] == "sendFunc") {
             string name = eventStrings[2]; 
             uint ringId = eventStrings[4].to!uint;
 
-            model.addFunction(name, 0, ringId);
+            currentScreen.model.addFunction(name, 0, ringId);
         }
 
         if(eventStrings[1] == "snapshotStart") {
-            isSnapshot = true;
+            currentScreen.isSnapshot = true;
         }
         if(eventStrings[1] == "snapshotEnd") {
-            isSnapshot = false;
+            currentScreen.isSnapshot = false;
         }
 
-        if(!isSnapshot) {
-            update();
+        if(!currentScreen.isSnapshot) {
+            currentScreen.update();
         }
-    }
-}
-
-class VrtsTUI {
-    VrtsIPC ipc;
-
-    PackageScreen screen;
-
-    alias screen this;
-
-    this(VrtsIPC ipc) {
-        this.ipc = ipc;
-        screen = new PackageScreen(ipc);
     }
 }
