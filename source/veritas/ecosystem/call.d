@@ -6,6 +6,8 @@ import veritas.ecosystem;
 ///Both-direction call class 
 class VrtsFunctionCall {
 private:    
+
+    uint id;
     ///is called function already defined before?
     bool defined = false;
 
@@ -27,6 +29,10 @@ public:
     ///
     this(VrtsFunction source, string name) {
         this.call.name = name;
+    }
+
+    auto getId() {
+        return id;
     }
 
     ///

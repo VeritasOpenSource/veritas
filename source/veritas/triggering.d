@@ -3,6 +3,7 @@ module veritas.triggering;
 import veritas.ecosystem.func;
 
 class Triggering {
+    uint id;
     VrtsFunction func;
     int count;
 

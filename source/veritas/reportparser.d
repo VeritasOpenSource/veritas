@@ -8,6 +8,7 @@ import std.stdio;
 import veritas.ecosystem;
 
 class VrtsReport {
+    uint id;
     VrtsSourceLocation location;
     string description;
 

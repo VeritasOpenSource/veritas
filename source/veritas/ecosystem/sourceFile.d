@@ -9,6 +9,7 @@ import veritas.ecosystem;
  */
 class VrtsSourceFile {
 private:
+    uint id;
 	DirEntry         fileEntry;
     VrtsPackage     pkg;
 
@@ -19,10 +20,21 @@ public:
         this.pkg = pkg;
 		this.fileEntry = fileEntry;
 	}
+
+    auto getFileEntry () {
+        return fileEntry;
+    }
     
+    auto getId() {
+        return id;
+    }
     ///
     string getPath() const {
         return fileEntry.name;
+    }
+
+    auto getPackage() {
+        return pkg;
     }
 
     ///

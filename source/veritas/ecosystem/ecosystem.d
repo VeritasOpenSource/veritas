@@ -4,11 +4,13 @@ module veritas.ecosystem.ecosystem;
 import std.algorithm;
 import std.array;
 import std.path;
+import std.file;
 
 import veritas.reportparser;
 import veritas.ecosystem;
 import veritas.ipc.events;
 import veritas.triggering;
+import veritas.model;
 
 /// 
 class VrtsEcosystem {
@@ -20,11 +22,21 @@ class VrtsEcosystem {
     
     VrtsFunction[]              functions;
     VrtsSourceFile[]            sourceFiles;
+    VrtsFunctionCall[]          calls;
+    VrtsReport[]                reports;
 
     Triggering[] triggers;
 
     void setEventBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
+    }
+
+    auto collectCalls() {
+        foreach(func; functions) {
+            calls ~= func.calls;
+        }
+
+        return calls.length;
     }
 
     /// 
@@ -195,6 +207,7 @@ class VrtsEcosystem {
 
     ///
     void processReports(VrtsReport[] reports) {
+        this.reports = reports;
         foreach(report; reports) {
             foreach(function_; functions.filter!(a => a.definitionLocation !is null)) {
                 if( report.location.filename == function_.definitionLocation.filename &&
@@ -227,7 +240,7 @@ class VrtsEcosystem {
         return packages;
     }
 
-    void collectTriggers() {
+    auto collectTriggers() {
         import std.stdio;
         foreach(ring; rings) {
             foreach(func; ring.functions) {
@@ -242,8 +255,133 @@ class VrtsEcosystem {
         auto trig = triggers.sort!((a, b) => a.count < b.count);
         
         trig.each!(a => writeln(a.func.name, " ", a.count));
+
+        return trig.length;
+    }
+
+    auto buidModel() {
+        VrtsModel model;
+
+        foreach(pkg; packages) {
+            auto modelPackage = VrtsModelPackage();
+            modelPackage.id = pkg.getId();
+            modelPackage.name = pkg.getName;
+            modelPackage.path = DirEntry(pkg.getPath);
+
+            foreach(func; pkg.getFunctions)
+                modelPackage.functionsIds ~= func.id;
+
+            foreach(sourceFile; pkg.getSourceFiles)
+                modelPackage.sourceFilesIds ~= sourceFile.getId;
+
+            model.packages ~= modelPackage;
+
+        }
+
+        foreach(sourceFile; sourceFiles) {
+            auto modelSourceFile = VrtsModelSourceFile();
+            modelSourceFile.id = sourceFile.getId();
+            modelSourceFile.path = sourceFile.getFileEntry;
+            modelSourceFile.packageId = sourceFile.getPackage.getId();
+
+            model.files ~= modelSourceFile;
+        }
+
+        foreach(ring; rings) {
+            auto modelRing = VrtsModelRing();
+            modelRing.id = ring.level;
+            // modelRing.path = ring.getFileEntry;
+            foreach(func; ring.functions)
+                modelRing.functionsIds ~= func.id;
+
+            model.rings ~= modelRing;
+        }
+
+        foreach(func; functions) {
+            auto modelFunc = VrtsModelFunction();
+            modelFunc.id = func.id;
+            modelFunc.name = func.name;
+            modelFunc.sourceFileId = func.file.getId;
+
+            modelFunc.declarationLocation = VrtsModelSourceLocation(
+                func.declarationLocation.filename,
+                func.declarationLocation.line,
+                func.declarationLocation.column
+            );
+            modelFunc.definitionLocation = 
+                VrtsModelSourceLocationRange(
+                    VrtsModelSourceLocation(
+                        func.definitionLocation.start.filename,
+                        func.definitionLocation.start.line,
+                        func.definitionLocation.start.column
+                    ),
+                    VrtsModelSourceLocation(
+                        func.definitionLocation.end.filename,
+                        func.definitionLocation.end.line,
+                        func.definitionLocation.end.column
+                    )
+                );
+
+            foreach(report; func.reports)
+                modelFunc.reportsIds ~= report.id;
+            foreach(trigger; func.triggers)
+                modelFunc.triggersId ~= trigger.id;
+            foreach(call; func.calls)
+                modelFunc.callsIds ~= call.getId;
+            foreach(called; func.calledBy)
+                modelFunc.calledByIds ~= called.getId;
+
+            model.functions ~= modelFunc;
+        }
+
+        foreach(call; calls) {
+            auto modelCall = VrtsModelCall();
+            modelCall.id = call.getId;
+            modelCall.isDefined = call.isDefined;
+            modelCall.sourceId = call.getSourceFunction.id;
+            // modelCall.path = call.getFileEntry;
+            if(call.isDefined) {
+                modelCall.call.name = call.getCallName; 
+            }
+            else {
+                modelCall.call.targetId = call.getTargetFunction.id;
+            }
+            // modelCall.call = call.call;
+
+            model.calls ~= modelCall;
+        }
+
+        foreach(trigger; triggers) {
+            auto modelTrigger = VrtsModelTriggering();
+            modelTrigger.id = trigger.id;
+            modelTrigger.functionId = trigger.func.id;
+            modelTrigger.count = trigger.count;
+            // modelTrigger.path = trigger.getFileEntry;
+            // modelTrigger.trigger = trigger.call;
+
+            model.triggerings ~= modelTrigger;
+        }
+
+        foreach(report; reports) {
+            auto modelReport = VrtsModelReport();
+            modelReport.id = report.id;
+            modelReport.location = VrtsModelSourceLocation(
+                report.location.filename,
+                report.location.line,
+                report.location.column
+            );
+            modelReport.description = report.description;
+            // modelReport.path = report.getFileEntry;
+            // modelReport.report = report.call;
+
+            model.reports ~= modelReport;
+        }
+
+        return model;
     }
 }
+
+
 
 ///
 T[] removeElements(T)(ref T[] array, T[] needles) {

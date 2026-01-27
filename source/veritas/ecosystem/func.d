@@ -7,6 +7,7 @@ import veritas.reportparser;
 import veritas.triggering;
 
 class VrtsFunction {
+    uint id;
     //Name of function in own package
     string name;
 

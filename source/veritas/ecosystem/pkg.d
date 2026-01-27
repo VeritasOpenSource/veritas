@@ -14,6 +14,7 @@ import veritas.ecosystem;
  */
 class VrtsPackage {
 private:
+    uint id;
     ///name of package
     string name;
 
@@ -31,6 +32,10 @@ public:
     this(string path, string name) {
         this.path = DirEntry(path);
         this.name = path.baseName;
+    }
+
+    auto getId() {
+        return id;
     }
 
     /// 
