@@ -54,7 +54,11 @@ class VrtsFunction {
         foreach(call; calls) {
             bool defined_ = call.isDefined;
             if(defined_ == true) {
-                externalTriggers ~= call.getTargetFunction.triggers;
+                auto triggers = call.getTargetFunction.triggers;
+                foreach(exTr; triggers) {
+                    if(!externalTriggers.canFind!(a => a is exTr))
+                    externalTriggers ~= triggers;
+                }
             }
         }
 
