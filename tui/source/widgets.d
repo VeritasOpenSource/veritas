@@ -4,6 +4,10 @@ import std.algorithm;
 
 import tb2;
 
+class Screen {
+    
+}
+
 class Widget {
     Widget[] childs;
     Widget parent;

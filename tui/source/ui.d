@@ -46,9 +46,9 @@ class UIState {
 //     Func
 // }
 
-class VrtsTUI {
+class PackageScreen {
     VrtsIPC ipc;
-
+    
     Panel packagesPanel;
     Panel ringsPanel;
     Panel funcPanel;
@@ -276,5 +276,18 @@ class VrtsTUI {
         if(!isSnapshot) {
             update();
         }
+    }
+}
+
+class VrtsTUI {
+    VrtsIPC ipc;
+
+    PackageScreen screen;
+
+    alias screen this;
+
+    this(VrtsIPC ipc) {
+        this.ipc = ipc;
+        screen = new PackageScreen(ipc);
     }
 }
