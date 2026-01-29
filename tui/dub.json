@@ -10,9 +10,7 @@
 		"-L./libtermbox2.a"
 	],
 	"dependencies": {
-		"veritas": {
-			"path": "../"
-		},
+
 		"ipc": {
 			"path": "../ipc/"
 		}
