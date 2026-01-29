@@ -56,15 +56,10 @@ class PackageScreen : Screen {
 
     UIState state;
 
-    string command;
-
     Mode mode;
 
     this(VrtsIPC ipc, CoreModel model) {
         super(ipc, model);
-        tb_init();
-
-        ipc.connect();
 
         state = new UIState;
 
@@ -135,22 +130,13 @@ class PackageScreen : Screen {
         updateFuncs();
     }
 
-    void render() {
-        tb_clear();
-
-        foreach(int i; 0 .. cast(int)command.length)
-            tb_change_cell(0 + i, tb_height() - 1, command[i], TB_BOLD | TB_WHITE, TB_BLACK);
-
+    override void render() {
         packagesPanel.draw();
-        // packageList.draw(focus.widget);
         ringsPanel.draw();
-
         funcPanel.draw();
-
-        tb_present();
     }
 
-    void navMode(tb_event* event) {
+    override void navMode(tb_event* event) {
         if(event.key == TB_KEY_ARROW_RIGHT) {
             if(state.focusedPanel < panels.length - 1){
                 state.current.switchFocus();
@@ -170,28 +156,68 @@ class PackageScreen : Screen {
         }
 
         state.current.handleEvent(event);
-        // state.current.focused = true;
     }
 
-    override void loop() {
-        while (true) {
-            render();
+    // override void navMode(ev);
+}
 
+class ReportsScreen : Screen {
+    this(VrtsIPC ipc, CoreModel model) {
+        super(ipc, model);
+    }
+    
+    override void navMode(tb_event* event) {}
+
+    override void render() {}
+
+}
+
+class VrtsTUI {
+    VrtsIPC ipc;
+
+    PackageScreen packagesScreen;
+    ReportsScreen reportsScreen;
+
+    CoreModel model;
+    Mode mode;
+    string command;
+
+    Screen[] screens;
+    int screenIndex;
+    Screen currentScreen;
+
+    this(VrtsIPC ipc) {
+        tb_init();
+
+        this.ipc = ipc;
+        ipc.connect();
+
+        model = new CoreModel;
+        packagesScreen = new PackageScreen(ipc, model);
+        reportsScreen = new ReportsScreen(ipc, model);
+
+        screens ~= packagesScreen;
+        screens ~= reportsScreen;
+        mode = Mode.Navigation;
+        currentScreen = packagesScreen;
+    }
+
+    void loop() {
+        while(true) {
             tb_event ev;
             tb_peek_event(&ev, 10);
 
             if (ev.type == TB_EVENT_KEY) {
-                // update();
-
-                if (ev.key == TB_KEY_ESC && mode == Mode.Navigation)
-                    break;
-
                 if(mode == Mode.Navigation) {
-                    if(ev.ch == cast(uint)'c')
+                    if(ev.ch == cast(uint)'c') {
                         mode = Mode.Command;
+                        continue;
+                    }
 
-                    navMode(&ev);
-                    continue;
+                    if(ev.key == TB_KEY_ESC)
+                        break;
+
+                    currentScreen.navMode(&ev);
                 }
 
                 if(mode == Mode.Command) {
@@ -216,48 +242,28 @@ class PackageScreen : Screen {
                         command ~= cast(char)ev.ch;
                     }
                 }
+
+                if(ev.key == TB_KEY_TAB)
+                    switchScreen();
             }
+
+            currentScreen.iterate(&ev);
+
+            tb_clear();
+
+            foreach(int i; 0 .. cast(int)command.length)
+                tb_change_cell(0 + i, tb_height() - 1, command[i], TB_BOLD | TB_WHITE, TB_BLACK);
+
+            currentScreen.render();
+
+            tb_present();
         }
     }
 
-    void processCommands(string command) {
-        if(command.split[0] == "exit") {
-            ipc.sendCommand("exit");
-        }
-        else 
-            ipc.sendCommand(command);
-    }
-}
-
-class ReportsScreen : Screen {
-    this(VrtsIPC ipc, CoreModel model) {
-        super(ipc, model);
-    }
-}
-
-class VrtsTUI {
-    VrtsIPC ipc;
-
-    PackageScreen packagesScreen;
-    ReportsScreen reportsScreen;
-    CoreModel model;
-
-    Screen currentScreen;
-
-    this(VrtsIPC ipc) {
-        this.ipc = ipc;
-        model = new CoreModel;
-        packagesScreen = new PackageScreen(ipc, model);
-        reportsScreen = new ReportsScreen(ipc, model);
-        // currentScreen = reportsScreen;
-        currentScreen = packagesScreen;
-    }
-
-    void loop() {
-        while(true) {
-            pollEvent();
-            currentScreen.loop();
-        }
+    void switchScreen() {
+        screenIndex++;
+        currentScreen = screens[screenIndex % 2];
+        writeln(screenIndex % 2);
     }
 
     void pollEvent() {
@@ -268,7 +274,7 @@ class VrtsTUI {
         }
     }
 
-       void parseAndDispatch(string event) {
+    void parseAndDispatch(string event) {
         string[] eventStrings = event.split;
 
         if(eventStrings[1] == "addedPackage") {
@@ -300,5 +306,13 @@ class VrtsTUI {
         if(!currentScreen.isSnapshot) {
             currentScreen.update();
         }
+    }
+
+    void processCommands(string command) {
+        if(command.split[0] == "exit") {
+            ipc.sendCommand("exit");
+        }
+        else 
+            ipc.sendCommand(command);
     }
 }

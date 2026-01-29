@@ -6,7 +6,7 @@ import tb2;
 import veritas.ipc.core;
 import model;
 
-class Screen : Widget {
+class Screen {
     VrtsIPC ipc;
     CoreModel model;
 
@@ -17,12 +17,11 @@ class Screen : Widget {
         this.model = model;
     }
 
-    void loop() {}
+    void iterate(tb_event* event) {}
     void update() {}
+    void render() {}
 
-    override void draw() {}
-
-    override bool processEvent(tb_event* event) {return false;}
+    void navMode(tb_event* event) {}
 }
 
 class Widget {
