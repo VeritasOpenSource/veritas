@@ -17,6 +17,7 @@ class VrtsIPC {
     VrtsIPCType type;
     enum SOCKET_PATH = "/tmp/veritas.sock";
     Socket socket;
+    bool socketConnected;
     string[] raws;
 
     bool exit;
@@ -28,7 +29,13 @@ class VrtsIPC {
 
     void connect() {
         socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
-        socket.connect(new UnixAddress(SOCKET_PATH));
+        try {
+            socket.connect(new UnixAddress(SOCKET_PATH));
+            socketConnected = true;
+        }
+        catch (SocketException e) {
+            e.writeln(e);
+        }
         socket.blocking = false;
     }
 
@@ -41,7 +48,7 @@ class VrtsIPC {
     }
 
     void pollEvent() {
-        while (true) {
+        while (true && socketConnected) {
             char[1024] tmp;
             auto n = socket.receive(tmp);
             if (n <= 0) break;
