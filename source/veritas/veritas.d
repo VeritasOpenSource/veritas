@@ -51,6 +51,7 @@ class Veritas {
             analyzer.analyzeSourceFilesByPackages(ecosystem.packages);
 
             ecosystem.relinkCalls();
+            ecosystem.collectCalls();
             ecosystem.buildRingsIerarchy();
 
             // ecosystem.processReports();

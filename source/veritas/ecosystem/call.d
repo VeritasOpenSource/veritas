@@ -27,12 +27,18 @@ private:
 
 public:
     ///
-    this(VrtsFunction source, string name) {
+    this(uint id, VrtsFunction source, string name) {
+        this.id = id;
         this.call.name = name;
+        this.source = source;
     }
 
     auto getId() {
         return id;
+    }
+
+    void setId(uint id) {
+        this.id = id;
     }
 
     ///

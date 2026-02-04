@@ -32,7 +32,9 @@ class VrtsEcosystem {
     }
 
     auto collectCalls() {
+        uint i;
         foreach(func; functions) {
+            func.calls.each!((a) => (a.setId(i++)));
             calls ~= func.calls;
         }
 
