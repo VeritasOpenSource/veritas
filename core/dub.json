@@ -9,6 +9,9 @@
 	"dependencies": {
 		"veritas" : {
 			"path": "../"
+		},
+		"model": {
+			"path": "../model/"
 		}
 	},
 	"targetType": "executable"
