@@ -29,7 +29,8 @@ private:
 
 public:
     ///
-    this(string path, string name) {
+    this(uint id, string path, string name) {
+        this.id = id;
         this.path = DirEntry(path);
         this.name = path.baseName;
     }

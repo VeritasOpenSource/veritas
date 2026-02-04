@@ -49,6 +49,14 @@ class VrtsEcosystem {
         pkg.scanForSourceFiles();
     }
 
+    void addPackage(string name, string path) {
+        auto pkg = new VrtsPackage(cast(uint)packages.length, name, path);
+        packages ~= pkg;
+
+        eventBus.publish(new EventProjectAdded(pkg.getPath));
+        pkg.scanForSourceFiles();
+    }
+
     ///
     void recollectData() {
         sourceFiles = packages.map!(a => a.getSourceFiles).join.array;

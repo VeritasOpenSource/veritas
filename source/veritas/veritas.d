@@ -73,7 +73,6 @@ class Veritas {
     }
 
     void addProject(string path) {
-        VrtsPackage pkg = new VrtsPackage(absolutePath(path), path);
-        ecosystem.addPackage(pkg);
+        ecosystem.addPackage(absolutePath(path), path);
     }
 }
