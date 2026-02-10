@@ -12,12 +12,14 @@ class VrtsReport {
     VrtsSourceLocation location;
     string description;
 
-    this() {
+    this(uint id) {
+        this.id = id;
         location = new VrtsSourceLocation();
     }
 }
 
 class VrtsReportsParser {
+    uint id;
     VrtsReport[] reports;
 
     VrtsReport[] parseResultFile(string path) {
@@ -33,7 +35,7 @@ class VrtsReportsParser {
             auto file = jsonReport["file"];
             //  writeln(file);
 
-            VrtsReport report = new VrtsReport();
+            VrtsReport report = new VrtsReport(id++);
 
             report.location.filename = file["original_path"]
                 .str()

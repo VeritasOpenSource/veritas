@@ -10,7 +10,6 @@
 		"-L./libtermbox2.a"
 	],
 	"dependencies": {
-
 		"ipc": {
 			"path": "../ipc/"
 		}

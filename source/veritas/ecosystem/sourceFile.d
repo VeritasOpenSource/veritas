@@ -28,6 +28,10 @@ public:
     auto getId() {
         return id;
     }
+
+    auto setId(uint id) {
+        this.id = id;
+    }
     ///
     string getPath() const {
         return fileEntry.name;

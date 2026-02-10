@@ -9,7 +9,7 @@ import std.algorithm;
 import std.array;
 
 import veritas.ipc.events;
-
+import veritas.model;
 class VrtsLogger : VrtsEventHandler {
     override void processEvent(VrtsEvent event) {
         writeln(event.getString());
@@ -77,9 +77,12 @@ void main(string[] args) {
     ClientState client;
 
 
-    // veritas.processCommand("add ../../veritas-test/bash");
-    // writeln("Added");
-    // veritas.processCommand("analyze");
+    veritas.processCommand("add ../../veritas-test/bash");
+    writeln("Added");
+    veritas.processCommand("analyze");
+
+    auto modl = veritas.ecosystem.buidModel;
+    writeln("Model is builded");
 
     // auto funcCount = veritas.ecosystem.functions.length;
     // // auto trigCount = veritas.ecosystem.collectTriggers;
@@ -91,50 +94,56 @@ void main(string[] args) {
     // writeln("Validity: ", funcCount / sum);
     // veritas.processCommand()
 
-    while (!client.exit) {
-        if (client.isDisconnected) {
-            try {
-                client.socket = server.accept();
-            }
-            catch(SocketException e) {}
+    // while (!client.exit) {
+    //     if (client.isDisconnected) {
+    //         try {
+    //             client.socket = server.accept();
+    //         }
+    //         catch(SocketException e) {}
 
-            if (!client.isDisconnected) {
-                client.socket.blocking = false;
-                clientBus.client = client.socket;
+    //         if (!client.isDisconnected) {
+    //             client.socket.blocking = false;
+    //             clientBus.client = client.socket;
 
-                clientBus.snapshot = true;
+    //             clientBus.snapshot = true;
 
-                clientBus.processEvent(new EventSnapshotStart());
+    //             auto model = veritas.ecosystem.buidModel();
+    //             writeln("Model builded");
+    //             auto sm = serialize(model);
+    //             writeln("Model is serialized");
+                
+    //             writeln(sm);
+    //             // clientBus.processEvent(new EventSnapshotStart());
 
-                foreach (i, pkg; veritas.ecosystem.packages) {     
-                    clientBus.processEvent(new EventProjectAdded(pkg.getPath.baseName));
-                }
+    //             // foreach (i, pkg; veritas.ecosystem.packages) {     
+    //             //     clientBus.processEvent(new EventProjectAdded(pkg.getPath.baseName));
+    //             // }
 
-                foreach (i, ring; veritas.ecosystem.rings) { 
-                    clientBus.processEvent(new EventAddRing(ring.level));
-                }
+    //             // foreach (i, ring; veritas.ecosystem.rings) { 
+    //             //     clientBus.processEvent(new EventAddRing(ring.level));
+    //             // }
 
-                foreach (ring; veritas.ecosystem.rings) {
-                    foreach(func; ring.functions) {
-                        auto e = new EventSendFunc(func.name, 0, ring.level);
-                        clientBus.processEvent(new EventSendFunc(func.name, 0, ring.level));
-                    }
-                }
+    //             // foreach (ring; veritas.ecosystem.rings) {
+    //             //     foreach(func; ring.functions) {
+    //             //         auto e = new EventSendFunc(func.name, 0, ring.level);
+    //             //         clientBus.processEvent(new EventSendFunc(func.name, 0, ring.level));
+    //             //     }
+    //             // }
 
-                clientBus.processEvent(new EventSnapshotEnd());
+    //             // clientBus.processEvent(new EventSnapshotEnd());
 
-                clientBus.snapshot = false;
-                clientBus.flush();
-            }
-        }
+    //             clientBus.snapshot = false;
+    //             clientBus.flush();
+    //         }
+    //     }
 
-        if (!client.isDisconnected) {
-            if(handleClient(veritas, client)) {
-                client.disconnect();
-                clientBus.client = null;
-            }
-        }
-    }
+    //     if (!client.isDisconnected) {
+    //         if(handleClient(veritas, client)) {
+    //             client.disconnect();
+    //             clientBus.client = null;
+    //         }
+    //     }
+    // }
 }
 
 bool handleClient(Veritas veritas, ref ClientState client) {

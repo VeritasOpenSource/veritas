@@ -59,7 +59,11 @@ class VrtsEcosystem {
 
     ///
     void recollectData() {
+        int i = 0;
+
         sourceFiles = packages.map!(a => a.getSourceFiles).join.array;
+
+        sourceFiles.each!((ref a) => a.setId(i++));
     }
 
     ///
@@ -84,9 +88,10 @@ class VrtsEcosystem {
         VrtsFunction def;
 
         if(func.empty) { 
-            def = new VrtsFunction(name); 
+            def = new VrtsFunction(cast(uint) functions.length, name); 
             def.file = sourceFile;
             functions ~= def; 
+            sourceFile.getPackage().addFunction(def);
         }
         else {
             def = func.front();
@@ -254,7 +259,7 @@ class VrtsEcosystem {
         import std.stdio;
         foreach(ring; rings) {
             foreach(func; ring.functions) {
-                func.collectTriggers();
+                func.collectTriggers(cast(uint)triggers.length);
 
                 if(func.reportsCount > 0)
                     triggers ~= func.triggers[0];
@@ -276,7 +281,7 @@ class VrtsEcosystem {
             auto modelPackage = VrtsModelPackage();
             modelPackage.id = pkg.getId();
             modelPackage.name = pkg.getName;
-            modelPackage.path = DirEntry(pkg.getPath);
+            modelPackage.path = pkg.getPath;
 
             foreach(func; pkg.getFunctions)
                 modelPackage.functionsIds ~= func.id;
@@ -313,24 +318,28 @@ class VrtsEcosystem {
             modelFunc.name = func.name;
             modelFunc.sourceFileId = func.file.getId;
 
-            modelFunc.declarationLocation = VrtsModelSourceLocation(
-                func.declarationLocation.filename,
-                func.declarationLocation.line,
-                func.declarationLocation.column
-            );
-            modelFunc.definitionLocation = 
-                VrtsModelSourceLocationRange(
-                    VrtsModelSourceLocation(
-                        func.definitionLocation.start.filename,
-                        func.definitionLocation.start.line,
-                        func.definitionLocation.start.column
-                    ),
-                    VrtsModelSourceLocation(
-                        func.definitionLocation.end.filename,
-                        func.definitionLocation.end.line,
-                        func.definitionLocation.end.column
-                    )
+            if(func.declarationLocation !is null) {
+                modelFunc.declarationLocation = VrtsModelSourceLocation(
+                    func.declarationLocation.filename,
+                    func.declarationLocation.line,
+                    func.declarationLocation.column
                 );
+            }
+            if(func.definitionLocation !is null) {
+                modelFunc.definitionLocation = 
+                    VrtsModelSourceLocationRange(
+                        VrtsModelSourceLocation(
+                            func.definitionLocation.start.filename,
+                            func.definitionLocation.start.line,
+                            func.definitionLocation.start.column
+                        ),
+                        VrtsModelSourceLocation(
+                            func.definitionLocation.end.filename,
+                            func.definitionLocation.end.line,
+                            func.definitionLocation.end.column
+                        )
+                    );
+            }
 
             foreach(report; func.reports)
                 modelFunc.reportsIds ~= report.id;
@@ -350,7 +359,7 @@ class VrtsEcosystem {
             modelCall.isDefined = call.isDefined;
             modelCall.sourceId = call.getSourceFunction.id;
             // modelCall.path = call.getFileEntry;
-            if(call.isDefined) {
+            if(!call.isDefined) {
                 modelCall.call.name = call.getCallName; 
             }
             else {

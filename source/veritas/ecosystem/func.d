@@ -22,7 +22,8 @@ class VrtsFunction {
     VrtsFunctionCall[] calls;
     VrtsFunctionCall[] calledBy;
 
-    this(string name) {
+    this(uint id, string name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -43,9 +44,9 @@ class VrtsFunction {
         return calls.all!(a => !a.isDefined);
     }
 
-    void collectTriggers() {
+    void collectTriggers(uint firstEmptyId) {
         import std.stdio;
-        auto ownTrigger = new Triggering(this, cast(int)reports.length);
+        auto ownTrigger = new Triggering(firstEmptyId++, this, cast(int)reports.length);
 
         if(reports.length > 0) {
             triggers ~= ownTrigger;
