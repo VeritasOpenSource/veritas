@@ -1,5 +1,7 @@
 import veritas.veritas;
 import veritas.ecosystem.ring;
+import veritas.ecosystem.ecosystem;
+
 
 import std.stdio;
 import std.path;
@@ -81,8 +83,31 @@ void main(string[] args) {
     writeln("Added");
     veritas.processCommand("analyze");
 
-    auto modl = veritas.ecosystem.buidModel;
+    auto model = veritas.ecosystem.buildModel;
     writeln("Model is builded");
+
+    auto ser = serialize(model);
+    // writeln(ser);
+
+    // writeln(deser.functions.length);
+
+    File file = File("db.vrtsdb", "wb");
+    file.rawWrite(ser);
+    file.flush();
+    file.close();
+
+    File fileL = File("db.vrtsdb", "rb");
+    ubyte[] buffer;
+
+    size_t size = fileL.size();
+    writeln(size);
+    buffer = fileL.rawRead(new ubyte[size]);
+    auto deser = deserialize(buffer);
+    auto sysRes = VrtsEcosystem.buildFromModel(deser);
+    auto ser2 = sysRes.buildModel.serialize;
+
+    assert(ser2 == ser);
+    // writeln(model.functions.length);
 
     // auto funcCount = veritas.ecosystem.functions.length;
     // // auto trigCount = veritas.ecosystem.collectTriggers;

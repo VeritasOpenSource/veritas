@@ -9,6 +9,7 @@ import std.algorithm;
 import std.file;
 
 import veritas.ecosystem;
+import veritas.model;
 /** 
  * Class for package representation  
  */
@@ -31,7 +32,7 @@ public:
     ///
     this(uint id, string path, string name) {
         this.id = id;
-        this.path = DirEntry(path);
+        this.path = DirEntry(path.buildNormalizedPath);
         this.name = path.baseName;
     }
 
@@ -75,5 +76,10 @@ public:
 
     auto getFunctions() {
         return functions;
+    }
+
+    static VrtsPackage buildFromModel(VrtsModelPackage pkg_) {        
+        auto pkg = new VrtsPackage(pkg_.id, pkg_.path, pkg_.name);
+        return pkg;
     }
 }

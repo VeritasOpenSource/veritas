@@ -274,7 +274,7 @@ class VrtsEcosystem {
         return trig.length;
     }
 
-    auto buidModel() {
+    auto buildModel() {
         VrtsModel model;
 
         foreach(pkg; packages) {
@@ -360,10 +360,10 @@ class VrtsEcosystem {
             modelCall.sourceId = call.getSourceFunction.id;
             // modelCall.path = call.getFileEntry;
             if(!call.isDefined) {
-                modelCall.call.name = call.getCallName; 
+                modelCall.name = call.getCallName; 
             }
             else {
-                modelCall.call.targetId = call.getTargetFunction.id;
+                modelCall.targetId = call.getTargetFunction.id;
             }
             // modelCall.call = call.call;
 
@@ -398,6 +398,153 @@ class VrtsEcosystem {
 
         return model;
     }
+
+    static VrtsEcosystem buildFromModel(VrtsModel model) {
+        auto result = new VrtsEcosystem();
+
+        VrtsPackage[uint]      packageById;
+        VrtsSourceFile[uint]   fileById;
+        VrtsFunction[uint]     functionById;
+        VrtsFunctionCall[uint] callById;
+        VrtsReport[uint]       reportById;
+        Triggering[uint]       triggerById;
+
+        foreach (pkgModel; model.packages) {
+            auto pkg = VrtsPackage.buildFromModel(pkgModel);
+            result.packages ~= pkg;
+            packageById[pkg.getId()] = pkg;
+        }
+
+        foreach (fileModel; model.files) {
+            auto pkg = packageById[fileModel.packageId];
+
+            auto entry = DirEntry(fileModel.path);
+            auto file = new VrtsSourceFile(pkg, entry);
+            file.setId(fileModel.id);
+
+            pkg.addSourceFile(file);
+            result.sourceFiles ~= file;
+            fileById[file.getId()] = file;
+        }
+
+        foreach (funcModel; model.functions) {
+            auto file = fileById[funcModel.sourceFileId];
+
+            auto func = new VrtsFunction(funcModel.id, funcModel.name);
+            func.file = file;
+            file.getPackage().addFunction(func);
+
+            if (funcModel.declarationLocation.filename.length > 0) {
+                func.declarationLocation = new VrtsSourceLocation(
+                    funcModel.declarationLocation.filename,
+                    funcModel.declarationLocation.line,
+                    funcModel.declarationLocation.column
+                );
+            }
+
+            if (funcModel.definitionLocation.start.filename.length > 0) {
+                func.definitionLocation = new VrtsSourceLocationRange(
+                    funcModel.definitionLocation.start.filename,
+                    funcModel.definitionLocation.start.line,
+                    funcModel.definitionLocation.start.column,
+                    funcModel.definitionLocation.end.line,
+                    funcModel.definitionLocation.end.column
+                );
+            }
+
+            result.functions ~= func;
+            functionById[func.id] = func;
+        }
+
+        foreach (reportModel; model.reports) {
+            auto report = new VrtsReport(reportModel.id);
+
+            report.location = new VrtsSourceLocation(
+                reportModel.location.filename,
+                reportModel.location.line,
+                reportModel.location.column
+            );
+
+            report.description = reportModel.description;
+
+            result.reports ~= report;
+            reportById[report.id] = report;
+        }
+
+        foreach (callModel; model.calls) {
+            auto sourceFunc = functionById[callModel.sourceId];
+
+            auto call = new VrtsFunctionCall(callModel.id, sourceFunc, "");
+            call.isDefined = callModel.isDefined;
+
+            if (!callModel.isDefined)
+                call.setCallName(callModel.name);
+
+            result.calls ~= call;
+            callById[call.getId()] = call;
+        }
+
+        foreach (funcModel; model.functions) {
+            auto func = functionById[funcModel.id];
+
+            foreach (callId; funcModel.callsIds) {
+                auto call = callById[callId];
+                func.calls ~= call;
+            }
+
+        }
+
+        foreach (callModel; model.calls) {
+            if (!callModel.isDefined)
+                continue;
+
+            auto call = callById[callModel.id];
+            auto target = functionById[callModel.targetId];
+
+            call.defineTarget(target);
+            target.calledBy ~= call;
+        }
+
+        foreach (trModel; model.triggerings) {
+            auto func = functionById[trModel.functionId];
+
+            auto trigger = new Triggering(trModel.id, func, trModel.count);
+
+            result.triggers ~= trigger;
+            triggerById[trigger.id] = trigger;
+        }
+
+        foreach (funcModel; model.functions) {
+            auto func = functionById[funcModel.id];
+
+            foreach (triggerId; funcModel.triggersId) {
+                auto trigger = triggerById[triggerId];
+                func.triggers ~= trigger;
+            }
+        }
+
+        foreach (funcModel; model.functions) {
+            auto func = functionById[funcModel.id];
+
+            foreach (reportId; funcModel.reportsIds) {
+                func.reports ~= reportById[reportId];
+            }
+        }
+
+        foreach (ringModel; model.rings) {
+            auto ring = new VrtsRing();
+            ring.level = ringModel.id;
+
+            foreach (funcId; ringModel.functionsIds) {
+                ring.functions ~= functionById[funcId];
+            }
+
+            result.rings ~= ring;
+        }
+
+        return result;
+    }
+
 }
 
 

@@ -2,6 +2,10 @@
 	"authors": [
 		"Roman Vlasov aka Doctor"
 	],
+	"subPackages": [
+		"./ipc/",
+		"./model/"
+	],
 	"license": "MIT",
 	"dflags": [
 		"-L-lclang"
@@ -11,11 +15,7 @@
 	"-ddoxTool": "scod",
 	"description": " Verification of Open‑source Reliability, Integrity, and Technical Assurance System",
 	"dependencies": {
-		":ipc" : "*",
-		":model" : "*"
-	},
-	"subPackages": [
-		"./ipc/",
-		"./model/"
-	]
+		"veritas:ipc": "*",
+		"veritas:model": "*"
+	}
 }

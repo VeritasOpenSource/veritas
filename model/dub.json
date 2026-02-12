@@ -1,9 +1,12 @@
 {
 	"description": "Model for Veritas",
-	"license": "MIT",
+	"dependencies": {
+		"mir-ion": "~>2.3.5"
+	},
 	"authors": [
 		"Roman Vlasov aka Doctor"
 	],
 	"copyright": "Copyright © 2025, Roman Vlasov aka Doctor",
+	"license": "MIT",
 	"name": "model"
 }

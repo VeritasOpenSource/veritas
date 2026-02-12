@@ -42,7 +42,7 @@ public:
     }
 
     ///
-    bool isDefined() => defined;
+    ref bool isDefined() => defined;
     ///
     void defineTarget(VrtsFunction func) {
         defined = true;
@@ -55,6 +55,10 @@ public:
             return target.name;
 
         return call.name;
+    }
+
+    void setCallName(string name) {
+        call.name = name;
     }
 
     ///

@@ -6,6 +6,10 @@ import std.concurrency;
 import std.string;
 import std.conv;
 
+import mir.ser.ion: serializeIon;
+import mir.deser.ion: deserializeIon;
+
+
 struct VrtsModelPackage {
     ///Internal id
     uint id;
@@ -78,13 +82,8 @@ struct VrtsModelCall {
 
     bool isDefined;
     uint sourceId;
-
-    union CallImpl {
-        string name;
-        uint targetId;
-    }
-
-    CallImpl call;
+    string name;
+    uint targetId;
 }
 
 struct VrtsModelRing {
@@ -103,104 +102,10 @@ struct VrtsModel {
     VrtsModelReport[]   reports;
 }
 
-string serialize(VrtsModel model) {
-    string result;
-
-    string[] entitiesString;
-    entitiesString ~= "S M start|";
-
-    foreach(pkg; model.packages) {
-
-    }
-
-    entitiesString ~= "S M end|";
-
-    return result;
+auto serialize(VrtsModel model) {
+    return serializeIon(model);
 }
 
-string[] serializePackage(VrtsModelPackage pkg) {
-    string[] result;
-    result ~= "S P";
-    result ~= pkg.id.to!string;
-    result ~= pkg.name;
-    result ~= pkg.path;
-
-    result ~= pkg.functionsIds.length.to!string;
-
-    foreach(id; 0..pkg.functionsIds.length) {
-        result ~= id.to!string;
-    }
-
-    result ~= pkg.sourceFilesIds.length.to!string;
-
-    foreach(id; 0..pkg.sourceFilesIds.length) {
-        result ~= id.to!string;
-    }
-
-    // result ~= " END ";
-
-    // result ~= "|";
-
-    return result;
-}
-
-string serializeFunc(VrtsModelFunction func) {
-    string result;
-    result ~= "S P " ~
-        func.id.to!string~
-        func.name ~ " " ~
-        func.sourceFileId.to!string;
-
-    // result ~= " FIDs ";
-
-    // foreach(id; func.functionsIds) {
-    //     result ~= id.to!string;
-    // }
-
-    // result ~= " END ";
-
-    // result ~= " SFIDs ";
-
-    // foreach(id; func.sourceFilesIds) {
-    //     result ~= id.to!string;
-    // }
-
-    // result ~= " END ";
-
-    // result ~= "|";
-
-    return result;
-}
-
-auto serializeSourceLocation(VrtsModelSourceLocation loc) {
-    string[] result;
-
-    result ~= "LOC";
-    result ~= loc.filename;
-    result ~= loc.line.to!string;
-    result ~= loc.column.to!string;
-    
-    return result;
-}
-
-auto serializeSourceLocationRange(VrtsModelSourceLocationRange locr) {
-    string[] result;
-
-    result ~= locr.start.serializeSourceLocation;
-    result ~= locr.end.serializeSourceLocation;
-    
-
-    return result;
-}
-
-import std.stdio;
-
-unittest {
-    // VrtsModelSourceLocation loc1 = VrtsModelSourceLocation("file", 100, 5);
-    // writeln(loc1.serializeSourceLocation);
-    // VrtsModelSourceLocation loc2 = VrtsModelSourceLocation("file2", 123, 77);
-    // writeln(loc1.serializeSourceLocation);
-
-    // auto range = VrtsModelSourceLocationRange(loc1, loc2);
-    // writeln(range.serializeSourceLocationRange);
+auto deserialize(inout ubyte[] bytes) {
+    return deserializeIon!VrtsModel(bytes);
 }

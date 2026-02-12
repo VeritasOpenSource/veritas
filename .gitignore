@@ -9,3 +9,4 @@ veritas-test
 tui/tui
 ./libveritas.a
 tui/tui-test-library
+core/db.vrtsdb
