@@ -63,7 +63,6 @@ void main(string[] args) {
     eventBus.events ~= new VrtsLogger;
     
     auto clientBus = new ClientBus;
-    // eventBus.events ~= clientBus;
 
     auto server = new Socket(AddressFamily.UNIX, SocketType.STREAM);
     server.blocking = false;

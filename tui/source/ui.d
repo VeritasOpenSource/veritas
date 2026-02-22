@@ -9,11 +9,9 @@ import veritas.ipc;
 
 import tb2;
 import std.path;
-// import core.cpuid;
 import model;
 import widgets;
 import core.sys.posix.libgen;
-// import model;
 
 enum Mode {
     Command,
@@ -40,7 +38,6 @@ class UIState {
     }
 }
 class PackageScreen : Screen {
-    VrtsIPC ipc;
 
     Panel packagesPanel;
     Panel ringsPanel;
@@ -49,10 +46,6 @@ class PackageScreen : Screen {
     List packageList;
     List ringsList;
     List funcList;
-
-    CoreModel model;
-
-    bool isSnapshot;
 
     UIState state;
 
@@ -93,7 +86,6 @@ class PackageScreen : Screen {
 
 
         mode = Mode.Navigation;
-        model = new CoreModel;
     }
 
     void switchRingContext(int i) {
@@ -173,6 +165,8 @@ class ReportsScreen : Screen {
 }
 
 class VrtsTUI {
+    bool isSnapshot;
+
     VrtsIPC ipc;
 
     PackageScreen packagesScreen;
@@ -204,6 +198,7 @@ class VrtsTUI {
 
     void loop() {
         while(true) {
+            pollEvent();
             tb_event ev;
             tb_peek_event(&ev, 10);
 
@@ -263,7 +258,6 @@ class VrtsTUI {
     void switchScreen() {
         screenIndex++;
         currentScreen = screens[screenIndex % 2];
-        writeln(screenIndex % 2);
     }
 
     void pollEvent() {
