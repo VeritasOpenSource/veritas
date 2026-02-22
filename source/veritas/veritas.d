@@ -27,9 +27,16 @@ class Veritas {
     VrtsSourceAnalyzer analyzer;
     VrtsReportsParser parser;
 
-    this(VrtsEventBus bus) {
+    this(VrtsEventBus bus, string[] args) {
         this.eventsBus = bus;
-        ecosystem = new VrtsEcosystem;
+
+        if(args.length > 1) {
+            ecosystem = VrtsEcosystem.loadLocalDatabase(args[1]);
+        }
+        else {
+            ecosystem = new VrtsEcosystem;
+        }
+        
         ecosystem.setEventBus(eventsBus);
         analyzer = new VrtsSourceAnalyzer(ecosystem);
         analyzer.setEventsBus(eventsBus);

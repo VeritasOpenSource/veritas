@@ -5,6 +5,7 @@ import std.algorithm;
 import std.array;
 import std.path;
 import std.file;
+import std.stdio;
 
 import veritas.reportparser;
 import veritas.ecosystem;
@@ -253,6 +254,17 @@ class VrtsEcosystem {
 
     auto getPackages() {
         return packages;
+    }
+
+    static auto loadLocalDatabase(string filepath) {
+        File fileL = File(filepath, "rb");
+        ubyte[] buffer;
+
+        size_t size = fileL.size();
+        buffer = fileL.rawRead(new ubyte[size]);
+        auto deser = deserialize(buffer);
+
+        return VrtsEcosystem.buildFromModel(deser); 
     }
 
     auto collectTriggers() {
