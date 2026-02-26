@@ -8,7 +8,7 @@ import std.conv;
 
 import mir.ser.ion: serializeIon;
 import mir.deser.ion: deserializeIon;
-
+import std.algorithm;
 
 struct VrtsModelPackage {
     ///Internal id
@@ -100,6 +100,12 @@ struct VrtsModel {
     VrtsModelTriggering[] triggerings;
     VrtsModelSourceFile[] files;
     VrtsModelReport[]   reports;
+
+    auto getById(alias source)(uint[] ids) {
+        mixin( 
+            "return "  ~ source ~ ".filter!(a => ids.canFind(a.id));" 
+        );
+    }
 }
 
 auto serialize(VrtsModel model) {
