@@ -24,30 +24,63 @@ class UIState {
     Panel current;
     int focusedPanel = 0;
     int selectedPackage = -1;
-    int selectedRing = -1;
-    int selectedFunction = -1;
 
     void setPack(int i) {
         selectedPackage = i;
     }
+}
 
-    void setRing(int i) {
-        selectedRing = i;
+class PackageInfoPanel : Panel {
+    string packageName;
+    uint functionsCount;
+    uint calls;
+
+    this(uint x, uint y, uint width, uint height, string name) {
+        super(x, y, width, height, name);
     }
 
-    void setFunc(int i) {
-        selectedFunction = i;
+    void changeContext(VrtsModel* model, VrtsModelPackage pkg) {
+        packageName = pkg.name;
+        functionsCount = cast(uint)pkg.functionsIds.length;
+        auto functions = model.getById!("functions")(pkg.functionsIds);
+        
+        calls = 0;
+        foreach(func; functions) {
+            calls += func.callsIds.length;
+        }
+    }
+
+    override void draw() {
+        if(childs.length > 0) {
+            childs.each!(a => a.draw());
+        }
+
+        colorText = TB_WHITE;
+        colorBack = TB_BLACK;
+
+        if(focused) {
+            colorText = TB_GREEN;
+        }   
+        drawText(x + 1, y + 1, "METADATA");
+        drawText(x + 1, y + 2, "    Package name: " ~ packageName);
+        drawText(x + 1, y + 3, "    Functions count: " ~ functionsCount.to!string);
+        drawText(x + 1, y + 4, "    Internal calls count: " ~ calls.to!string);
+
+        drawBox();
+    } 
+
+    void toMainContext() {
+        packageName = "";
     }
 }
+
 class PackageScreen : Screen {
 
-    Panel packagesPanel;
-    Panel ringsPanel;
-    Panel funcPanel;
     Panel[] panels;
+    Panel packagesPanel;
+    PackageInfoPanel packageInfoPanel;
+
     List packageList;
-    List ringsList;
-    List funcList;
 
     UIState state;
 
@@ -58,13 +91,10 @@ class PackageScreen : Screen {
 
         state = new UIState;
 
-        packagesPanel = new Panel(0, 0, 20, 40, "PACKAGES");
-        ringsPanel = new Panel(20, 0, 20, 40, "RINGS");
-        funcPanel = new Panel(40, 0, 20, 40, "FUNCTIONS");
+        packagesPanel = new Panel(0, 0, 20, 20, "PACKAGES");
+        packageInfoPanel = new PackageInfoPanel(20, 0, 60, 20, "PACKAGE INFO");
 
         panels ~= packagesPanel;
-        panels ~= ringsPanel;
-        panels ~= funcPanel;
 
         state.current = panels[0];
         panels[0].focused = true;
@@ -75,95 +105,42 @@ class PackageScreen : Screen {
         packageList.addItem("[all]", -1);
         packageList.onFocus = &state.setPack;
 
-        ringsList = new List;
-        ringsPanel.addChild(ringsList);
-        ringsList.fillParent;
-        ringsList.addItem("[all]", -1);
-        ringsList.onFocus = &switchRingContext;
-
-        funcList = new List;
-        funcPanel.addChild(funcList);
-        funcList.fillParent;
-        funcList.onFocus = &state.setFunc;
-
-
         mode = Mode.Navigation;
-    }
-
-    void switchRingContext(int i) {
-        state.setRing(i);
-
-        updateFuncs();
     }
 
     ~this() {
         tb_shutdown();
     }
 
-    void updateFuncs() {
-        funcList.items.length = 0;
-
-        auto funcs = model.getFunctionsByRing(state.selectedRing);
-        foreach(func; funcs) {
-            funcList.addItem(func.name ~ " "~ func.ringId.to!string, 0);
+    void updateInfoPanel() {
+        if(state.selectedPackage != -1) {
+            import std.stdio;
+            auto pkg = model.packages.find!(a => a.id == state.selectedPackage).front;
+            packageInfoPanel.changeContext(model, pkg);
         }
+        else 
+            packageInfoPanel.toMainContext();
     }
 
     override void update() {
         packageList.items.length = 1;
-        ringsList.items.length = 1;
 
         foreach(pkg; model.packages) {
-            packageList.addItem(pkg.name, pkg.localId);
+            packageList.addItem(pkg.name, pkg.id);
         }
 
-        foreach(ring; model.rings) {
-            ringsList.addItem(ring.veritasId.to!string, ring.localId);
-        }
-
-        updateFuncs();
+        updateInfoPanel();
     }
 
     override void render() {
         packagesPanel.draw();
-        ringsPanel.draw();
-        funcPanel.draw();
+        packageInfoPanel.draw();
     }
 
     override void navMode(tb_event* event) {
-        if(event.key == TB_KEY_ARROW_RIGHT) {
-            if(state.focusedPanel < panels.length - 1){
-                state.current.switchFocus();
-                state.focusedPanel++;
-                state.current = panels[state.focusedPanel];
-                state.current.switchFocus();
-            }
-        }
-
-        if(event.key == TB_KEY_ARROW_LEFT) {
-            if(state.focusedPanel > 0){
-                state.current.switchFocus();
-                state.focusedPanel--;
-                state.current = panels[state.focusedPanel];
-                state.current.switchFocus();
-            }
-        }
-
         state.current.handleEvent(event);
+        update();
     }
-
-    // override void navMode(ev);
-}
-
-class ReportsScreen : Screen {
-    this(VrtsIPC ipc, CoreModel model) {
-        super(ipc, model);
-    }
-    
-    override void navMode(tb_event* event) {}
-
-    override void render() {}
-
 }
 
 class VrtsTUI {
@@ -172,7 +149,6 @@ class VrtsTUI {
     VrtsIPC ipc;
 
     PackageScreen packagesScreen;
-    ReportsScreen reportsScreen;
 
     VrtsModel model;
     Mode mode;
