@@ -92,7 +92,6 @@ struct VrtsModelRing {
 }
 
 struct VrtsModel {
-    // string homePath;
     VrtsModelPackage[] packages;
     VrtsModelFunction[] functions;
     VrtsModelRing[] rings;
@@ -101,10 +100,34 @@ struct VrtsModel {
     VrtsModelSourceFile[] files;
     VrtsModelReport[]   reports;
 
+    struct Range(T) {
+        T[] array;
+        uint[] ids;
+
+        this(T[] array, uint[] ids) {
+            this.ids = ids;
+            this.array = array;
+        }
+
+        void popFront() {
+            ids = ids[1..$];
+        }
+
+        bool empty() {
+            return ids.length == 0;
+        }
+
+        T front() {
+            return array[ids[0]];
+        }
+
+    }
+
     auto getById(alias source)(uint[] ids) {
-        mixin( 
-            "return "  ~ source ~ ".filter!(a => ids.canFind(a.id));" 
-        );
+        auto array = mixin(source);
+        alias ET = typeof(array[0]);
+        auto range = Range!ET(array, ids);
+        return range;
     }
 }
 

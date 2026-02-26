@@ -44,19 +44,16 @@ class PackageInfoPanel : Panel {
     void changeContext(VrtsModel* model, VrtsModelPackage pkg) {
         packageName = pkg.name;
         functionsCount = cast(uint)pkg.functionsIds.length;
-        auto functions = model.getById!("functions")(pkg.functionsIds);
-        
-        calls = 0;
-        foreach(func; functions) {
-            calls += func.callsIds.length;
-        }
 
-        // auto modelCalls = model.calls;
+        auto functions = model.getById!("functions")(pkg.functionsIds);
+
+        calls = 0;
+
+        functions.each!(a => calls += a.callsIds.length);
+
         eCalls = 0;
         auto fcids = functions.map!(a => a.callsIds).joiner.array;
         auto fids = functions.map!(a => a.id).array;
-
-
         auto pCalls = model.getById!"calls"(fcids);
 
         foreach(call; pCalls) {
