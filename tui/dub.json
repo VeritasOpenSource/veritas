@@ -12,6 +12,9 @@
 	"dependencies": {
 		"ipc": {
 			"path": "../ipc/"
+		},
+		"model": {
+			"path": "../model/"
 		}
 	}
 }

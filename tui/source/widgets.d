@@ -4,15 +4,15 @@ import std.algorithm;
 
 import tb2;
 import veritas.ipc.core;
-import model;
+import veritas.model;
 
 class Screen {
     VrtsIPC ipc;
-    CoreModel model;
+    VrtsModel* model;
 
     bool isSnapshot;
 
-    this(VrtsIPC ipc, CoreModel model) {
+    this(VrtsIPC ipc, VrtsModel* model) {
         this.ipc = ipc;
         this.model = model;
     }

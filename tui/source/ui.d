@@ -9,7 +9,7 @@ import veritas.ipc;
 
 import tb2;
 import std.path;
-import model;
+import veritas.model;
 import widgets;
 import core.sys.posix.libgen;
 
@@ -51,7 +51,7 @@ class PackageScreen : Screen {
 
     Mode mode;
 
-    this(VrtsIPC ipc, CoreModel model) {
+    this(VrtsIPC ipc, VrtsModel* model) {
         super(ipc, model);
 
         state = new UIState;
