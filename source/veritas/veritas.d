@@ -20,6 +20,7 @@ import veritas.ecosystem.sourceAnalyzer;
 import veritas.ecosystem.journal;
 import std.socket;
 import veritas.ipc.events;
+import mir.ser.ion;
 
 class Veritas {
     VrtsEventBus eventsBus;
@@ -61,22 +62,20 @@ class Veritas {
             ecosystem.collectCalls();
             ecosystem.buildRingsIerarchy();
 
-            // ecosystem.processReports();
-
             auto packages = ecosystem.getPackages();
             auto reports = parser.parseResultFile("../../veritas-test/bash/res.json");
-            // writeln("Parsed");
             ecosystem.processReports(reports);
-
-            // foreach(report; reports) {
-            //     writeln(report.location);
-            //     writeln(report.description);
-            // }
 
             ecosystem.collectTriggers();
         }
 
-
+        if(commands[0] == "save database") {
+            auto model = ecosystem.buildModel;
+            auto serial = serializeIon(model);
+            File file = File("db.vrtsdb", "rb");
+            file.rawWrite(serial);
+            file.close();
+        }
     }
 
     void addProject(string path) {
