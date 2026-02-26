@@ -4,6 +4,7 @@ import std.algorithm;
 import std.array;
 import std.stdio;
 import std.conv;
+import std.range;
 
 import veritas.ipc;
 
@@ -34,6 +35,7 @@ class PackageInfoPanel : Panel {
     string packageName;
     uint functionsCount;
     uint calls;
+    uint eCalls;
 
     this(uint x, uint y, uint width, uint height, string name) {
         super(x, y, width, height, name);
@@ -48,6 +50,20 @@ class PackageInfoPanel : Panel {
         foreach(func; functions) {
             calls += func.callsIds.length;
         }
+
+        // auto modelCalls = model.calls;
+        eCalls = 0;
+        auto fcids = functions.map!(a => a.callsIds).joiner.array;
+        auto fids = functions.map!(a => a.id).array;
+
+
+        auto pCalls = model.getById!"calls"(fcids);
+
+        foreach(call; pCalls) {
+            if(!fids.canFind(call.targetId)) {
+                eCalls++;
+            }
+        }
     }
 
     override void draw() {
@@ -58,13 +74,15 @@ class PackageInfoPanel : Panel {
         colorText = TB_WHITE;
         colorBack = TB_BLACK;
 
-        if(focused) {
-            colorText = TB_GREEN;
-        }   
+        // if(focused) {
+        //     colorText = TB_GREEN;
+        // }   
         drawText(x + 1, y + 1, "METADATA");
         drawText(x + 1, y + 2, "    Package name: " ~ packageName);
         drawText(x + 1, y + 3, "    Functions count: " ~ functionsCount.to!string);
         drawText(x + 1, y + 4, "    Internal calls count: " ~ calls.to!string);
+        drawText(x + 1, y + 5, "    External calls count: " ~ eCalls.to!string);
+
 
         drawBox();
     } 
