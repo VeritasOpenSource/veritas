@@ -29,7 +29,11 @@ enum EventType {
 
 
 class EventSnapshotStart : VrtsEvent {
-    // string name;
+    char[] encoded;
+
+    this(char[] encoded) {
+        this.encoded = encoded;
+    }
 
     override EventType getType() {
         return EventType.ProjectAdded;
@@ -38,29 +42,34 @@ class EventSnapshotStart : VrtsEvent {
     string getString() {return "";}
 
     string compileString() {
-        return "E snapshotStart";
+        return "E snapshotStart " ~ encoded.to!string;
     }
 }
 
-class EventSnapshotEnd : VrtsEvent {
-    // string name;
-
-    override EventType getType() {
-        return EventType.ProjectAdded;
-    }
-
-    string getString() {return "";}
-
-    string compileString() {
-        return "E snapshotEnd";
-    }
-}
 interface VrtsEvent {
     EventType getType();
 
     string getString();
 
     string compileString();
+}
+
+class EventTransModel : VrtsEvent {
+    this(ubyte[] buff) {
+        this.buff = buff;
+    }
+
+    override EventType getType() {
+        return EventType.ProjectAdded;
+    } 
+
+    override string getString() {
+        return "Model trasns:";
+    }
+
+    override string compileString() {
+        return cast(immutable(char[]))buff;
+    }
 }
 
 class EventProjectAdded : VrtsEvent {
@@ -162,17 +171,14 @@ class EventFuncToRing : VrtsEvent {
 }
 
 class EventSendFunc : VrtsEvent {
-    // uint ringId;
     string funcName;
     uint localId;
-    // string packageName;
     uint ringId;
 
     this(string funcName, uint id, uint ringId) {
         this.ringId = ringId;
         this.localId = id;
         this.funcName = funcName;
-        // this.packageName = packageName;
     }
 
     override EventType getType() {

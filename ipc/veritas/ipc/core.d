@@ -47,6 +47,47 @@ class VrtsIPC {
         socket.send(command);
     }
 
+    void sendRaw(const(ubyte)[] data) {
+        uint len = cast(uint)data.length;
+        sendAll((cast(ubyte*)&len)[0 .. uint.sizeof]);
+        sendAll(data);
+    }
+
+    void sendAll(const(ubyte)[] data) {
+        size_t sent = 0;
+
+        while (sent < data.length) {
+            auto n = socket.send(data[sent .. $]);
+            if (n <= 0)
+                throw new Exception("Socket send failed");
+
+            sent += n;
+        }
+    }
+
+    ubyte[] receiveRaw() {
+        ubyte[4] lenBuf;
+        receiveAll(lenBuf[]);
+
+        uint beLen = *cast(uint*)lenBuf.ptr;
+        auto buffer = new ubyte[beLen];
+        receiveAll(buffer);
+
+        return buffer;
+    }
+
+    void receiveAll(ubyte[] buffer) {
+        size_t received = 0;
+
+        while (received < buffer.length) {
+            auto n = socket.receive(buffer[received .. $]);
+            if (n <= 0)
+                throw new Exception("Socket receive failed");
+
+            received += n;
+        }
+    }
+
     void pollEvent() {
         while (true && socketConnected) {
             char[1024] tmp;

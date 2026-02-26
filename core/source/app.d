@@ -12,6 +12,9 @@ import std.array;
 
 import veritas.ipc.events;
 import veritas.model;
+import mir.ser.ion;
+import std.base64;
+
 class VrtsLogger : VrtsEventHandler {
     override void processEvent(VrtsEvent event) {
         writeln(event.getString());
@@ -29,15 +32,58 @@ class ClientBus : VrtsEventHandler {
             raws ~= event.compileString ~ "|";
         }
         else
-            client.send(event.compileString() ~ "|"); 
+            sendAll(cast(ubyte[])(event.compileString() ~ "|")); 
     }  
 
     void flush() {
         string res = raws.join;
-        client.send(res);
+        sendAll(cast(ubyte[])res);
         raws = [];
     }
+
+    void sendRaw(const(ubyte)[] data) {
+        uint len = cast(uint)data.length;
+        sendAll((cast(ubyte*)&len)[0 .. uint.sizeof]);
+        sendAll(data);
     }
+
+    void sendAll(const(ubyte)[] data) {
+        size_t sent = 0;
+
+        while (sent < data.length) {
+            auto n = client.send(data[sent .. $]);
+            if (n <= 0)
+                throw new Exception("Socket send failed");
+
+            sent += n;
+        }
+    }
+
+    ubyte[] receiveRaw() {
+        ubyte[4] lenBuf;
+        receiveAll(lenBuf[]);
+
+        uint beLen = *cast(uint*)lenBuf.ptr;
+
+        auto buffer = new ubyte[beLen];
+        receiveAll(buffer);
+
+        return buffer;
+    }
+
+    void receiveAll(ubyte[] buffer) {
+        size_t received = 0;
+
+        while (received < buffer.length) {
+            auto n = client.receive(buffer[received .. $]);
+            if (n <= 0)
+                throw new Exception("Socket receive failed");
+
+            received += n;
+        }
+    }
+}
+
 
 struct ClientState {
     Socket socket;
@@ -86,31 +132,17 @@ void main(string[] args) {
             catch(SocketException e) {}
 
             if (!client.isDisconnected) {
-                client.socket.blocking = false;
                 clientBus.client = client.socket;
 
                 clientBus.snapshot = true;
 
-                clientBus.processEvent(new EventSnapshotStart());
-
-                foreach (i, pkg; veritas.ecosystem.packages) {     
-                    clientBus.processEvent(new EventProjectAdded(pkg.getPath.baseName));
-                }
-
-                foreach (i, ring; veritas.ecosystem.rings) { 
-                    clientBus.processEvent(new EventAddRing(ring.level));
-                }
-
-                foreach (ring; veritas.ecosystem.rings) {
-                    foreach(func; ring.functions) {
-                        clientBus.processEvent(new EventSendFunc(func.name, 0, ring.level));
-                    }
-                }
-
-                clientBus.processEvent(new EventSnapshotEnd());
+                auto model = veritas.ecosystem.buildModel;
+                auto ser = serializeIon(model);
+                clientBus.processEvent(new EventSnapshotStart(Base64.encode(ser)));
+                clientBus.flush();
+                client.socket.blocking = false;
 
                 clientBus.snapshot = false;
-                clientBus.flush();
             }
         }
 

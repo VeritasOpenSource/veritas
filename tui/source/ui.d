@@ -12,6 +12,8 @@ import std.path;
 import veritas.model;
 import widgets;
 import core.sys.posix.libgen;
+import mir.deser.ion;
+import std.base64;
 
 enum Mode {
     Command,
@@ -172,7 +174,7 @@ class VrtsTUI {
     PackageScreen packagesScreen;
     ReportsScreen reportsScreen;
 
-    CoreModel model;
+    VrtsModel model;
     Mode mode;
     string command;
 
@@ -186,12 +188,9 @@ class VrtsTUI {
         this.ipc = ipc;
         ipc.connect();
 
-        model = new CoreModel;
-        packagesScreen = new PackageScreen(ipc, model);
-        reportsScreen = new ReportsScreen(ipc, model);
+        packagesScreen = new PackageScreen(ipc, &model);
 
         screens ~= packagesScreen;
-        screens ~= reportsScreen;
         mode = Mode.Navigation;
         currentScreen = packagesScreen;
     }
@@ -268,37 +267,37 @@ class VrtsTUI {
         }
     }
 
-    void parseAndDispatch(string event) {
-        string[] eventStrings = event.split;
+     void parseAndDispatch(string event) {
+        auto parts = event.split(" ");
 
-        if(eventStrings[1] == "addedPackage") {
-            currentScreen.model.addPackage(eventStrings[2].baseName, 0);
-            if(!currentScreen.isSnapshot) {
-                currentScreen.update();
-            }
-        }
+        if(parts.length < 2)
+            return;
 
-        if(eventStrings[1] == "newRing") {
-            int id = eventStrings[2].to!int;
-            currentScreen.model.addRing(id);
-        }
+        if(parts[1] == "snapshotStart") {
 
-        if(eventStrings[1] == "sendFunc") {
-            string name = eventStrings[2]; 
-            uint ringId = eventStrings[4].to!uint;
+            if(parts.length < 3)
+                return;
 
-            currentScreen.model.addFunction(name, 0, ringId);
-        }
+            auto data = Base64.decode(parts[2]);
+            model = deserializeIon!VrtsModel(data);
 
-        if(eventStrings[1] == "snapshotStart") {
-            currentScreen.isSnapshot = true;
-        }
-        if(eventStrings[1] == "snapshotEnd") {
-            currentScreen.isSnapshot = false;
-        }
-
-        if(!currentScreen.isSnapshot) {
             currentScreen.update();
+            return;
+        }
+
+        if(parts[1] == "addedPackage") {
+            currentScreen.update();
+            return;
+        }
+
+        if(parts[1] == "newRing") {
+            currentScreen.update();
+            return;
+        }
+
+        if(parts[1] == "sendFunc") {
+            currentScreen.update();
+            return;
         }
     }
 
