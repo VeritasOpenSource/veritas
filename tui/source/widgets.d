@@ -133,6 +133,10 @@ class Panel : Widget {
     }
 }
 
+void drawText(uint x, uint y, string text) {
+    foreach(int i; 0 .. cast(int)text.length)
+        tb_change_cell(x + i, y, text[i], TB_BOLD | TB_WHITE, TB_BLACK);
+}
 class List : Widget {
     ListItem[] items;
 
