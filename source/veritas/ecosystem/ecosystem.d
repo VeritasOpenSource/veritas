@@ -42,6 +42,17 @@ class VrtsEcosystem {
         return calls.length;
     }
 
+    void clear() {
+        foreach(VrtsPackage pkg; packages) {
+            pkg.clear();
+        }
+        rings.length = 0;
+        functions.length = 0;
+        calls.length = 0;
+        reports.length = 0;
+        triggers.length = 0;
+    }
+
     /// 
     void addPackage(VrtsPackage pkg) {
         packages ~= pkg;
@@ -60,6 +71,7 @@ class VrtsEcosystem {
 
     ///
     void recollectData() {
+        clear();
         int i = 0;
 
         sourceFiles = packages.map!(a => a.getSourceFiles).join.array;

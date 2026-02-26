@@ -29,6 +29,9 @@ private:
     VrtsSourceFile[]        sourceFiles;
 
 public:
+    void clear() {
+        functions.length = 0;
+    }
     ///
     this(uint id, string path, string name) {
         this.id = id;
