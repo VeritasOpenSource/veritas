@@ -32,6 +32,8 @@ class UIState {
 }
 
 class PackageInfoPanel : Panel {
+    VrtsModel* model;
+    bool globalContext;
     string packageName;
     uint functionsCount;
     uint calls;
@@ -39,9 +41,14 @@ class PackageInfoPanel : Panel {
 
     this(uint x, uint y, uint width, uint height, string name) {
         super(x, y, width, height, name);
+        globalContext = true;
     }
 
-    void changeContext(VrtsModel* model, VrtsModelPackage pkg) {
+    void setModel(VrtsModel* model) {
+        this.model = model;
+    }
+
+    void changeContext(VrtsModelPackage pkg) {
         packageName = pkg.name;
         functionsCount = cast(uint)pkg.functionsIds.length;
 
@@ -71,21 +78,30 @@ class PackageInfoPanel : Panel {
         colorText = TB_WHITE;
         colorBack = TB_BLACK;
 
-        // if(focused) {
-        //     colorText = TB_GREEN;
-        // }   
-        drawText(x + 1, y + 1, "METADATA");
-        drawText(x + 1, y + 2, "    Package name: " ~ packageName);
-        drawText(x + 1, y + 3, "    Functions count: " ~ functionsCount.to!string);
-        drawText(x + 1, y + 4, "    Internal calls count: " ~ calls.to!string);
-        drawText(x + 1, y + 5, "    External calls count: " ~ eCalls.to!string);
+        if(globalContext) {
+            drawText(x + 1, y + 1, "ECOSYSTEM:");
+            drawText(x + 1, y + 2, "    Packages count: " ~ model.packages.length.to!string);
+            drawText(x + 1, y + 3, "    Observed files count: " ~ model.files.length.to!string);
+            drawText(x + 1, y + 4, "    Functions count: " ~ model.functions.length.to!string);
+            drawText(x + 1, y + 5, "    Calls count: " ~ model.calls.length.to!string);
+            drawText(x + 1, y + 6, "    Reports count: " ~ model.reports.length.to!string);
+            drawText(x + 1, y + 7, "    Rings count: " ~ model.rings.length.to!string);
 
+
+        }
+        else {
+            drawText(x + 1, y + 1, "METADATA");
+            drawText(x + 1, y + 2, "    Package name: " ~ packageName);
+            drawText(x + 1, y + 3, "    Functions count: " ~ functionsCount.to!string);
+            drawText(x + 1, y + 4, "    Internal calls count: " ~ calls.to!string);
+            drawText(x + 1, y + 5, "    External calls count: " ~ eCalls.to!string);
+        }
 
         drawBox();
     } 
 
     void toMainContext() {
-        packageName = "";
+        globalContext = true;
     }
 }
 
@@ -108,6 +124,7 @@ class PackageScreen : Screen {
 
         packagesPanel = new Panel(0, 0, 20, 20, "PACKAGES");
         packageInfoPanel = new PackageInfoPanel(20, 0, 60, 20, "PACKAGE INFO");
+        packageInfoPanel.setModel(model);
 
         panels ~= packagesPanel;
 
@@ -129,9 +146,10 @@ class PackageScreen : Screen {
 
     void updateInfoPanel() {
         if(state.selectedPackage != -1) {
+            packageInfoPanel.globalContext = false;
             import std.stdio;
             auto pkg = model.packages.find!(a => a.id == state.selectedPackage).front;
-            packageInfoPanel.changeContext(model, pkg);
+            packageInfoPanel.changeContext(pkg);
         }
         else 
             packageInfoPanel.toMainContext();
