@@ -54,24 +54,6 @@ interface VrtsEvent {
     string compileString();
 }
 
-class EventTransModel : VrtsEvent {
-    this(ubyte[] buff) {
-        this.buff = buff;
-    }
-
-    override EventType getType() {
-        return EventType.ProjectAdded;
-    } 
-
-    override string getString() {
-        return "Model trasns:";
-    }
-
-    override string compileString() {
-        return cast(immutable(char[]))buff;
-    }
-}
-
 class EventProjectAdded : VrtsEvent {
     this(string path) {
         this.path = path;
