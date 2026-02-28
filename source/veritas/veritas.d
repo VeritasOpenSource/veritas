@@ -25,7 +25,7 @@ import mir.ser.ion;
 class Veritas {
     VrtsEventBus eventsBus;
     VrtsEcosystem ecosystem;
-    VrtsSourceAnalyzer analyzer;
+    VrtsSourceCollector analyzer;
     VrtsReportsParser parser;
 
     this(VrtsEventBus bus, string[] args) {
@@ -39,7 +39,7 @@ class Veritas {
         }
         
         ecosystem.setEventBus(eventsBus);
-        analyzer = new VrtsSourceAnalyzer(ecosystem);
+        analyzer = new VrtsSourceCollector(ecosystem);
         analyzer.setEventsBus(eventsBus);
 
         parser = new VrtsReportsParser;

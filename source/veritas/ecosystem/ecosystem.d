@@ -16,7 +16,7 @@ import veritas.model;
 /// 
 class VrtsEcosystem {
     VrtsEventBus eventBus;
-    VrtsSourceAnalyzer analyzer;
+    VrtsSourceCollector analyzer;
 
     VrtsPackage[]               packages;
 
