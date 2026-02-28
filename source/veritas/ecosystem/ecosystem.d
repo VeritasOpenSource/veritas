@@ -16,14 +16,14 @@ import veritas.model;
 /// 
 class VrtsEcosystem {
     VrtsEventBus eventBus;
-    VrtsSourceCollector         sourceCollector;
+    VrtsSourceAnalyzer analyzer;
 
     VrtsPackage[]               packages;
 
     VrtsRing[]                  rings;
     
     VrtsFunction[]              functions;
-    // VrtsSourceFile[]            sourceFiles;
+    VrtsSourceFile[]            sourceFiles;
     VrtsFunctionCall[]          calls;
     VrtsReport[]                reports;
 
