@@ -7,9 +7,60 @@ import std.path;
 import std.array;
 import std.algorithm;
 import std.file;
+import std.stdio;
+import std.conv;
 
 import veritas.ecosystem;
 import veritas.model;
+import std.compiler;
+
+class VrtsMetaData {
+    File file;
+
+    string[] data;
+
+    this(string path) {
+        file = File(path);
+        data = file
+            .byLineCopy
+            // .to!string
+            .array;
+
+        file.close();
+    }
+
+    static auto load(string path) {
+        return new VrtsMetaData(path);
+    }
+
+    string getConfigCommand() {
+        for(int i = 0; i < data.length; i++) {
+            if(data[i] == "Configure")
+                return data[i+1];
+        }
+
+        assert(0, "Config command not found!");
+    }
+
+    string getPatch() {
+        for(int i = 0; i < data.length; i++) {
+            if(data[i] == "Makepatch")
+                return data[i+1];
+        }
+
+        assert(0, "Makepatch string not found!");
+    }
+
+    string getMakeCommand() {
+        for(int i = 0; i < data.length; i++) {
+            if(data[i] == "Make")
+                return data[i+1];
+        }
+
+        assert(0, "Make command not found!");
+    }
+}
+
 /** 
  * Class for package representation  
  */
