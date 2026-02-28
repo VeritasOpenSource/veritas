@@ -11,7 +11,7 @@ import std.conv;
 
 import veritas.ipc.events;
 
-class VrtsSourceAnalyzer {
+class VrtsSourceCollector {
     VrtsEventBus eventBus;
     VrtsEcosystem ecosystem;
     VrtsSourceVisitor visitor;

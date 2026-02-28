@@ -139,7 +139,7 @@ void main(string[] args) {
 
     // VrtsPackage pkg = new VrtsPackage(0, "../../veritas-test/bash", "bash");
 
-    // auto sa = new VrtsSourceAnalyzer(null);
+    // auto sa = new VrtsSourceCollector(null);
     // auto files = sa.processSourceFiles(pkg, paths);
 
     // files.each!(a => a.getPath.writeln);
