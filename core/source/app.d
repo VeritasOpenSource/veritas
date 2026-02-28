@@ -9,11 +9,15 @@ import std.socket;
 import std.file;
 import std.algorithm;
 import std.array;
+import std.string;
 
 import veritas.ipc.events;
 import veritas.model;
 import mir.ser.ion;
 import std.base64;
+import veritas.ecosystem.pkg;
+import veritas.ecosystem.preparing;
+import veritas.ecosystem.sourceAnalyzer;
 
 class VrtsLogger : VrtsEventHandler {
     override void processEvent(VrtsEvent event) {
@@ -123,6 +127,22 @@ void main(string[] args) {
     bool exit = false;
     ClientState client;
 
+    // auto md = VrtsMetaData.load("../../veritas-test/bash.vmd");
+    // // writeln(md.getConfigCommand.strip);
+
+    // auto sp = new VrtsSourcePreparing();
+    // sp.preparePackage(md);
+    // sp.pseudoMake();
+    // auto paths = sp.getSourceFilesPaths(md);
+
+    // paths.each!(a => writeln(a));
+
+    // VrtsPackage pkg = new VrtsPackage(0, "../../veritas-test/bash", "bash");
+
+    // auto sa = new VrtsSourceAnalyzer(null);
+    // auto files = sa.processSourceFiles(pkg, paths);
+
+    files.each!(a => a.getPath.writeln);
     while (!client.exit) {
         if (client.isDisconnected) {
             try {
