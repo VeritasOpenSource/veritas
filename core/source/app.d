@@ -142,7 +142,7 @@ void main(string[] args) {
     // auto sa = new VrtsSourceAnalyzer(null);
     // auto files = sa.processSourceFiles(pkg, paths);
 
-    files.each!(a => a.getPath.writeln);
+    // files.each!(a => a.getPath.writeln);
     while (!client.exit) {
         if (client.isDisconnected) {
             try {
