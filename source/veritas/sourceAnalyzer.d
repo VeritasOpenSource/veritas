@@ -40,4 +40,9 @@ class VrtsSourceAnalyzer {
         }
     }
 
+    void collectAllCalls() {
+        foreach(func; functionCollector.storage.data) {
+            toolkit.extractCallsFromFunction(callsCollector, func);
+        }
+    }
 }

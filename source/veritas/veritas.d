@@ -69,6 +69,9 @@ class Veritas {
             // ecosystem.recollectData();
             
             sourceAnalyzer.collectAllFunctions();
+            sourceAnalyzer.collectAllCalls();
+
+            callsCollector.storage.data.length.to!string.writeln;
             writeln("DONE");
             // callsCollector.relinkCalls();
             // functionsCollectoranalyzer.analyzeSourceFilesByPackages(ecosystem.packages);

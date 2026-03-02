@@ -41,7 +41,14 @@ extern(C) {
     }
     
     alias CXCursorVisitor = uint function(CXCursor, CXCursor, CXClientData);
-    
+
+    // enum CXChildVisit_Break = 0;
+    // enum CXChildVisit_Continue = 1;
+    // enum CXChildVisit_Recurse = 2;
+
+    enum CXCursor_FunctionDecl = 8;
+    enum CXCursor_CallExpr = 103;
+
     CXIndex clang_createIndex(int, int);
     CXString clang_getFileName(CXFile);
     void clang_disposeIndex(CXIndex);
@@ -71,138 +78,131 @@ extern(C) {
     CXCursor clang_getCursorReferenced(CXCursor cursor);
 }
 
-string cxToStr(CXCursor cursor) {
-    CXString str = clang_getCursorSpelling(cursor);
-    const(char)* cstr = clang_getCString(str);
-    return cstr.to!string ? cstr.to!string : "";
+string cxToStr(CXCursor cursor)
+{
+    auto str = clang_getCursorSpelling(cursor);
+    scope(exit) clang_disposeString(str);
+
+    auto c = clang_getCString(str);
+    return c ? c.to!string : "";
 }
 
 class ClangToolkit : VrtsToolkit {
-    // CXTranslationUnit[VrtsSourceFile]   translationUnits;
-    // CXCursor[VrtsFunction]              functionsCursor;
+    CXIndex index;
+    CXTranslationUnit[VrtsSourceFile] tus;
+    CXCursor[VrtsFunction] functionCursors;
 
-    struct Context {
-        ClangToolkit toolkit;
-        VrtsFunctionsCollector collector;
-        VrtsSourceFile sfContext;
-        VrtsFunction fContext;
-        // VrtsFunction[] functions;    
+    this() {
+        index = clang_createIndex(0, 0);
     }
 
-    // Context* context;
+    ~this() {
+        foreach (tu; tus)
+            clang_disposeTranslationUnit(tu);
+        clang_disposeIndex(index);
+    }
 
-    override void extractFunctionsFromSourceFile(VrtsFunctionsCollector collector, VrtsSourceFile file) {
-        CXIndex index = clang_createIndex(0, 0);
+    struct Context {
+            ClangToolkit toolkit;
+            VrtsFunctionsCollector collector;
+            VrtsSourceFile file;
+    }
 
-        CXTranslationUnit tu;
-        
-        const (char)*[] args;
+    override void extractFunctionsFromSourceFile(
+        VrtsFunctionsCollector collector,
+        VrtsSourceFile file) {
+        const(char)*[] args;
 
-        // args ~="-xc".toStringz;
-        // args ~= "-w".toStringz;                    
-        // args ~= "-Wno-everything".toStringz;       
-        // args ~= "-Wno-error".toStringz;            
-        // args ~= "-ferror-limit=1".toStringz;       
-        // args ~= "-Wno-missing-include-dirs".toStringz;
-        // args ~= "-Wno-implicit-function-declaration".toStringz;
-        // args ~= "-Wno-missing-include-dirs".toStringz;
-
-        args ~= "-nostdlib".toStringz;
-        args ~= "-nostdinc".toStringz;
-
-        tu = clang_parseTranslationUnit(index, 
-            file.getPath.toStringz, 
-            args.ptr, 
+        auto tu = clang_parseTranslationUnit(
+            index,
+            file.getPath.toStringz,
+            args.ptr,
             cast(int)args.length,
             null,
             0,
-            0x4000 | 0x400);
+            0);
 
-        // translationUnits[file] = tu;
+        tus[file] = tu;
 
-        CXCursor root = clang_getTranslationUnitCursor(tu);
+        auto root = clang_getTranslationUnitCursor(tu);
 
-        Context* context = new Context;
-        context.sfContext = file;
-        // context.toolkit = this;
-        context.collector = collector;
+        struct Context {
+            ClangToolkit toolkit;
+            VrtsFunctionsCollector collector;
+            VrtsSourceFile file;
+        }
 
-        // int[2] counts = [0, 0];
-        clang_visitChildren(root, &sourceFileVisitor, cast(CXClientData)context);
+        auto ctx = new Context(this, collector, file);
 
-        // auto funcs = context.functions;
-        write(file.getPath, " ");
-        // writeln(functionsCursor.length);
-
-        // return funcs;
-
-        // clang_disposeTranslationUnit(tu);
-        // clang_disposeIndex(index);
+        clang_visitChildren(root, &functionVisitor, cast(void*)ctx);
     }
 
-    extern(C) static uint sourceFileVisitor(CXCursor cursor, CXCursor parent, CXClientData data) {
-        Context* context = cast(Context*)data;
-        auto sourceFile = context.sfContext;
-        auto collector = context.collector;
-        
-        int kind = clang_getCursorKind(cursor);
+    extern(C) static uint functionVisitor(
+        CXCursor cursor,
+        CXCursor parent,
+        CXClientData data) {
+        auto ctx = cast(Context*)data;
 
-        if (kind == 8) {
+        if (clang_getCursorKind(cursor) == CXCursor_FunctionDecl &&
+            clang_isCursorDefinition(cursor)) {
             string name = cxToStr(cursor);
 
-            auto funcDecl = collector.addFunction(sourceFile, name);
-            // auto funcDecl = new VrtsFunction(0, name);
-            // auto funcDecl = new VrtsFunction(context.functionCollector.getNewId(), name);
-            // auto funcDecl = context.functionCollector.addFunction(sourceFile, name);
+            auto func = ctx.collector.addFunction(ctx.file, name);
+            ctx.toolkit.functionCursors[func] = cursor;
 
-            CXSourceRange range = clang_getCursorExtent(cursor);
-            CXSourceLocation start = clang_getRangeStart(range);
-            CXSourceLocation end = clang_getRangeEnd(range);
-            
-            CXFile file;
-            uint start_line, end_line;
-
-            clang_getFileLocation(start, file, &start_line, null, null);
-            clang_getFileLocation(end, file, &end_line, null, null);
-
-            if(clang_isCursorDefinition(cursor)) {
-                // context.functions ~= funcDecl;
-                funcDecl.setLocation(true, parent.cxToStr().baseName, start_line, 0, end_line, 0);
-
-                // context.fContext = funcDecl;
-                // context.toolkit.functionsCursor[funcDecl] = cursor;
-                // clang_visitChildren(cursor, &functionVisitor, data);
-                writeln(name);
-            }
-            else {
-                funcDecl.setLocation(false, parent.cxToStr().baseName, start_line, 0, end_line, 0);
-            }
-            return 1;
+            writeln("FUNCTION: ", name);
         }
-       
-        return 2; 
+
+        return 2;
     }
 
-    override void extractCallsFromFunction(VrtsCallsCollector collector, VrtsFunction func) {
-        // return null;
+    override void extractCallsFromFunction(
+        VrtsCallsCollector collector,
+        VrtsFunction func) {
+        if (func !in functionCursors)
+            return;
+
+        auto cursor = functionCursors[func];
+
+        struct CallContext {
+            VrtsFunction func;
+            VrtsCallsCollector collector;
+        }
+
+        auto ctx = new CallContext(func, collector);
+
+        clang_visitChildren(cursor, &callVisitor, cast(void*)ctx);
     }
 
-    // extern(C) static uint functionVisitor(CXCursor cursor, CXCursor parent, CXClientData data) {
-    //     ClangToolkit context = cast(ClangToolkit)data;
-    //     auto funcDecl = context.funcContext;
-        
-    //     auto refCur = clang_getCursorReferenced(cursor);
-    //     auto refkind = clang_getCursorKind(refCur);
+    extern(C) static uint callVisitor(
+        CXCursor cursor,
+        CXCursor parent,
+        CXClientData data) {
 
-    //     if (refkind == 8) { 
-    //         string name = cxToStr(refCur);
-    //         auto call = new VrtsFunctionCall(context.callsCollector.getNewId, funcDecl, name);
-    //         context.callsCollector.storage.add(call);
-    //         // funcDecl.calls ~= call;
-            
-    //         return 1;
-    //     }
-       
-    //     return 2; 
-    // }
+        struct CallContext {
+            VrtsFunction func;
+            VrtsCallsCollector collector;
+        }
+
+        auto ctx = cast(CallContext*)data;
+
+        if (clang_getCursorKind(cursor) == CXCursor_CallExpr) {
+            auto ref_ = clang_getCursorReferenced(cursor);
+
+            if (clang_getCursorKind(ref_) == CXCursor_FunctionDecl) {
+                string name = cxToStr(ref_);
+
+                auto call = new VrtsFunctionCall(
+                    ctx.collector.getNewId(),
+                    ctx.func,
+                    name);
+
+                ctx.collector.storage.add(call);
+
+                writeln("CALL: ", name);
+            }
+        }
+
+        return 2;
+    }
 }
