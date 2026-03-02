@@ -50,7 +50,7 @@ class Veritas {
         ecosystem.sourceFileStorage = sourceCollector.storage;
 
         functionsCollector = new VrtsFunctionsCollector(ecosystem, sourceCollector);
-        callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector);
+        callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector, functionsCollector);
 
         sourceAnalyzer = new VrtsSourceAnalyzer(sourceCollector, functionsCollector, callsCollector);
     }
@@ -70,10 +70,10 @@ class Veritas {
             
             sourceAnalyzer.collectAllFunctions();
             sourceAnalyzer.collectAllCalls();
+            callsCollector.relinkFunctionsCalls();
 
-            callsCollector.storage.data.length.to!string.writeln;
+            // callsCollector.storage.data.length.to!string.writeln;
             writeln("DONE");
-            // callsCollector.relinkCalls();
             // functionsCollectoranalyzer.analyzeSourceFilesByPackages(ecosystem.packages);
 
             // ecosystem.relinkCalls();

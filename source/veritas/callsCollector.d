@@ -15,11 +15,13 @@ import veritas.analyzer;
 import veritas.preparing;
 import veritas.ipc.events;
 import veritas.ecosystem.call;
+import veritas.functionsCollector;
 
 class VrtsCallsCollector : VrtsAnalyzer!VrtsFunctionCall {
     VrtsEventBus eventBus;
     VrtsEcosystem ecosystem;
     VrtsSourceCollector sourceCollector;
+    VrtsFunctionsCollector functionsCollector;
 
     struct FunctionSourceAssoc {
         VrtsPackage pkg;
@@ -37,8 +39,23 @@ class VrtsCallsCollector : VrtsAnalyzer!VrtsFunctionCall {
     }
 
     this(	VrtsEcosystem ecosystem,
-			VrtsSourceCollector collector) {
+			VrtsSourceCollector collector,
+            VrtsFunctionsCollector functionsCollector) {
         this.ecosystem = ecosystem;
 		this.sourceCollector = collector; 
+        this.functionsCollector = functionsCollector;
+    }
+
+    void relinkFunctionsCalls() {
+        foreach(call; this.storage.data) {
+            foreach(func; functionsCollector.storage.data) {
+                if(!call.isDefined && call.getCallName == func.name) {
+                    call.defineTarget(func);
+                    func.calledBy ~= call;
+
+                    break;
+                }
+            }
+        }
     }
 }
