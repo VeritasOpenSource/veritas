@@ -10,5 +10,6 @@ public {
     ///CodeChecker report parser
     import veritas.reportparser;
     ///Source code parser
-    import veritas.sourceVisitor;
+    import veritas.sourceAnalyzer;
+    import veritas.sourceCollector;
 }

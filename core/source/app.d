@@ -16,8 +16,8 @@ import veritas.model;
 import mir.ser.ion;
 import std.base64;
 import veritas.ecosystem.pkg;
-import veritas.ecosystem.preparing;
-import veritas.ecosystem.sourceAnalyzer;
+import veritas.preparing;
+import veritas.sourceAnalyzer;
 
 class VrtsLogger : VrtsEventHandler {
     override void processEvent(VrtsEvent event) {
@@ -109,6 +109,7 @@ enum string SOCKET_PATH = "/tmp/veritas.sock";
 void main(string[] args) {
     VrtsEventBus eventBus = new VrtsEventBus();
     Veritas veritas = new Veritas(eventBus, args);
+    veritas.initAnalyzers();
 
     eventBus.events ~= new VrtsLogger;
     

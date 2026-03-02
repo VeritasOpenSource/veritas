@@ -1,21 +1,45 @@
-module veritas.sourceVisitor;
+module veritas.sourceAnalyzer;
 
 import std.string;
 import std.path;
 
 import veritas.clang;
 import veritas.ecosystem;
+import veritas.analyzer;
+import veritas.dataProvider;
+import veritas.functionsCollector;
+import veritas.callsCollector;
+import veritas.sourceCollector;
 
 
-class VrtsSourceVisitor {
-    VrtsEcosystem ecosystem;
 
+class VrtsSourceAnalyzer : VrtsAnalyzer!VrtsSourceFile {
+    VrtsSourceCollector sourceCollector;
+    VrtsFunctionsCollector functionCollector;
+    VrtsCallsCollector callsCollector;
+
+    VrtsSourceFile sourceFileContext;
     VrtsFunction funcContext;
-    VrtsSourceFile sourceFile;
 
-    void visitSourceFile(VrtsEcosystem ecosystem, VrtsSourceFile file) {
-        this.ecosystem = ecosystem;
-        this.sourceFile = file;
+    this(
+        VrtsSourceCollector collector,
+        VrtsFunctionsCollector functionCollector,
+        VrtsCallsCollector callsCollector
+    ) {
+        this.sourceCollector = collector;
+        this.functionCollector = functionCollector;
+        this.callsCollector = callsCollector;
+    }
+
+    void collectAllFunctions() {
+        foreach(sourceFile; sourceCollector.storage.data) {
+            visitSourceFile(sourceFile);
+        }
+    }
+
+    void visitSourceFile(VrtsSourceFile file) {
+        // this.ecosystem = ecosystem;
+        // this.sourceFile = file;
         // writeln("Extracting file: ", file.fullname);
 
         CXIndex index = clang_createIndex(0, 0);
@@ -55,15 +79,16 @@ class VrtsSourceVisitor {
     
     
     extern(C) static uint sourceFileVisitor(CXCursor cursor, CXCursor parent, CXClientData data) {
-        VrtsSourceVisitor context = cast(VrtsSourceVisitor)data;
-        auto sourceFile = context.sourceFile;
+        VrtsSourceAnalyzer context = cast(VrtsSourceAnalyzer)data;
+        auto sourceFile = context.sourceFileContext;
         
         int kind = clang_getCursorKind(cursor);
 
         if (kind == 8) {
             string name = cxToStr(cursor);
 
-            auto funcDecl = context.ecosystem.addFunction(sourceFile, name);
+            // auto funcDecl = new VrtsFunction(context.functionCollector.getNewId(), name);
+            auto funcDecl = context.functionCollector.addFunction(sourceFile, name);
 
             CXSourceRange range = clang_getCursorExtent(cursor);
             CXSourceLocation start = clang_getRangeStart(range);
@@ -91,7 +116,7 @@ class VrtsSourceVisitor {
     }
 
     extern(C) static uint functionVisitor(CXCursor cursor, CXCursor parent, CXClientData data) {
-        VrtsSourceVisitor context = cast(VrtsSourceVisitor)data;
+        VrtsSourceAnalyzer context = cast(VrtsSourceAnalyzer)data;
         auto funcDecl = context.funcContext;
         
         auto refCur = clang_getCursorReferenced(cursor);
@@ -99,7 +124,9 @@ class VrtsSourceVisitor {
 
         if (refkind == 8) { 
             string name = cxToStr(refCur);
-            funcDecl.calls ~= new VrtsFunctionCall(0, funcDecl, name);
+            auto call = new VrtsFunctionCall(context.callsCollector.getNewId, funcDecl, name);
+            context.callsCollector.storage.add(call);
+            // funcDecl.calls ~= call;
             
             return 1;
         }

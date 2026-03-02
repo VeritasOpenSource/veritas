@@ -12,73 +12,88 @@ import std.string;
 import std.conv;
 import veritas.ecosystem;
 import veritas.clang;
-import veritas.sourceVisitor;
 import std.range;
 import veritas.reportparser;
-import veritas.sourceVisitor;
-import veritas.ecosystem.sourceAnalyzer;
-import veritas.ecosystem.journal;
+import veritas.sourceCollector;
+import veritas.sourceAnalyzer;
 import std.socket;
 import veritas.ipc.events;
 import mir.ser.ion;
 
+import veritas.callsCollector;
+import veritas.functionsCollector;
+
 class Veritas {
     VrtsEventBus eventsBus;
     VrtsEcosystem ecosystem;
-    VrtsSourceCollector analyzer;
-    VrtsReportsParser parser;
+    VrtsSourceCollector     sourceCollector;
+    VrtsSourceAnalyzer      sourceAnalyzer;
+    VrtsFunctionsCollector  functionsCollector;
+    VrtsCallsCollector      callsCollector;
+    // VrtsReportsParser parser;
 
     this(VrtsEventBus bus, string[] args) {
         this.eventsBus = bus;
 
         if(args.length > 1) {
-            ecosystem = VrtsEcosystem.loadLocalDatabase(args[1]);
+            // ecosystem = VrtsEcosystem.loadLocalDatabase(args[1]);
         }
         else {
             ecosystem = new VrtsEcosystem;
         }
         
         ecosystem.setEventBus(eventsBus);
-        analyzer = new VrtsSourceCollector(ecosystem);
-        analyzer.setEventsBus(eventsBus);
+    }
 
-        parser = new VrtsReportsParser;
+    void initAnalyzers() {
+        sourceCollector = new VrtsSourceCollector(ecosystem);
+        ecosystem.sourceFileStorage = sourceCollector.storage;
+
+        functionsCollector = new VrtsFunctionsCollector(ecosystem, sourceCollector);
+        callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector);
+
+        sourceAnalyzer = new VrtsSourceAnalyzer(sourceCollector, functionsCollector, callsCollector);
     }
 
     void processCommand(string _command) {
         string[] commands = _command.to!string.split;
 
         if(commands[0] == "add") {
-            string project = commands[1];
-            addProject(project);
+            string package_ = commands[1];
+            addPackage(package_);
         } else
 
         if(commands[0] == "analyze") {
-            ecosystem.recollectData();
+            sourceCollector.collectAllSourceFiles(ecosystem);
+            sourceCollector.storage.length.to!string.writeln;
+            // ecosystem.recollectData();
+            
+            sourceAnalyzer.collectAllFunctions();
+            writeln("DONE");
+            // callsCollector.relinkCalls();
+            // functionsCollectoranalyzer.analyzeSourceFilesByPackages(ecosystem.packages);
 
-            analyzer.analyzeSourceFilesByPackages(ecosystem.packages);
+            // ecosystem.relinkCalls();
+            // ecosystem.collectCalls();
+            // ecosystem.buildRingsIerarchy();
 
-            ecosystem.relinkCalls();
-            ecosystem.collectCalls();
-            ecosystem.buildRingsIerarchy();
+            // auto packages = ecosystem.getPackages();
+            // auto reports = parser.parseResultFile("../../veritas-test/bash/res.json");
+            // ecosystem.processReports(reports);
 
-            auto packages = ecosystem.getPackages();
-            auto reports = parser.parseResultFile("../../veritas-test/bash/res.json");
-            ecosystem.processReports(reports);
-
-            ecosystem.collectTriggers();
+            // ecosystem.collectTriggers();
         }
 
         if(commands[0] == "save database") {
-            auto model = ecosystem.buildModel;
-            auto serial = serializeIon(model);
-            File file = File("db.vrtsdb", "rb");
-            file.rawWrite(serial);
-            file.close();
+            // auto model = ecosystem.buildModel;
+            // auto serial = serializeIon(model);
+            // File file = File("db.vrtsdb", "rb");
+            // file.rawWrite(serial);
+            // file.close();
         }
     }
 
-    void addProject(string path) {
-        ecosystem.addPackage(absolutePath(path), path);
+    void addPackage(string path) {
+        ecosystem.addPackage(path);
     }
 }

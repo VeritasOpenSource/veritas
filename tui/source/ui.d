@@ -36,6 +36,7 @@ class PackageInfoPanel : Panel {
     bool globalContext;
     string packageName;
     uint functionsCount;
+    uint sourceFilesCount;
     uint calls;
     uint eCalls;
 
@@ -51,6 +52,7 @@ class PackageInfoPanel : Panel {
     void changeContext(VrtsModelPackage pkg) {
         packageName = pkg.name;
         functionsCount = cast(uint)pkg.functionsIds.length;
+        sourceFilesCount = cast(uint)pkg.sourceFilesIds.length;
 
         auto functions = model.getById!("functions")(pkg.functionsIds);
 
@@ -92,9 +94,11 @@ class PackageInfoPanel : Panel {
         else {
             drawText(x + 1, y + 1, "METADATA");
             drawText(x + 1, y + 2, "    Package name: " ~ packageName);
-            drawText(x + 1, y + 3, "    Functions count: " ~ functionsCount.to!string);
-            drawText(x + 1, y + 4, "    Internal calls count: " ~ calls.to!string);
-            drawText(x + 1, y + 5, "    External calls count: " ~ eCalls.to!string);
+            drawText(x + 1, y + 4, "    Source files count: " ~ sourceFilesCount.to!string);
+
+            drawText(x + 1, y + 5, "    Functions count: " ~ functionsCount.to!string);
+            drawText(x + 1, y + 6, "    Internal calls count: " ~ calls.to!string);
+            drawText(x + 1, y + 7, "    External calls count: " ~ eCalls.to!string);
         }
 
         drawBox();

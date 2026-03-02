@@ -1,4 +1,4 @@
-module veritas.ecosystem.preparing;
+module veritas.preparing;
 
 import std.process;
 import veritas.ecosystem.pkg;

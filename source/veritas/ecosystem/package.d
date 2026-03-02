@@ -9,5 +9,5 @@ public {
     import veritas.ecosystem.call;
     import veritas.ecosystem.ring;
     import veritas.ecosystem.journal;
-    import veritas.ecosystem.sourceAnalyzer;
+    import veritas.sourceAnalyzer;
 }

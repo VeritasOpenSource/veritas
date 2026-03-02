@@ -42,6 +42,24 @@ class VrtsMetaData {
         assert(0, "Config command not found!");
     }
 
+    string name() @property {
+        for(int i = 0; i < data.length; i++) {
+            if(data[i] == "Name")
+                return data[i+1];
+        }
+
+        assert(0, "Name string not found!");
+    }
+
+    string path() @property {
+        for(int i = 0; i < data.length; i++) {
+            if(data[i] == "Path")
+                return data[i+1];
+        }
+
+        assert(0, "Path string not found!");
+    }
+
     string getPatch() {
         for(int i = 0; i < data.length; i++) {
             if(data[i] == "Makepatch")
@@ -70,6 +88,8 @@ private:
     ///name of package
     string name;
 
+    VrtsMetaData metadata;
+
     ///absolute path to package dir
     /// Example: /home/x/project/
     DirEntry path;
@@ -77,63 +97,41 @@ private:
     ///Provided lists
     VrtsFunction[]          functions;
     ///ditto
-    VrtsSourceFile[]        sourceFiles;
 
 public:
     void clear() {
         functions.length = 0;
     }
     ///
-    this(uint id, string path, string name) {
+    this(uint id, VrtsMetaData data) {
         this.id = id;
-        this.path = DirEntry(path.buildNormalizedPath);
-        this.name = path.baseName;
+        this.metadata = data;
     }
 
     auto getId() {
         return id;
     }
 
-    /// 
-    auto getSourceFiles() {
-        return sourceFiles;
-    }
-
-    auto setSourceFiles(VrtsSourceFile[] files) {
-        sourceFiles = files;
+    auto getMetadata() {
+        return metadata;
     }
 
     ///
-    string getPath() const => this.path;
+    string getPath()  => this.metadata.path;
     ///
-    string getName() const => this.name;
+    string getName()  => this.metadata.name;
     
     ///
     void addFunction(VrtsFunction func) {
         functions ~= func;
     }
-
-    ///
-    void addSourceFile(VrtsSourceFile sf) {
-        sourceFiles ~= sf;
-    }
-
-    ///
-    void scanForSourceFiles() {
-        auto res = dirEntries(path,"*.{h,c}",SpanMode.depth)
-            .filter!(a => a.isFile)
-            .filter!(a => !a.baseName.startsWith("tst-"))
-            .filter!(a => !a.baseName.startsWith("test-"))
-            .map!((a) => new VrtsSourceFile(this, a))
-            .each!((a) => this.addSourceFile(a));
-    }
-
+    
     auto getFunctions() {
         return functions;
     }
 
-    static VrtsPackage buildFromModel(VrtsModelPackage pkg_) {        
-        auto pkg = new VrtsPackage(pkg_.id, pkg_.path, pkg_.name);
-        return pkg;
-    }
+    // static VrtsPackage buildFromModel(VrtsModelPackage pkg_) {        
+    //     auto pkg = new VrtsPackage(pkg_.id, pkg_.path, pkg_.name);
+    //     return pkg;
+    // }
 }
