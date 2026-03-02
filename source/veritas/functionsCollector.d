@@ -21,13 +21,13 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
     VrtsEcosystem ecosystem;
     VrtsSourceCollector sourceCollector;
 
-    struct FunctionSourceAssoc {
-        VrtsFunction function_;
-        VrtsSourceFile file;
-    }
+    // struct FunctionSourceAssoc {
+    //     VrtsFunction function_;
+    //     VrtsSourceFile file;
+    // }
 
-    // VrtsSourceFile[]
-    FunctionSourceAssoc[] associatedFunctions;
+    VrtsSourceFile[VrtsFunction]    associatedFunctions;
+    // FunctionSourceAssoc[] associatedFunctions;
 
     void setEventsBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
@@ -44,9 +44,14 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
         return cast(uint)storage.length;
     }
 
+    // void processFunctionsFromSourceFiles(VrtsFunction[] funcs) {
+    //     funcs.each!(a => this.addFunction(a));
+    // }
+
     bool checkFunctionEdentity(VrtsFunction func1, VrtsSourceFile sourceFile2, string name) {
-        auto pathFile = associatedFunctions.find!(a => a.function_ is func1).front.file.getPath.dirName;
-        // auto pathFile = func1.file.getPath.dirName;
+        // auto pathFile = associatedFunctions.find!(a => a.function_ is func1).front.file.getPath.dirName;
+        auto pathFile = associatedFunctions[func1].getPath.dirName;
+        // auto pathFile = func1.declarationLocation.
 
         auto pathCheckingFile = sourceFile2.getPath().dirName;
         return  pathFile == pathCheckingFile &&
@@ -61,8 +66,8 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
 
         if(func.empty) { 
             def = new VrtsFunction(getNewId(), name); 
-            auto assoc = FunctionSourceAssoc(def, sourceFile);
-            associatedFunctions ~= assoc;
+            // auto assoc = FunctionSourceAssoc(def, sourceFile);
+            associatedFunctions[def] = sourceFile;
             storage.add(def);
             // def.file = sourceFile;
             // functions ~= def; 
@@ -70,8 +75,8 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
         }
         else {
             def = storage.data.front();
-            auto assoc = FunctionSourceAssoc(def, sourceFile);
-            associatedFunctions ~= assoc;
+            // auto assoc = FunctionSourceAssoc(def, sourceFile);
+            associatedFunctions[def] = sourceFile;
             // def.file = sourceFile;
         }
 

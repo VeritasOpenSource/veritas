@@ -23,15 +23,6 @@ class VrtsEcosystem {
 
     VrtsPackage[]               packages;
 
-    VrtsRing[]                  rings;
-    
-    // VrtsSourceFile[]            sourceFiles;
-    // VrtsFunction[]              functions;
-    // VrtsFunctionCall[]          calls;
-    // VrtsReport[]                reports;
-
-    // Triggering[] triggers;
-
     void setEventBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
     }
