@@ -27,21 +27,6 @@ class VrtsEcosystem {
         this.eventBus = eventBus;
     }
 
-    // void updateStorages() {
-    //     sourceFiles = sourceFileStorage.data; 
-    // }
-
-    // auto collectCalls() {
-
-    //     uint i;
-    //     foreach(func; functions) {
-    //         func.calls.each!((a) => (a.setId(i++)));
-    //         calls ~= func.calls;
-    //     }
-
-    //     return calls.length;
-    // }
-
     void clear() {
         foreach(VrtsPackage pkg; packages) {
             pkg.clear();
