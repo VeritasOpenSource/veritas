@@ -1,7 +1,5 @@
 module veritas.functionsCollector;
 
-// module veritas.ecosystem.sourceAnalyzer;
-
 import veritas.ecosystem;
 import veritas.sourceCollector;
 import std.stdio;
@@ -21,13 +19,7 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
     VrtsEcosystem ecosystem;
     VrtsSourceCollector sourceCollector;
 
-    // struct FunctionSourceAssoc {
-    //     VrtsFunction function_;
-    //     VrtsSourceFile file;
-    // }
-
     VrtsSourceFile[VrtsFunction]    associatedFunctions;
-    // FunctionSourceAssoc[] associatedFunctions;
 
     void setEventsBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
@@ -37,7 +29,6 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
 			VrtsSourceCollector collector) {
         this.ecosystem = ecosystem;
 		this.sourceCollector = collector; 
-        // this.visitor = new VrtsSourceVisitor;
     }
 
     uint getNewId() {
@@ -49,9 +40,7 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
     // }
 
     bool checkFunctionEdentity(VrtsFunction func1, VrtsSourceFile sourceFile2, string name) {
-        // auto pathFile = associatedFunctions.find!(a => a.function_ is func1).front.file.getPath.dirName;
         auto pathFile = associatedFunctions[func1].getPath.dirName;
-        // auto pathFile = func1.declarationLocation.
 
         auto pathCheckingFile = sourceFile2.getPath().dirName;
         return  pathFile == pathCheckingFile &&
@@ -66,18 +55,12 @@ class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
 
         if(func.empty) { 
             def = new VrtsFunction(getNewId(), name); 
-            // auto assoc = FunctionSourceAssoc(def, sourceFile);
             associatedFunctions[def] = sourceFile;
             storage.add(def);
-            // def.file = sourceFile;
-            // functions ~= def; 
-            // sourceFile.getPackage().addFunction(def);
         }
         else {
             def = storage.data.front();
-            // auto assoc = FunctionSourceAssoc(def, sourceFile);
             associatedFunctions[def] = sourceFile;
-            // def.file = sourceFile;
         }
 
         return def;
