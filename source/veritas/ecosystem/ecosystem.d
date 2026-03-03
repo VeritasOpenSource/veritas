@@ -13,7 +13,6 @@ import veritas.ecosystem;
 import veritas.ipc.events;
 import veritas.triggering;
 import veritas.model;
-// import veritas.preparing;
 import veritas.dataProvider;
 
 /// 
@@ -31,11 +30,6 @@ class VrtsEcosystem {
         foreach(VrtsPackage pkg; packages) {
             pkg.clear();
         }
-        // rings.length = 0;
-        // // functions.length = 0;
-        // calls.length = 0;
-        // reports.length = 0;
-        // triggers.length = 0;
     }
 
     /// 
@@ -50,94 +44,9 @@ class VrtsEcosystem {
         auto md = VrtsMetaData.load(pathToMetadata);
         auto pkg = new VrtsPackage(cast(uint)packages.length, md);
         packages ~= pkg;
-        // writeln(md.getConfigCommand.strip);
-
-        // auto sp = new VrtsSourcePreparing();
-        // sp.preparePackage(md);
-        // sp.pseudoMake();
-        // auto paths = sp.getSourceFilesPaths(md);
-
-        // paths.each!(a => writeln(a));
-
-        // VrtsPackage pkg = new VrtsPackage(0, "../../veritas-test/bash", "bash");
-
-        // auto sa = new VrtsSourceCollector(null);
-        // auto files = sa.processSourceFiles(pkg, paths);
-
-        // files.each!(a => a.getPath.writeln);
-
-        // auto pkg = new VrtsPackage(cast(uint)packages.length, name, path);
-        // packages ~= pkg;
 
         eventBus.publish(new EventProjectAdded(pkg.getPath));
-        // pkg.scanForSourceFiles();
     }
-
-    // ///
-    // void recollectData() {
-    //     clear();
-    //     int i = 0;
-
-    //     sourceFiles = packages.map!(a => a.getSourceFiles).join.array;
-
-    //     sourceFiles.each!((ref a) => a.setId(i++));
-    // }
-
-    // /
-    // void addSourceFile(VrtsSourceFile file) {
-    //     sourceFiles ~= file;
-    // }
-
-    ///
-    // bool checkFunctionEdentity(VrtsFunction func1, VrtsSourceFile sourceFile2, string name) {
-    //     auto pathFile = func1.file.getPath.dirName;
-
-    //     auto pathCheckingFile = sourceFile2.getPath().dirName;
-    //     return  pathFile == pathCheckingFile &&
-    //              name == func1.name;
-    // }
-
-    ///
-    // VrtsFunction addFunction(VrtsSourceFile sourceFile, string name) {
-    //     auto func = functions
-    //         .find!((a) => checkFunctionEdentity(a, sourceFile, name));
-
-    //     VrtsFunction def;
-
-    //     if(func.empty) { 
-    //         def = new VrtsFunction(cast(uint) functions.length, name); 
-    //         def.file = sourceFile;
-    //         functions ~= def; 
-    //         sourceFile.getPackage().addFunction(def);
-    //     }
-    //     else {
-    //         def = func.front();
-    //         def.file = sourceFile;
-    //     }
-
-    //     return def;
-    // }
-
-    ///
-    // void relinkCalls() {
-    //     foreach(func; functions) {
-    //         relinkFunctionCall(func);
-    //     }
-    // }
-
-    ///
-    // void relinkFunctionCall(VrtsFunction def) {
-    //     foreach(call; def.calls) {
-    //         foreach(needle; functions) {
-    //             if(!call.isDefined && call.getCallName == needle.name) {
-    //                 call.defineTarget(needle);
-    //                 needle.calledBy ~= call;
-
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
 
     ///
     // auto getFunctionsWithoutCalls() {
