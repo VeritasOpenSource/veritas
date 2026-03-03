@@ -73,14 +73,6 @@ class VrtsEcosystem {
         // pkg.scanForSourceFiles();
     }
 
-    // void preparePackageForAnalyze(VrtsPackage pkg) {
-    //     auto sp = new VrtsSourcePreparing();
-    //     sp.preparePackage(pkg.getMetadata);
-    //     sp.pseudoMake();
-    //     sp.getSourceFilesPaths(pkg.getMetadata);
-    //     // sourceFiles
-    // }
-
     // ///
     // void recollectData() {
     //     clear();
