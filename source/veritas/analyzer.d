@@ -1,6 +1,6 @@
 module veritas.analyzer;
 
-import veritas.dataProvider;
+import veritas.dataStorage;
 
 
 abstract class VrtsAnalyzer(VrtsEntity) {

@@ -6,7 +6,7 @@ import std.path;
 import veritas.clang;
 import veritas.ecosystem;
 import veritas.analyzer;
-import veritas.dataProvider;
+import veritas.dataStorage;
 import veritas.functionsCollector;
 import veritas.callsCollector;
 import veritas.sourceCollector;
