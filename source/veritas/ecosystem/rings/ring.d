@@ -1,5 +1,5 @@
 ///
-module veritas.ecosystem.ring;
+module veritas.ecosystem.rings.ring;
 
 import std.algorithm;
 

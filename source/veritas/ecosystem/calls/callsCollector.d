@@ -58,4 +58,8 @@ class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
             }
         }
     }
+
+    auto getFunctionsWithoutCalls() {
+        return functionsCollector.storage.data.filter!((a) => a.calls.length == 0);
+    }
 }

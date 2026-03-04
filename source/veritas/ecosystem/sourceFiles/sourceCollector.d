@@ -15,7 +15,8 @@ import veritas.ipc.events;
 
 class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
     VrtsEventBus eventBus;
-    VrtsEcosystem ecosystem;
+
+    VrtsPackageCollector packages;
     VrtsSourceAnalyzer visitor;
 
     struct PkgSourceAssoc {
@@ -30,8 +31,7 @@ class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
     }
 
     this(VrtsEcosystem ecosystem) {
-        this.ecosystem = ecosystem;
-        // this.visitor = new VrtsSourceVisito;
+        this.packages = ecosystem.packageCollector;
     }
 
     VrtsSourceFile[] processSourceFiles(VrtsPackage pkg, string[] sources) {
@@ -60,7 +60,7 @@ class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
     }
 
     void collectAllSourceFiles() {
-        foreach(pkg; ecosystem.packagesStorage.data) {
+        foreach(pkg; packages.storage.data) {
             analyzePackage(pkg);
         }
     }

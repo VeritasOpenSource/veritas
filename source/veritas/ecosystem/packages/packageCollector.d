@@ -8,6 +8,7 @@ class VrtsPackageCollector : VrtsCollector!VrtsPackage {
 	VrtsEcosystem ecosystem;
 
 	this(VrtsEcosystem ecosystem) {
+		super();
 		this.ecosystem = ecosystem;
 	}
 

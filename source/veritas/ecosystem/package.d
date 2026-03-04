@@ -7,7 +7,7 @@ public {
     import veritas.ecosystem.packages;
     import veritas.ecosystem.sourceFiles;
     import veritas.ecosystem.calls;
-    import veritas.ecosystem.ring;
+    import veritas.ecosystem.rings;
     import veritas.ecosystem.journal;
  import veritas.ecosystem.sourceFiles;
 }

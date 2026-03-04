@@ -20,8 +20,10 @@ import veritas.ecosystem.packages.packageCollector;
 /// 
 class VrtsEcosystem {
     VrtsEventBus eventBus;
-    VrtsDataStorage!VrtsPackage     packagesStorage;
-    VrtsDataStorage!VrtsSourceFile  sourceFileStorage;
+    VrtsSourceCollector sourcesCollector;
+    VrtsPackageCollector packageCollector;
+    VrtsFunctionsCollector funtionsCollector;
+    VrtsCallsCollector callsCollector;
 
     // VrtsPackage[]               packages;
 
@@ -29,8 +31,12 @@ class VrtsEcosystem {
         this.eventBus = eventBus;
     }
 
-    void initStorages(VrtsPackageCollector  pkgs) {
-        packagesStorage = pkgs.storage;
+    void initCollectors(VrtsPackageCollector  pkgs,
+        VrtsFunctionsCollector funcs,
+        VrtsCallsCollector calls) {
+        this.packageCollector = pkgs;
+        this.funtionsCollector = funcs;
+        this.callsCollector = calls;
     }
 
     /// 
@@ -212,139 +218,139 @@ class VrtsEcosystem {
     //     return trig.length;
     // }
 
-    auto buildModel() {
-        VrtsModel model;
+    // auto buildModel() {
+    //     VrtsModel model;
 
-        foreach(pkg; packagesStorage.data) {
-            auto modelPackage = VrtsModelPackage();
-            modelPackage.id = pkg.getId();
-            modelPackage.name = pkg.getName;
-            // modelPackage.path = pkg.getPath;
+    //     foreach(pkg; packagesStorage.data) {
+    //         auto modelPackage = VrtsModelPackage();
+    //         modelPackage.id = pkg.getId();
+    //         modelPackage.name = pkg.getName;
+    //         // modelPackage.path = pkg.getPath;
 
-            foreach(func; pkg.getFunctions)
-                modelPackage.functionsIds ~= func.id;
+    //         foreach(func; pkg.getFunctions)
+    //             modelPackage.functionsIds ~= func.id;
 
-            uint accessor(T) (T t) {
-                return t.getPackage.getId;
-            }
+    //         uint accessor(T) (T t) {
+    //             return t.getPackage.getId;
+    //         }
 
-            auto pkgSourceFiles = sourceFileStorage
-                .data
-                .filter!(a => a.getPackage.getId() == pkg.getId())
-                .map!(a => a.getId());
+    //         auto pkgSourceFiles = sourceFileStorage
+    //             .data
+    //             .filter!(a => a.getPackage.getId() == pkg.getId())
+    //             .map!(a => a.getId());
 
-            foreach(sourceFile; pkgSourceFiles)
-                modelPackage.sourceFilesIds ~= cast(uint)sourceFile;
+    //         foreach(sourceFile; pkgSourceFiles)
+    //             modelPackage.sourceFilesIds ~= cast(uint)sourceFile;
 
-            model.packages ~= modelPackage;
+    //         model.packages ~= modelPackage;
 
-        }
+    //     }
 
-        foreach(sourceFile; sourceFileStorage.data) {
-            auto modelSourceFile = VrtsModelSourceFile();
-            modelSourceFile.id = sourceFile.getId();
-            modelSourceFile.path = sourceFile.getFileEntry;
-            modelSourceFile.packageId = sourceFile.getPackage.getId();
+    //     foreach(sourceFile; sourceFileStorage.data) {
+    //         auto modelSourceFile = VrtsModelSourceFile();
+    //         modelSourceFile.id = sourceFile.getId();
+    //         modelSourceFile.path = sourceFile.getFileEntry;
+    //         modelSourceFile.packageId = sourceFile.getPackage.getId();
 
-            model.files ~= modelSourceFile;
-        }
+    //         model.files ~= modelSourceFile;
+    //     }
 
-        // foreach(ring; rings) {
-        //     auto modelRing = VrtsModelRing();
-        //     modelRing.id = ring.level;
-        //     // modelRing.path = ring.getFileEntry;
-        //     foreach(func; ring.functions)
-        //         modelRing.functionsIds ~= func.id;
+    //     // foreach(ring; rings) {
+    //     //     auto modelRing = VrtsModelRing();
+    //     //     modelRing.id = ring.level;
+    //     //     // modelRing.path = ring.getFileEntry;
+    //     //     foreach(func; ring.functions)
+    //     //         modelRing.functionsIds ~= func.id;
 
-        //     model.rings ~= modelRing;
-        // }
+    //     //     model.rings ~= modelRing;
+    //     // }
 
-        // foreach(func; functions) {
-        //     auto modelFunc = VrtsModelFunction();
-        //     modelFunc.id = func.id;
-        //     modelFunc.name = func.name;
-        //     modelFunc.sourceFileId = func.file.getId;
+    //     // foreach(func; functions) {
+    //     //     auto modelFunc = VrtsModelFunction();
+    //     //     modelFunc.id = func.id;
+    //     //     modelFunc.name = func.name;
+    //     //     modelFunc.sourceFileId = func.file.getId;
 
-        //     if(func.declarationLocation !is null) {
-        //         modelFunc.declarationLocation = VrtsModelSourceLocation(
-        //             func.declarationLocation.filename,
-        //             func.declarationLocation.line,
-        //             func.declarationLocation.column
-        //         );
-        //     }
-        //     if(func.definitionLocation !is null) {
-        //         modelFunc.definitionLocation = 
-        //             VrtsModelSourceLocationRange(
-        //                 VrtsModelSourceLocation(
-        //                     func.definitionLocation.start.filename,
-        //                     func.definitionLocation.start.line,
-        //                     func.definitionLocation.start.column
-        //                 ),
-        //                 VrtsModelSourceLocation(
-        //                     func.definitionLocation.end.filename,
-        //                     func.definitionLocation.end.line,
-        //                     func.definitionLocation.end.column
-        //                 )
-        //             );
-        //     }
+    //     //     if(func.declarationLocation !is null) {
+    //     //         modelFunc.declarationLocation = VrtsModelSourceLocation(
+    //     //             func.declarationLocation.filename,
+    //     //             func.declarationLocation.line,
+    //     //             func.declarationLocation.column
+    //     //         );
+    //     //     }
+    //     //     if(func.definitionLocation !is null) {
+    //     //         modelFunc.definitionLocation = 
+    //     //             VrtsModelSourceLocationRange(
+    //     //                 VrtsModelSourceLocation(
+    //     //                     func.definitionLocation.start.filename,
+    //     //                     func.definitionLocation.start.line,
+    //     //                     func.definitionLocation.start.column
+    //     //                 ),
+    //     //                 VrtsModelSourceLocation(
+    //     //                     func.definitionLocation.end.filename,
+    //     //                     func.definitionLocation.end.line,
+    //     //                     func.definitionLocation.end.column
+    //     //                 )
+    //     //             );
+    //     //     }
 
-        //     foreach(report; func.reports)
-        //         modelFunc.reportsIds ~= report.id;
-        //     foreach(trigger; func.triggers)
-        //         modelFunc.triggersId ~= trigger.id;
-        //     foreach(call; func.calls)
-        //         modelFunc.callsIds ~= call.getId;
-        //     foreach(called; func.calledBy)
-        //         modelFunc.calledByIds ~= called.getId;
+    //     //     foreach(report; func.reports)
+    //     //         modelFunc.reportsIds ~= report.id;
+    //     //     foreach(trigger; func.triggers)
+    //     //         modelFunc.triggersId ~= trigger.id;
+    //     //     foreach(call; func.calls)
+    //     //         modelFunc.callsIds ~= call.getId;
+    //     //     foreach(called; func.calledBy)
+    //     //         modelFunc.calledByIds ~= called.getId;
 
-        //     model.functions ~= modelFunc;
-        // }
+    //     //     model.functions ~= modelFunc;
+    //     // }
 
-        // foreach(call; calls) {
-        //     auto modelCall = VrtsModelCall();
-        //     modelCall.id = call.getId;
-        //     modelCall.isDefined = call.isDefined;
-        //     modelCall.sourceId = call.getSourceFunction.id;
-        //     // modelCall.path = call.getFileEntry;
-        //     if(!call.isDefined) {
-        //         modelCall.name = call.getCallName; 
-        //     }
-        //     else {
-        //         modelCall.targetId = call.getTargetFunction.id;
-        //     }
-        //     // modelCall.call = call.call;
+    //     // foreach(call; calls) {
+    //     //     auto modelCall = VrtsModelCall();
+    //     //     modelCall.id = call.getId;
+    //     //     modelCall.isDefined = call.isDefined;
+    //     //     modelCall.sourceId = call.getSourceFunction.id;
+    //     //     // modelCall.path = call.getFileEntry;
+    //     //     if(!call.isDefined) {
+    //     //         modelCall.name = call.getCallName; 
+    //     //     }
+    //     //     else {
+    //     //         modelCall.targetId = call.getTargetFunction.id;
+    //     //     }
+    //     //     // modelCall.call = call.call;
 
-        //     model.calls ~= modelCall;
-        // }
+    //     //     model.calls ~= modelCall;
+    //     // }
 
-        // foreach(trigger; triggers) {
-        //     auto modelTrigger = VrtsModelTriggering();
-        //     modelTrigger.id = trigger.id;
-        //     modelTrigger.functionId = trigger.func.id;
-        //     modelTrigger.count = trigger.count;
-        //     // modelTrigger.path = trigger.getFileEntry;
-        //     // modelTrigger.trigger = trigger.call;
+    //     // foreach(trigger; triggers) {
+    //     //     auto modelTrigger = VrtsModelTriggering();
+    //     //     modelTrigger.id = trigger.id;
+    //     //     modelTrigger.functionId = trigger.func.id;
+    //     //     modelTrigger.count = trigger.count;
+    //     //     // modelTrigger.path = trigger.getFileEntry;
+    //     //     // modelTrigger.trigger = trigger.call;
 
-        //     model.triggerings ~= modelTrigger;
-        // }
+    //     //     model.triggerings ~= modelTrigger;
+    //     // }
 
-        // foreach(report; reports) {
-        //     auto modelReport = VrtsModelReport();
-        //     modelReport.id = report.id;
-        //     modelReport.location = VrtsModelSourceLocation(
-        //         report.location.filename,
-        //         report.location.line,
-        //         report.location.column
-        //     );
-        //     modelReport.description = report.description;
-        //     // modelReport.path = report.getFileEntry;
-        //     // modelReport.report = report.call;
+    //     // foreach(report; reports) {
+    //     //     auto modelReport = VrtsModelReport();
+    //     //     modelReport.id = report.id;
+    //     //     modelReport.location = VrtsModelSourceLocation(
+    //     //         report.location.filename,
+    //     //         report.location.line,
+    //     //         report.location.column
+    //     //     );
+    //     //     modelReport.description = report.description;
+    //     //     // modelReport.path = report.getFileEntry;
+    //     //     // modelReport.report = report.call;
 
-        //     model.reports ~= modelReport;
-        // }
+    //     //     model.reports ~= modelReport;
+    //     // }
 
-        return model;
-    }
+    //     return model;
+    // }
 
     // static VrtsEcosystem buildFromModel(VrtsModel model) {
     //     auto result = new VrtsEcosystem();

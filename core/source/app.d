@@ -1,5 +1,5 @@
 import veritas.veritas;
-import veritas.ecosystem.ring;
+import veritas.ecosystem.rings;
 import veritas.ecosystem.ecosystem;
 
 

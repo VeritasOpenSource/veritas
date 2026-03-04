@@ -21,6 +21,7 @@ import veritas.ipc.events;
 import mir.ser.ion;
 
 import veritas.ecosystem;
+import veritas.ecosystem.rings.ringsAnalyzer;
 // import veritas.calls;
 // import veritas.functionsCollector;
 // import veritas.ecosystem.packages;
@@ -33,6 +34,9 @@ class Veritas {
     VrtsSourceCollector     sourceCollector;
     VrtsFunctionsCollector  functionsCollector;
     VrtsCallsCollector      callsCollector;
+    VrtsRingsCollector      ringsCollector;
+    VrtsRingsAnalyzer       ringsAnalyzers;
+
 
     // VrtsPackageAnalyzer     packageAnalyzer;
     VrtsSourceAnalyzer      sourceAnalyzer;
@@ -53,15 +57,25 @@ class Veritas {
 
     void initAnalyzers() {
         packageCollector = new VrtsPackageCollector(ecosystem);
-        ecosystem.packagesStorage = packageCollector.storage;
+        ecosystem.packageCollector = packageCollector;
 
         sourceCollector = new VrtsSourceCollector(ecosystem);
-        ecosystem.sourceFileStorage = sourceCollector.storage;
+        ecosystem.sourcesCollector = sourceCollector;
 
         functionsCollector = new VrtsFunctionsCollector(ecosystem, sourceCollector);
         callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector, functionsCollector);
 
         sourceAnalyzer = new VrtsSourceAnalyzer(sourceCollector, functionsCollector, callsCollector);
+
+        ringsCollector = new VrtsRingsCollector();
+        ringsAnalyzers = new VrtsRingsAnalyzer(ecosystem);
+
+
+        ecosystem.initCollectors(
+            packageCollector,
+            functionsCollector,
+            callsCollector
+        );
     }
 
     void processCommand(string _command) {
@@ -79,6 +93,7 @@ class Veritas {
             sourceAnalyzer.collectAllFunctions();
             sourceAnalyzer.collectAllCalls();
             callsCollector.relinkFunctionsCalls();
+            ringsAnalyzers.buildRingsIerarchy();
 
             // callsCollector.storage.data.length.to!string.writeln;
             writeln("DONE");
