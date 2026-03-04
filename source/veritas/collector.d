@@ -1,9 +1,9 @@
-module veritas.analyzer;
+module veritas.collector;
 
 import veritas.dataStorage;
 
 
-abstract class VrtsAnalyzer(VrtsEntity) {
+abstract class VrtsCollector(VrtsEntity) {
 	VrtsDataStorage!VrtsEntity storage;
 
 	this() {

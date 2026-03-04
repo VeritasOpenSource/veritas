@@ -10,11 +10,11 @@ import std.algorithm;
 import std.conv;
 import std.path;
 
-import veritas.analyzer;
+import veritas.collector;
 import veritas.preparing;
 import veritas.ipc.events;
 
-class VrtsFunctionsCollector : VrtsAnalyzer!VrtsFunction {
+class VrtsFunctionsCollector : VrtsCollector!VrtsFunction {
     VrtsEventBus eventBus;
     VrtsEcosystem ecosystem;
     VrtsSourceCollector sourceCollector;
