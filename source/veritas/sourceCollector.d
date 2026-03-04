@@ -59,8 +59,8 @@ class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
         this.storage.add(processSourceFiles(pkg, filesNames));
     }
 
-    void collectAllSourceFiles(VrtsEcosystem ecosystem) {
-        foreach(pkg; ecosystem.getPackages()) {
+    void collectAllSourceFiles() {
+        foreach(pkg; ecosystem.packagesStorage.data) {
             analyzePackage(pkg);
         }
     }

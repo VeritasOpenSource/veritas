@@ -15,22 +15,22 @@ import veritas.triggering;
 import veritas.model;
 // import veritas.preparing;
 import veritas.dataStorage;
+import veritas.packageCollector;
 
 /// 
 class VrtsEcosystem {
     VrtsEventBus eventBus;
-    VrtsDataStorage!VrtsSourceFile sourceFileStorage;
+    VrtsDataStorage!VrtsPackage     packagesStorage;
+    VrtsDataStorage!VrtsSourceFile  sourceFileStorage;
 
-    VrtsPackage[]               packages;
+    // VrtsPackage[]               packages;
 
     void setEventBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
     }
 
-    void clear() {
-        foreach(VrtsPackage pkg; packages) {
-            pkg.clear();
-        }
+    void initStorages(VrtsPackageCollector  pkgs) {
+        packagesStorage = pkgs.storage;
     }
 
     /// 
@@ -41,13 +41,13 @@ class VrtsEcosystem {
     //     // pkg.scanForSourceFiles();
     // }
 
-    void addPackage(string pathToMetadata) {
-        auto md = VrtsMetaData.load(pathToMetadata);
-        auto pkg = new VrtsPackage(cast(uint)packages.length, md);
-        packages ~= pkg;
+    // void addPackage(string pathToMetadata) {
+    //     auto md = VrtsMetaData.load(pathToMetadata);
+    //     auto pkg = new VrtsPackage(cast(uint)packages.length, md);
+    //     packages ~= pkg;
 
-        eventBus.publish(new EventProjectAdded(pkg.getPath));
-    }
+    //     eventBus.publish(new EventProjectAdded(pkg.getPath));
+    // }
 
     ///
     // auto getFunctionsWithoutCalls() {
@@ -178,9 +178,9 @@ class VrtsEcosystem {
     //     return allCallsInRings;
     // }
 
-    auto getPackages() {
-        return packages;
-    }
+    // auto getPackages() {
+    //     return packages;
+    // }
 
     static auto loadLocalDatabase(string filepath) {
         File fileL = File(filepath, "rb");
@@ -215,7 +215,7 @@ class VrtsEcosystem {
     auto buildModel() {
         VrtsModel model;
 
-        foreach(pkg; packages) {
+        foreach(pkg; packagesStorage.data) {
             auto modelPackage = VrtsModelPackage();
             modelPackage.id = pkg.getId();
             modelPackage.name = pkg.getName;

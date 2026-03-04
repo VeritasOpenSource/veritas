@@ -22,14 +22,19 @@ import mir.ser.ion;
 
 import veritas.callsCollector;
 import veritas.functionsCollector;
+import veritas.packageCollector;
 
 class Veritas {
     VrtsEventBus eventsBus;
     VrtsEcosystem ecosystem;
+
+    VrtsPackageCollector    packageCollector;
     VrtsSourceCollector     sourceCollector;
-    VrtsSourceAnalyzer      sourceAnalyzer;
     VrtsFunctionsCollector  functionsCollector;
     VrtsCallsCollector      callsCollector;
+
+    // VrtsPackageAnalyzer     packageAnalyzer;
+    VrtsSourceAnalyzer      sourceAnalyzer;
     // VrtsReportsParser parser;
 
     this(VrtsEventBus bus, string[] args) {
@@ -46,6 +51,9 @@ class Veritas {
     }
 
     void initAnalyzers() {
+        packageCollector = new VrtsPackageCollector(ecosystem);
+        ecosystem.packagesStorage = packageCollector.storage;
+
         sourceCollector = new VrtsSourceCollector(ecosystem);
         ecosystem.sourceFileStorage = sourceCollector.storage;
 
@@ -60,13 +68,12 @@ class Veritas {
 
         if(commands[0] == "add") {
             string package_ = commands[1];
-            addPackage(package_);
+            packageCollector.addPackage(package_);
         } else
 
         if(commands[0] == "analyze") {
-            sourceCollector.collectAllSourceFiles(ecosystem);
+            sourceCollector.collectAllSourceFiles();
             sourceCollector.storage.length.to!string.writeln;
-            // ecosystem.recollectData();
             
             sourceAnalyzer.collectAllFunctions();
             sourceAnalyzer.collectAllCalls();
@@ -94,9 +101,5 @@ class Veritas {
             // file.rawWrite(serial);
             // file.close();
         }
-    }
-
-    void addPackage(string path) {
-        ecosystem.addPackage(path);
     }
 }
