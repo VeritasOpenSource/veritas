@@ -14,15 +14,16 @@ import veritas.ecosystem;
 import veritas.clang;
 import std.range;
 import veritas.reportparser;
-import veritas.sourceCollector;
-import veritas.sourceAnalyzer;
+import veritas.ecosystem.sourceFiles;
+import veritas.ecosystem.sourceFiles;
 import std.socket;
 import veritas.ipc.events;
 import mir.ser.ion;
 
-import veritas.callsCollector;
-import veritas.functionsCollector;
-import veritas.packageCollector;
+import veritas.ecosystem;
+// import veritas.calls;
+// import veritas.functionsCollector;
+// import veritas.ecosystem.packages;
 
 class Veritas {
     VrtsEventBus eventsBus;

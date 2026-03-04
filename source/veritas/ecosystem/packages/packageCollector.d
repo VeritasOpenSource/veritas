@@ -1,6 +1,6 @@
-module veritas.packageCollector;
+module veritas.ecosystem.packages.packageCollector;
 
-import veritas.ecosystem.pkg;
+import veritas.ecosystem.packages.pkg;
 import veritas.collector;
 import veritas.ecosystem;
 

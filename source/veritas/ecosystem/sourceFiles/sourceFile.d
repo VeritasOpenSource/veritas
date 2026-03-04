@@ -1,4 +1,4 @@
-module veritas.ecosystem.sourceFile;
+module veritas.ecosystem.sourceFiles.sourceFile;
 
 import std.file;
 

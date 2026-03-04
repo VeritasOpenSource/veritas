@@ -1,5 +1,5 @@
 ///Module for call representation
-module veritas.ecosystem.call;
+module veritas.ecosystem.calls.call;
 
 import veritas.ecosystem;
 

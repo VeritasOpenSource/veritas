@@ -1,4 +1,4 @@
-module veritas.ecosystem.func;
+module veritas.ecosystem.functions.func;
 
 import std.algorithm;
 

@@ -1,4 +1,4 @@
-module veritas.sourceCollector;
+module veritas.ecosystem.sourceFiles.sourceCollector;
 
 import veritas.ecosystem;
 // import veritas.source;
@@ -10,7 +10,7 @@ import std.algorithm;
 import std.conv;
 
 import veritas.collector;
-import veritas.preparing;
+import veritas.ecosystem.packages;
 import veritas.ipc.events;
 
 class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {

@@ -1,11 +1,11 @@
 module veritas.toolkit;
 
-import veritas.ecosystem.sourceFile;
-import veritas.ecosystem.func;
-import veritas.ecosystem.call;
-import veritas.callsCollector;
-import veritas.functionsCollector;
-import veritas.ecosystem.pkg;
+import veritas.ecosystem.sourceFiles;
+import veritas.ecosystem.functions;
+import veritas.ecosystem.calls;
+// import veritas.callsCollector;
+// import veritas.functionsCollector;
+import veritas.ecosystem.packages;
 
 
 abstract class VrtsToolkit {

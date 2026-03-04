@@ -1,6 +1,6 @@
 module veritas.triggering;
 
-import veritas.ecosystem.func;
+import veritas.ecosystem.functions;
 
 class Triggering {
     uint id;

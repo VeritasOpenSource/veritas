@@ -7,8 +7,8 @@ import veritas.ecosystem;
 import std.string;
 import std.path;
 import std.stdio;
-import veritas.functionsCollector;
-import veritas.callsCollector;
+import veritas.ecosystem.functions;
+import veritas.ecosystem.calls;
 import std.process;
 import std.algorithm;
 

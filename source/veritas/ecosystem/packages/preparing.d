@@ -1,7 +1,7 @@
-module veritas.preparing;
+module veritas.ecosystem.packages.preparing;
 
 import std.process;
-import veritas.ecosystem.pkg;
+import veritas.ecosystem.packages;
 import std.string;
 import std.stdio;
 import std.algorithm;

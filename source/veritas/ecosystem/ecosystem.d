@@ -13,9 +13,9 @@ import veritas.ecosystem;
 import veritas.ipc.events;
 import veritas.triggering;
 import veritas.model;
-// import veritas.preparing;
+// import veritas.ecosystem.packages;
 import veritas.dataStorage;
-import veritas.packageCollector;
+import veritas.ecosystem.packages.packageCollector;
 
 /// 
 class VrtsEcosystem {

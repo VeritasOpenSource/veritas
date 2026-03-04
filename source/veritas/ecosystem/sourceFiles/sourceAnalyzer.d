@@ -1,4 +1,4 @@
-module veritas.sourceAnalyzer;
+module veritas.ecosystem.sourceFiles.sourceAnalyzer;
 
 import std.string;
 import std.path;
@@ -7,9 +7,9 @@ import veritas.clang;
 import veritas.ecosystem;
 import veritas.collector;
 import veritas.dataStorage;
-import veritas.functionsCollector;
-import veritas.callsCollector;
-import veritas.sourceCollector;
+import veritas.ecosystem.functions;
+import veritas.ecosystem.calls;
+import veritas.ecosystem.sourceFiles;
 import veritas.toolkit;
 import veritas.clang;
 

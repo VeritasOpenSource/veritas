@@ -15,9 +15,9 @@ import veritas.ipc.events;
 import veritas.model;
 import mir.ser.ion;
 import std.base64;
-import veritas.ecosystem.pkg;
-import veritas.preparing;
-import veritas.sourceAnalyzer;
+import veritas.ecosystem.packages;
+import veritas.ecosystem.packages;
+import veritas.ecosystem.sourceFiles;
 
 class VrtsLogger : VrtsEventHandler {
     override void processEvent(VrtsEvent event) {

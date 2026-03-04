@@ -1,9 +1,9 @@
-module veritas.callsCollector;
+module veritas.ecosystem.calls.callsCollector;
 
 // module veritas.ecosystem.sourceAnalyzer;
 
 import veritas.ecosystem;
-import veritas.sourceCollector;
+import veritas.ecosystem.sourceFiles;
 import std.stdio;
 import std.file;
 import std.array;
@@ -12,10 +12,10 @@ import std.algorithm;
 import std.conv;
 
 import veritas.collector;
-import veritas.preparing;
+import veritas.ecosystem.packages;
 import veritas.ipc.events;
-import veritas.ecosystem.call;
-import veritas.functionsCollector;
+import veritas.ecosystem.calls;
+import veritas.ecosystem.functions;
 
 class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
     VrtsEventBus eventBus;

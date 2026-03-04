@@ -1,7 +1,7 @@
 /**
  * Module provided package class and stuff
 */
-module veritas.ecosystem.pkg;
+module veritas.ecosystem.packages.pkg;
 
 import std.path;
 import std.array;

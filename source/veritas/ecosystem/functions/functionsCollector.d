@@ -1,7 +1,7 @@
-module veritas.functionsCollector;
+module veritas.ecosystem.functions.functionsCollector;
 
 import veritas.ecosystem;
-import veritas.sourceCollector;
+import veritas.ecosystem.sourceFiles;
 import std.stdio;
 import std.file;
 import std.array;
@@ -11,7 +11,7 @@ import std.conv;
 import std.path;
 
 import veritas.collector;
-import veritas.preparing;
+import veritas.ecosystem.packages;
 import veritas.ipc.events;
 
 class VrtsFunctionsCollector : VrtsCollector!VrtsFunction {
