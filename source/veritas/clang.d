@@ -9,6 +9,8 @@ import std.path;
 import std.stdio;
 import veritas.functionsCollector;
 import veritas.callsCollector;
+import std.process;
+import std.algorithm;
 
 
 extern(C) {
@@ -204,5 +206,26 @@ class ClangToolkit : VrtsToolkit {
         }
 
         return 2;
+    }
+
+    override void startStaticAnalyze(VrtsPackage pkg) {
+        auto meta = pkg.getMetadata;
+        ProcessPipes proc = pipeProcess(["bash"]);
+
+        proc.stdin.writeln("cd ~/veritas-test/");
+		proc.stdin.writeln("cd bash");
+		proc.stdin.writeln("Codechecker analyze ./compile_commands.json --output ./reports");
+        proc.stdin.flush;
+        proc.stdin.writeln("CodeChecker parse --export html --output ../reports_html ../reports_bash");
+        proc.stdin.flush;
+        proc.stdin.writeln("CodeChecker parse --export json --output ../reports.json ../reports_bash");
+        proc.stdin.flush;
+
+        proc
+			.stdout
+			.byLine
+			.each!(a => a.writeln);
+
+		proc.stdin.close();
     }
 }

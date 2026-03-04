@@ -1,0 +1,2 @@
+module veritas.reportsCollector;
+
