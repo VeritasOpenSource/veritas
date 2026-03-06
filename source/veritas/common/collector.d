@@ -13,4 +13,8 @@ abstract class VrtsCollector(VrtsEntity) {
 	auto getStorage() {
 		return storage;
 	}
+
+	auto length() inout @property {
+		return storage.length;
+	}
 }
