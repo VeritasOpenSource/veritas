@@ -30,7 +30,7 @@ class Veritas {
     VrtsEventBus eventsBus;
     VrtsEcosystem ecosystem;
 
-    VrtsPackageAnalyzer     packagesAnalyzer;
+    VrtsPackageAnalyzer     packageAnalyzer;
     // VrtsPackagesCollector    packageCollector;
     VrtsSourceCollector     sourceCollector;
     VrtsFunctionsCollector  functionsCollector;
@@ -57,8 +57,8 @@ class Veritas {
     }
 
     void initAnalyzers() {
-        packageAnalyzer = new VrtsPackagesCollector(ecosystem);
-        ecosystem.packageCollector = packageCollector;
+        packageAnalyzer = new VrtsPackageAnalyzer(ecosystem);
+        ecosystem.packageCollector = packageAnalyzer.collector;
 
         sourceCollector = new VrtsSourceCollector(ecosystem);
         ecosystem.sourcesCollector = sourceCollector;
@@ -73,7 +73,7 @@ class Veritas {
 
 
         ecosystem.initCollectors(
-            packageCollector,
+            packageAnalyzer.collector,
             functionsCollector,
             callsCollector
         );
@@ -84,7 +84,7 @@ class Veritas {
 
         if(commands[0] == "add") {
             string package_ = commands[1];
-            packageCollector.addPackage(package_);
+            packageAnalyzer.addPackage(package_);
         } else
 
         if(commands[0] == "analyze") {
