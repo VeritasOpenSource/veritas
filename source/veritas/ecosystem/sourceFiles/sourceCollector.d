@@ -9,14 +9,14 @@ import std.array;
 import std.algorithm;
 import std.conv;
 
-import veritas.collector;
+import veritas.common.collector;
 import veritas.ecosystem.packages;
 import veritas.ipc.events;
 
 class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
     VrtsEventBus eventBus;
 
-    VrtsPackageCollector packages;
+    VrtsPackagesCollector packages;
     VrtsSourceAnalyzer visitor;
 
     struct PkgSourceAssoc {

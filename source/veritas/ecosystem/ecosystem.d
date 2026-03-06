@@ -14,14 +14,14 @@ import veritas.ipc.events;
 import veritas.triggering;
 import veritas.model;
 // import veritas.ecosystem.packages;
-import veritas.dataStorage;
+import veritas.common.dataStorage;
 import veritas.ecosystem.packages.packageCollector;
 
 /// 
 class VrtsEcosystem {
     VrtsEventBus eventBus;
     VrtsSourceCollector sourcesCollector;
-    VrtsPackageCollector packageCollector;
+    VrtsPackagesCollector packageCollector;
     VrtsFunctionsCollector funtionsCollector;
     VrtsCallsCollector callsCollector;
 
@@ -31,7 +31,7 @@ class VrtsEcosystem {
         this.eventBus = eventBus;
     }
 
-    void initCollectors(VrtsPackageCollector  pkgs,
+    void initCollectors(VrtsPackagesCollector  pkgs,
         VrtsFunctionsCollector funcs,
         VrtsCallsCollector calls) {
         this.packageCollector = pkgs;

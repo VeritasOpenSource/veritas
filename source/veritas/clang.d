@@ -1,7 +1,7 @@
 module veritas.clang;
 
 import std.conv;
-import veritas.toolkit;
+import veritas.common.toolkit;
 // import std.complex;
 import veritas.ecosystem;
 import std.string;

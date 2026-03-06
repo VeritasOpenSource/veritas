@@ -10,7 +10,7 @@ import std.algorithm;
 import std.conv;
 import std.path;
 
-import veritas.collector;
+import veritas.common.collector;
 import veritas.ecosystem.packages;
 import veritas.ipc.events;
 

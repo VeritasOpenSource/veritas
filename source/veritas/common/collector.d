@@ -1,6 +1,6 @@
-module veritas.collector;
+module veritas.common.collector;
 
-import veritas.dataStorage;
+import veritas.common.dataStorage;
 
 
 abstract class VrtsCollector(VrtsEntity) {

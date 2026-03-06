@@ -1,4 +1,4 @@
-module veritas.dataStorage;
+module veritas.common.dataStorage;
 
 import std.algorithm;
 import std.functional;

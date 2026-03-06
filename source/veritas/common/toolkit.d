@@ -1,4 +1,4 @@
-module veritas.toolkit;
+module veritas.common.toolkit;
 
 import veritas.ecosystem.sourceFiles;
 import veritas.ecosystem.functions;

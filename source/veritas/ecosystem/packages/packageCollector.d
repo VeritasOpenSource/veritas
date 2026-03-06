@@ -1,10 +1,10 @@
 module veritas.ecosystem.packages.packageCollector;
 
 import veritas.ecosystem.packages.pkg;
-import veritas.collector;
+import veritas.common.collector;
 import veritas.ecosystem;
 
-class VrtsPackageCollector : VrtsCollector!VrtsPackage {
+class VrtsPackagesCollector : VrtsCollector!VrtsPackage {
 	VrtsEcosystem ecosystem;
 
 	this(VrtsEcosystem ecosystem) {
@@ -12,12 +12,7 @@ class VrtsPackageCollector : VrtsCollector!VrtsPackage {
 		this.ecosystem = ecosystem;
 	}
 
-	void addPackage(string metadataPath) {
-		auto md = VrtsMetaData.load(metadataPath);
-		auto pkg = new VrtsPackage(cast(uint)storage.length, md);
+	void addPackage(VrtsPackage pkg) {
         storage.add(pkg);
-        // packages ~= pkg;
-
-        // eventBus.publish(new EventProjectAdded(pkg.getPath));
 	}
 }

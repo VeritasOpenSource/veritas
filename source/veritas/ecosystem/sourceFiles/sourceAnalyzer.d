@@ -5,12 +5,12 @@ import std.path;
 
 import veritas.clang;
 import veritas.ecosystem;
-import veritas.collector;
-import veritas.dataStorage;
+import veritas.common.collector;
+import veritas.common.dataStorage;
 import veritas.ecosystem.functions;
 import veritas.ecosystem.calls;
 import veritas.ecosystem.sourceFiles;
-import veritas.toolkit;
+import veritas.common.toolkit;
 import veritas.clang;
 
 class VrtsSourceAnalyzer {
