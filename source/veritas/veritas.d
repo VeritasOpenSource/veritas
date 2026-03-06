@@ -31,12 +31,13 @@ class Veritas {
     VrtsEcosystem ecosystem;
 
     VrtsPackageAnalyzer     packageAnalyzer;
+    VrtsSourcePreparator    sourcePreparator;
     // VrtsPackagesCollector    packageCollector;
-    VrtsSourceCollector     sourceCollector;
-    VrtsFunctionsCollector  functionsCollector;
-    VrtsCallsCollector      callsCollector;
-    VrtsRingsCollector      ringsCollector;
-    VrtsRingsAnalyzer       ringsAnalyzers;
+    // VrtsSourceCollector     sourceCollector;
+    // VrtsFunctionsCollector  functionsCollector;
+    // VrtsCallsCollector      callsCollector;
+    // VrtsRingsCollector      ringsCollector;
+    // VrtsRingsAnalyzer       ringsAnalyzers;
 
 
     // VrtsPackageAnalyzer     packageAnalyzer;
@@ -60,23 +61,25 @@ class Veritas {
         packageAnalyzer = new VrtsPackageAnalyzer(ecosystem);
         ecosystem.packageCollector = packageAnalyzer.collector;
 
-        sourceCollector = new VrtsSourceCollector(ecosystem);
-        ecosystem.sourcesCollector = sourceCollector;
+        sourcePreparator = new VrtsSourcePreparator(ecosystem);
 
-        functionsCollector = new VrtsFunctionsCollector(ecosystem, sourceCollector);
-        callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector, functionsCollector);
+        // sourceCollector = new VrtsSourceCollector(ecosystem);
+        // ecosystem.sourcesCollector = sourceCollector;
 
-        sourceAnalyzer = new VrtsSourceAnalyzer(sourceCollector, functionsCollector, callsCollector);
+        // functionsCollector = new VrtsFunctionsCollector(ecosystem, sourceCollector);
+        // callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector, functionsCollector);
 
-        ringsCollector = new VrtsRingsCollector();
-        ringsAnalyzers = new VrtsRingsAnalyzer(ecosystem);
+        // sourceAnalyzer = new VrtsSourceAnalyzer(sourceCollector, functionsCollector, callsCollector);
+
+        // ringsCollector = new VrtsRingsCollector();
+        // ringsAnalyzers = new VrtsRingsAnalyzer(ecosystem);
 
 
-        ecosystem.initCollectors(
-            packageAnalyzer.collector,
-            functionsCollector,
-            callsCollector
-        );
+        // ecosystem.initCollectors(
+        //     packageAnalyzer.collector,
+        //     // functionsCollector,
+        //     // callsCollector
+        // );
     }
 
     void processCommand(string _command) {
@@ -88,13 +91,18 @@ class Veritas {
         } else
 
         if(commands[0] == "analyze") {
-            sourceCollector.collectAllSourceFiles();
-            sourceCollector.storage.length.to!string.writeln;
+
+            sourcePreparator.collectAllSourceFiles();
+            sourcePreparator.collector.storage.length.to!string.writeln();
             
-            sourceAnalyzer.collectAllFunctions();
-            sourceAnalyzer.collectAllCalls();
-            callsCollector.relinkFunctionsCalls();
-            ringsAnalyzers.buildRingsIerarchy();
+            // packageAnalyzer.addPackage
+            // sourceCollector.collectAllSourceFiles();
+            // sourceCollector.storage.length.to!string.writeln;
+            
+            // sourceAnalyzer.collectAllFunctions();
+            // sourceAnalyzer.collectAllCalls();
+            // callsCollector.relinkFunctionsCalls();
+            // ringsAnalyzers.buildRingsIerarchy();
 
             // callsCollector.storage.data.length.to!string.writeln;
             writeln("DONE");

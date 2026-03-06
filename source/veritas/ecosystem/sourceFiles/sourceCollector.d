@@ -33,35 +33,4 @@ class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
     this(VrtsEcosystem ecosystem) {
         this.packages = ecosystem.packageCollector;
     }
-
-    VrtsSourceFile[] processSourceFiles(VrtsPackage pkg, string[] sources) {
-        auto assoc = PkgSourceAssoc(pkg);
-
-        auto dirs = sources.
-            map!(a => DirEntry(a));
-
-        foreach(dir; dirs) {
-            assoc.file ~= new VrtsSourceFile(pkg, dir);
-        }
-        
-        return assoc.file;
-    }
-
-    string[] preparePackageSourceFiles(VrtsPackage pkg) {
-        auto sp = new VrtsSourcePreparing();
-        // sp.preparePackage(pkg.getMetadata);
-        // sp.pseudoMake();
-        return sp.getSourceFilesPaths(pkg.getMetadata);
-    }
-
-    void analyzePackage(VrtsPackage pkg) {
-        string[] filesNames = preparePackageSourceFiles(pkg);
-        this.storage.add(processSourceFiles(pkg, filesNames));
-    }
-
-    void collectAllSourceFiles() {
-        foreach(pkg; packages.storage.data) {
-            analyzePackage(pkg);
-        }
-    }
 }

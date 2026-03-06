@@ -1,4 +1,4 @@
-module veritas.ecosystem.packages.preparing;
+module veritas.ecosystem.sourceFiles.preparing;
 
 import std.process;
 import veritas.ecosystem.packages;
@@ -9,8 +9,21 @@ import std.path;
 import std.json;
 import std.file;
 import std.conv;
+import veritas.ecosystem.sourceFiles;
+import veritas.ecosystem.ecosystem;
 
-class VrtsSourcePreparing {
+
+class VrtsSourcePreparator {
+	VrtsSourceCollector collector;
+
+	VrtsPackagesCollector packageCollector;
+
+	this(VrtsEcosystem ecosystem) {
+		collector = new VrtsSourceCollector(ecosystem);
+		ecosystem.sourcesCollector = this.collector; 
+
+		this.packageCollector = ecosystem.packageCollector;
+	}
 
 	void preparePackage(VrtsMetaData data) {
 		auto home = environment["HOME"];
@@ -69,4 +82,35 @@ class VrtsSourcePreparing {
 
 		return res;
 	}
+
+	VrtsSourceFile[] processSourceFiles(VrtsPackage pkg, string[] sources) {
+        auto assoc = VrtsSourceCollector.PkgSourceAssoc(pkg);
+
+        auto dirs = sources.
+            map!(a => DirEntry(a));
+
+        foreach(dir; dirs) {
+            assoc.file ~= new VrtsSourceFile(pkg, dir);
+        }
+        
+        return assoc.file;
+    }
+
+    string[] preparePackageSourceFiles(VrtsPackage pkg) {
+        // auto sp = new VrtsSourcePreparing();
+        // sp.preparePackage(pkg.getMetadata);
+        // sp.pseudoMake();
+        return this.getSourceFilesPaths(pkg.getMetadata);
+    }
+
+    void analyzePackage(VrtsPackage pkg) {
+        string[] filesNames = preparePackageSourceFiles(pkg);
+        collector.storage.add(processSourceFiles(pkg, filesNames));
+    }
+
+    void collectAllSourceFiles() {
+        foreach(pkg; packageCollector.storage.data) {
+            analyzePackage(pkg);
+        }
+    }
 }
