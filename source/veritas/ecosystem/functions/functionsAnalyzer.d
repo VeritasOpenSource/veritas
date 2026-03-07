@@ -16,10 +16,9 @@ import veritas.ecosystem.sourceFiles;
 import veritas.common.toolkit;
 import veritas.clang;
 import veritas.ecosystem.packages;
+import veritas.common.analyzer;
 
-
-class VrtsFunctionsAnalyzer {
-	VrtsEventBus eventBus;
+class VrtsFunctionsAnalyzer : VrtsAnalyzer {
 
 	VrtsFunctionsCollector	collector;
 
@@ -30,10 +29,6 @@ class VrtsFunctionsAnalyzer {
 	this(VrtsEcosystem ecosystem) {
         //No need ecosystem data here
 		collector = new VrtsFunctionsCollector();
-	}
-
-	void setEventBus(VrtsEventBus eventBus) {
-		this.eventBus = eventBus;
 	}
 
 	VrtsFunction addFunction(VrtsSourceFile sourceFile, string name) {

@@ -8,11 +8,11 @@ import std.array;
 import std.algorithm;
 import veritas.ipc;
 import std.stdio;
+import veritas.common.analyzer;
 
 
-class VrtsRingsAnalyzer {
+class VrtsRingsAnalyzer : VrtsAnalyzer {
 	
-	VrtsEventBus eventBus;
 	VrtsRingsCollector	collector;
 
 	VrtsCallsCollector callsCollector;
@@ -42,9 +42,6 @@ class VrtsRingsAnalyzer {
 		functionsCollector = ecosystem.functionsCollector;
 	}
 
-	void setEventBus(VrtsEventBus eventBus) {
-		this.eventBus = eventBus;
-	}
     void createFirstRing() {
         VrtsRing ring0 = new VrtsRing();
 

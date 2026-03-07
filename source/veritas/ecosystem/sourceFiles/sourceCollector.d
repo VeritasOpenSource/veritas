@@ -14,7 +14,6 @@ import veritas.ecosystem.packages;
 import veritas.ipc.events;
 
 class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
-    VrtsEventBus eventBus;
 
     VrtsPackagesCollector packages;
     // VrtsSourceAnalyzer visitor;
@@ -25,10 +24,6 @@ class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
     }
 
     PkgSourceAssoc[] associatedFiles;
-
-    void setEventsBus(VrtsEventBus eventBus) {
-        this.eventBus = eventBus;
-    }
 
     this(VrtsEcosystem ecosystem) {
         this.packages = ecosystem.packageCollector;

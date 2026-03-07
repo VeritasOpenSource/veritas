@@ -11,9 +11,9 @@ import std.file;
 import std.conv;
 import veritas.ecosystem.sourceFiles;
 import veritas.ecosystem.ecosystem;
+import veritas.common.analyzer;
 
-
-class VrtsSourcePreparator {
+class VrtsSourcePreparator : VrtsAnalyzer {
 	VrtsSourceCollector collector;
 
 	VrtsPackagesCollector packageCollector;

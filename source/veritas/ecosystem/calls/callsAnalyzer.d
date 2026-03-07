@@ -16,11 +16,11 @@ import veritas.ecosystem.sourceFiles;
 import veritas.common.toolkit;
 import veritas.clang;
 import veritas.ecosystem.packages;
+import veritas.common.analyzer;
 import mir.stdio;
 
 
-class VrtsCallsAnalyzer {
-	VrtsEventBus eventBus;
+class VrtsCallsAnalyzer : VrtsAnalyzer {
 
 	VrtsCallsCollector	collector;
 
@@ -31,10 +31,6 @@ class VrtsCallsAnalyzer {
 	this(VrtsEcosystem ecosystem) {
         //No need ecosystem data here
 		collector = new VrtsCallsCollector(ecosystem);
-	}
-
-	void setEventBus(VrtsEventBus eventBus) {
-		this.eventBus = eventBus;
 	}
 
 	void addCall(VrtsFunction source, string name) {

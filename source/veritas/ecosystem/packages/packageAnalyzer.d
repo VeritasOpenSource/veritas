@@ -14,10 +14,10 @@ import veritas.ecosystem.sourceFiles;
 import veritas.common.toolkit;
 import veritas.clang;
 import veritas.ecosystem.packages;
+import veritas.common.analyzer;
 
 
 class VrtsPackageAnalyzer {
-	VrtsEventBus eventBus;
 
 	VrtsPackagesCollector	collector;
 
@@ -28,10 +28,6 @@ class VrtsPackageAnalyzer {
 	this(VrtsEcosystem ecosystem) {
         //No need ecosystem data here
 		collector = new VrtsPackagesCollector(null);
-	}
-
-	void setEventBus(VrtsEventBus eventBus) {
-		this.eventBus = eventBus;
 	}
 
     void addPackage(string metadataPath) {
