@@ -3,16 +3,12 @@
 */
 module veritas.ecosystem.packages.pkg;
 
-import std.path;
 import std.array;
 import std.algorithm;
 import std.file;
 import std.stdio;
-import std.conv;
 
-import veritas.ecosystem;
-import veritas.model;
-import std.compiler;
+// import veritas.model;
 
 class VrtsMetaData {
     File file;
@@ -23,7 +19,6 @@ class VrtsMetaData {
         file = File(path);
         data = file
             .byLineCopy
-            // .to!string
             .array;
 
         file.close();
@@ -94,14 +89,7 @@ private:
     /// Example: /home/x/project/
     DirEntry path;
     
-    ///Provided lists
-    VrtsFunction[]          functions;
-    ///ditto
-
 public:
-    void clear() {
-        functions.length = 0;
-    }
     ///
     this(uint id, VrtsMetaData data) {
         this.id = id;
@@ -124,15 +112,6 @@ public:
     string getPath()  => this.metadata.path;
     ///
     string getName()  => this.metadata.name;
-    
-    ///
-    void addFunction(VrtsFunction func) {
-        functions ~= func;
-    }
-    
-    auto getFunctions() {
-        return functions;
-    }
 
     // static VrtsPackage buildFromModel(VrtsModelPackage pkg_) {        
     //     auto pkg = new VrtsPackage(pkg_.id, pkg_.path, pkg_.name);
