@@ -224,23 +224,23 @@ class ClangToolkit : VrtsToolkit {
             
             return 1;
         }
-        else 
-        if (refkind == CXCursor_CallExpr)
-        {
-            auto ref_ = clang_getCursorReferenced(cursor);
+        // else 
+        // if (refkind == CXCursor_CallExpr)
+        // {
+        //     auto ref_ = clang_getCursorReferenced(cursor);
 
-            string name;
+        //     string name;
 
-            if (!clang_Cursor_isNull(ref_))
-                name = cxToStr(ref_);
-            else
-                name = cxToStr(cursor);
+        //     if (!clang_Cursor_isNull(ref_))
+        //         name = cxToStr(ref_);
+        //     else
+        //         name = cxToStr(cursor);
 
-            context.analyzer.addCall(context.func, name);
+        //     context.analyzer.addCall(context.func, name);
 
-            // if (ctx.func.name == "realloc_line")
-                // writeln("CALL: ", name);
-        }
+        //     // if (ctx.func.name == "realloc_line")
+        //         // writeln("CALL: ", name);
+        // }
 
     return 2;
 }
