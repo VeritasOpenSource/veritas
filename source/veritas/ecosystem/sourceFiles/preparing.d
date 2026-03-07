@@ -1,21 +1,20 @@
 module veritas.ecosystem.sourceFiles.preparing;
 
 import std.process;
-import veritas.ecosystem.packages;
 import std.string;
-import std.stdio;
 import std.algorithm;
 import std.path;
 import std.json;
 import std.file;
 import std.conv;
-import veritas.ecosystem.sourceFiles;
-import veritas.ecosystem.ecosystem;
+
 import veritas.common.analyzer;
+import veritas.ecosystem.ecosystem;
+import veritas.ecosystem.sourceFiles;
+import veritas.ecosystem.packages;
 
 class VrtsSourcePreparator : VrtsAnalyzer {
 	VrtsSourceCollector collector;
-
 	VrtsPackagesCollector packageCollector;
 
 	this(VrtsEcosystem ecosystem) {
@@ -34,20 +33,14 @@ class VrtsSourcePreparator : VrtsAnalyzer {
 		proc.stdin.writeln("cd bash");
 		proc.stdin.writeln("./configure");
 
-		// auto 
 		string file = data.getPatch().split(":")[0];
 		uint line = data.getPatch().split(":")[1].to!uint;
 		string patch = data.getPatch().split(":")[2];
 		proc.stdin.writeln("sed -i '" ~ line.to!string~ "s/.*/ /' "~file);
 		proc.stdin.flush;
 		proc.stdin.close();
-		proc
-			.stdout
-			.byLine
-			.each!(a => a.writeln);
 		
 		wait(proc.pid);
-		writeln("DONE");
 	}
 
 	void pseudoMake() {
@@ -58,10 +51,6 @@ class VrtsSourcePreparator : VrtsAnalyzer {
 		proc.stdin.writeln("bear -- make");
 		proc.stdin.flush;
 		proc.stdin.close();
-		proc
-			.stdout
-			.byLine
-			.each!(a => a.writeln);
 
 		wait(proc.pid);
 	}
@@ -84,8 +73,6 @@ class VrtsSourcePreparator : VrtsAnalyzer {
 	}
 
 	VrtsSourceFile[] processSourceFiles(VrtsPackage pkg, string[] sources) {
-        // auto assoc = collector.filesPerPackage[pkg];
-
         auto dirs = sources.
             map!(a => DirEntry(a));
 
