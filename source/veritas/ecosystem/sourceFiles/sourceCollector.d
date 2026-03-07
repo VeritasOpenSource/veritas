@@ -17,7 +17,7 @@ class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
     VrtsEventBus eventBus;
 
     VrtsPackagesCollector packages;
-    VrtsSourceAnalyzer visitor;
+    // VrtsSourceAnalyzer visitor;
 
     struct PkgSourceAssoc {
         VrtsPackage pkg;

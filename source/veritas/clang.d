@@ -106,12 +106,12 @@ class ClangToolkit : VrtsToolkit {
 
     struct Context {
             ClangToolkit toolkit;
-            VrtsFunctionsCollector collector;
+            VrtsFunctionsAnalyzer analyzer;
             VrtsSourceFile file;
     }
 
     override void extractFunctionsFromSourceFile(
-        VrtsFunctionsCollector collector,
+        VrtsFunctionsAnalyzer analyzer,
         VrtsSourceFile file) {
         const(char)*[] args;
 
@@ -130,11 +130,11 @@ class ClangToolkit : VrtsToolkit {
 
         struct Context {
             ClangToolkit toolkit;
-            VrtsFunctionsCollector collector;
+            VrtsFunctionsAnalyzer funcsAnalyzer;
             VrtsSourceFile file;
         }
 
-        auto ctx = new Context(this, collector, file);
+        auto ctx = new Context(this, analyzer, file);
 
         clang_visitChildren(root, &functionVisitor, cast(void*)ctx);
     }
@@ -149,7 +149,7 @@ class ClangToolkit : VrtsToolkit {
             clang_isCursorDefinition(cursor)) {
             string name = cxToStr(cursor);
 
-            auto func = ctx.collector.addFunction(ctx.file, name);
+            auto func = ctx.analyzer.addFunction(ctx.file, name);
             ctx.toolkit.functionCursors[func] = cursor;
 
             writeln("FUNCTION: ", name);

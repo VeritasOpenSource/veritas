@@ -32,6 +32,7 @@ class Veritas {
 
     VrtsPackageAnalyzer     packageAnalyzer;
     VrtsSourcePreparator    sourcePreparator;
+    VrtsFunctionsAnalyzer   functionsAnalyzer;
     // VrtsPackagesCollector    packageCollector;
     // VrtsSourceCollector     sourceCollector;
     // VrtsFunctionsCollector  functionsCollector;
@@ -63,13 +64,16 @@ class Veritas {
 
         sourcePreparator = new VrtsSourcePreparator(ecosystem);
 
+        functionsAnalyzer = new VrtsFunctionsAnalyzer(ecosystem);
+
         // sourceCollector = new VrtsSourceCollector(ecosystem);
         // ecosystem.sourcesCollector = sourceCollector;
 
         // functionsCollector = new VrtsFunctionsCollector(ecosystem, sourceCollector);
         // callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector, functionsCollector);
 
-        // sourceAnalyzer = new VrtsSourceAnalyzer(sourceCollector, functionsCollector, callsCollector);
+        sourceAnalyzer = new VrtsSourceAnalyzer(sourcePreparator.collector, functionsAnalyzer, null);
+
 
         // ringsCollector = new VrtsRingsCollector();
         // ringsAnalyzers = new VrtsRingsAnalyzer(ecosystem);
@@ -94,12 +98,13 @@ class Veritas {
 
             sourcePreparator.collectAllSourceFiles();
             sourcePreparator.collector.storage.length.to!string.writeln();
-            
+
+
             // packageAnalyzer.addPackage
             // sourceCollector.collectAllSourceFiles();
             // sourceCollector.storage.length.to!string.writeln;
             
-            // sourceAnalyzer.collectAllFunctions();
+            sourceAnalyzer.collectAllFunctions();
             // sourceAnalyzer.collectAllCalls();
             // callsCollector.relinkFunctionsCalls();
             // ringsAnalyzers.buildRingsIerarchy();
