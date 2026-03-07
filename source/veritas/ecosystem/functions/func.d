@@ -19,8 +19,8 @@ class VrtsFunction {
     VrtsReport[] reports;
     Triggering[] triggers;
 
-    VrtsFunctionCall[] calls;
-    VrtsFunctionCall[] calledBy;
+    // VrtsFunctionCall[] calls;
+    // VrtsFunctionCall[] calledBy;
 
     this(uint id, string name) {
         this.id = id;
@@ -40,36 +40,36 @@ class VrtsFunction {
         }
     }
 
-    bool isAllCallsUndefined() {
-        return calls.all!(a => !a.isDefined);
-    }
+    // bool isAllCallsUndefined() {
+    //     return calls.all!(a => !a.isDefined);
+    // }
 
-    void collectTriggers(uint firstEmptyId) {
-        import std.stdio;
-        auto ownTrigger = new Triggering(firstEmptyId++, this, cast(int)reports.length);
+    // void collectTriggers(uint firstEmptyId) {
+    //     import std.stdio;
+    //     auto ownTrigger = new Triggering(firstEmptyId++, this, cast(int)reports.length);
 
-        if(reports.length > 0) {
-            triggers ~= ownTrigger;
-        }
+    //     if(reports.length > 0) {
+    //         triggers ~= ownTrigger;
+    //     }
 
-        Triggering[] externalTriggers; 
-        foreach(call; calls) {
-            bool defined_ = call.isDefined;
-            if(defined_ == true) {
-                auto triggers = call.getTargetFunction.triggers;
-                foreach(exTr; triggers) {
-                    if(!externalTriggers.canFind!(a => a is exTr))
-                    externalTriggers ~= triggers;
-                }
-            }
-        }
+    //     Triggering[] externalTriggers; 
+    //     foreach(call; calls) {
+    //         bool defined_ = call.isDefined;
+    //         if(defined_ == true) {
+    //             auto triggers = call.getTargetFunction.triggers;
+    //             foreach(exTr; triggers) {
+    //                 if(!externalTriggers.canFind!(a => a is exTr))
+    //                 externalTriggers ~= triggers;
+    //             }
+    //         }
+    //     }
 
-        foreach(exTr; externalTriggers) {
-            exTr.count++;
-        }
+    //     foreach(exTr; externalTriggers) {
+    //         exTr.count++;
+    //     }
 
-        triggers ~= externalTriggers;
-    }
+    //     triggers ~= externalTriggers;
+    // }
 
     auto reportsCount() => reports.length;
 }

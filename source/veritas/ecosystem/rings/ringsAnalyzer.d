@@ -48,7 +48,7 @@ class VrtsRingsAnalyzer {
     void createFirstRing() {
         VrtsRing ring0 = new VrtsRing();
 
-        ring0.functions = callsCollector.getFunctionsWithoutCalls().array;
+        ring0.functions = callsCollector.getFunctionsWithoutCalls().map!(a => a.key).array;
     }
 
     // ///
@@ -69,7 +69,7 @@ class VrtsRingsAnalyzer {
     // ///
     VrtsRing getNextRing(uint level) {
         if(rings.length - 1 < level) {
-            eventBus.publish(new EventAddRing(level));
+            // eventBus.publish(new EventAddRing(level));
             return new VrtsRing();
         }
         else if(rings.length - 1 >= level) {
@@ -92,7 +92,7 @@ class VrtsRingsAnalyzer {
             ring0 = rings[0];
 
         foreach(func; functions) {
-            if(func.isAllCallsUndefined) {
+            if(callsCollector.isOutgoingCallsIsUndefined(func)) {
                 ring0.functions ~= func;
                 // eventBus.publish(new EventFuncToRing(0, func.getTaggedName.baseName));
             }
@@ -100,7 +100,7 @@ class VrtsRingsAnalyzer {
 
         if(rings.length == 0) {
             rings ~= ring0;
-            eventBus.publish(new EventAddRing(0));
+            // eventBus.publish(new EventAddRing(0));
         }
 
         // foreach(func; rings[0].functions) {
@@ -114,7 +114,7 @@ class VrtsRingsAnalyzer {
             auto ring = this.getNextRing(level);
 
             foreach(func_; funcs) {
-                auto calls = func_.calls.filter!(a => a.isDefined).array;
+                auto calls = callsCollector.callsPerFunctions[func_].outgoing.filter!(a => a.isDefined).array;
 
                 if(checkAllCallsInRings(calls)) {
                     ring.functions ~= func_;

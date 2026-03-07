@@ -16,6 +16,7 @@ import veritas.ecosystem.sourceFiles;
 import veritas.common.toolkit;
 import veritas.clang;
 import veritas.ecosystem.packages;
+import mir.stdio;
 
 
 class VrtsCallsAnalyzer {
@@ -36,12 +37,29 @@ class VrtsCallsAnalyzer {
 		this.eventBus = eventBus;
 	}
 
+	void addCall(VrtsFunction source, string name) {
+		if(source !in collector.callsPerFunctions) {
+			collector.callsPerFunctions[source] = collector.FunctionCalls();
+		}
+
+		auto call = new VrtsFunctionCall(cast(uint)collector.storage.length, source, name);
+		collector.storage.add(call);
+		collector.callsPerFunctions[source].outgoing ~= call;
+	}
+
 	void relinkFunctionsCalls() {
         foreach(call; this.collector.storage.data) {
             foreach(func; collector.functionsCollector.storage.data) {
                 if(!call.isDefined && call.getCallName == func.name) {
                     call.defineTarget(func);
-                    func.calledBy ~= call;
+					if(func !in collector.callsPerFunctions)
+						collector.callsPerFunctions[func] = collector.FunctionCalls();
+						try {
+                    		collector.callsPerFunctions[func].ongoing ~= call;
+						}
+						catch(Exception e) {
+							writeln(e);
+						}
 
                     break;
                 }

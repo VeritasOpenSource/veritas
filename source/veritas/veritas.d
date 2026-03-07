@@ -107,6 +107,26 @@ class Veritas {
             sourceAnalyzer.collectAllCalls();
             callsAnalyzer.relinkFunctionsCalls();
             ringsAnalyzers.buildRingsIerarchy();
+
+            callsAnalyzer.collector.storage.length.to!string.writeln();
+            ringsAnalyzers.collector.storage.length.to!string.writeln();
+            // callsAnalyzer
+            //     .collector
+            //     .callsPerFunctions
+            //     .byKeyValue();
+            foreach(pair;callsAnalyzer
+                .collector
+                .callsPerFunctions
+                .byKeyValue())
+                {
+                    std.stdio.write(pair.key.name);
+                    std.stdio.write(" Ongoing: ");
+                    std.stdio.write(pair.value.ongoing.length.to!string);
+                    std.stdio.write(" Outgoing: ");
+                    std.stdio.writeln(pair.value.outgoing.length.to!string);
+                    std.stdio.writeln("     ", pair.key.file.getPath);
+
+                }
             // ringsAnalyzers.buildRingsIerarchy();
 
             // callsCollector.storage.data.length.to!string.writeln;

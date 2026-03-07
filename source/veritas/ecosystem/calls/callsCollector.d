@@ -16,6 +16,7 @@ import veritas.ecosystem.packages;
 import veritas.ipc.events;
 import veritas.ecosystem.calls;
 import veritas.ecosystem.functions;
+import std.array;
 
 class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
     VrtsEventBus eventBus;
@@ -50,9 +51,26 @@ class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
         this.functionsCollector = ecosystem.functionsCollector;
     }
 
+    bool isOutgoingCallsIsUndefined(VrtsFunction func) {
+        return getOutgoingCalls(func).all!(a => !a.isDefined);
+    }
 
+    VrtsFunctionCall[] getOutgoingCalls(VrtsFunction func) {
+        writeln(func.name);
+        if(func !in callsPerFunctions)
+            return [];
+
+        return callsPerFunctions[func].outgoing;
+        // try {
+        // }
+        // catch(Exception e) {
+        //     writeln(func.name);
+        //     return [];
+        // }
+    }
 
     auto getFunctionsWithoutCalls() {
-        return functionsCollector.storage.data.filter!((a) => a.calls.length == 0);
+        return callsPerFunctions.byKeyValue().filter!(a => a.value.outgoing.length == 0);
+        // return functionsCollector.storage.data.filter!((a) => a.calls.length == 0);
     }
 }

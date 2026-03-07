@@ -194,12 +194,12 @@ class ClangToolkit : VrtsToolkit {
             if (clang_getCursorKind(ref_) == CXCursor_FunctionDecl) {
                 string name = cxToStr(ref_);
 
-                auto call = new VrtsFunctionCall(
-                    ctx.analyzer.collector.getNewId(),
-                    ctx.func,
-                    name);
+                // auto call = new VrtsFunctionCall(
+                //     ctx.analyzer.collector.getNewId(),
+                //     ctx.func,
+                //     name);
 
-                ctx.analyzer.collector.storage.add(call);
+                ctx.analyzer.addCall(ctx.func, name);
 
                 writeln("CALL: ", name);
             }
