@@ -12,6 +12,7 @@ import veritas.ecosystem.calls;
 import veritas.ecosystem.sourceFiles;
 import veritas.common.toolkit;
 import veritas.clang;
+import std.stdio;
 
 class VrtsSourceAnalyzer {
     VrtsToolkit toolkit;
@@ -43,6 +44,8 @@ class VrtsSourceAnalyzer {
 
     void collectAllCalls() {
         foreach(func; functionsAnalyzer.collector.storage.data) {
+            // writeln(func.name);
+            // write("     ");
             toolkit.extractCallsFromFunction(callsAnalyzer, func);
         }
     }

@@ -56,7 +56,7 @@ class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
     }
 
     VrtsFunctionCall[] getOutgoingCalls(VrtsFunction func) {
-        writeln(func.name);
+        // writeln(func.name);
         if(func !in callsPerFunctions)
             return [];
 

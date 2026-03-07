@@ -118,7 +118,7 @@ class VrtsRingsAnalyzer {
 
                 if(checkAllCallsInRings(calls)) {
                     ring.functions ~= func_;
-                    writeln(func_.getTaggedName);
+                    // writeln(func_.getTaggedName);
                     // eventBus.publish(new EventFuncToRing(level, func_.getTaggedName.baseName));
                 }
             }

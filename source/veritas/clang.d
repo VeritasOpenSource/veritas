@@ -78,6 +78,7 @@ extern(C) {
     CXSourceLocation clang_getCursorLocation(CXCursor cursor);
     CXSourceLocation clang_getCursorLocation(CXCursor cursor);
     CXCursor clang_getCursorReferenced(CXCursor cursor);
+    bool clang_Cursor_isNull(CXCursor cursor);
 }
 
 string cxToStr(CXCursor cursor)
@@ -152,7 +153,7 @@ class ClangToolkit : VrtsToolkit {
             auto func = ctx.analyzer.addFunction(ctx.file, name);
             ctx.toolkit.functionCursors[func] = cursor;
 
-            writeln("FUNCTION: ", name);
+            // writeln("FUNCTION: ", name);
         }
 
         return 2;
@@ -177,36 +178,72 @@ class ClangToolkit : VrtsToolkit {
     }
 
     extern(C) static uint callVisitor(
-        CXCursor cursor,
-        CXCursor parent,
-        CXClientData data) {
+    CXCursor cursor,
+    CXCursor parent,
+    CXClientData data)
+{
+    struct CallContext {
+        VrtsFunction func;
+        VrtsCallsAnalyzer analyzer;
+    }
 
-        struct CallContext {
-            VrtsFunction func;
-            VrtsCallsAnalyzer analyzer;
+    // auto ctx = cast(CallContext*)data;
+
+    // if(ctx.func.name == "realloc_line") {
+    //     writeln("realloc_line");
+    // }
+
+    // auto kind = clang_getCursorKind(cursor);
+
+    // if (kind == CXCursor_CallExpr)
+    // {
+    //     auto ref_ = clang_getCursorReferenced(cursor);
+
+    //     string name;
+
+    //     if (!clang_Cursor_isNull(ref_))
+    //         name = cxToStr(ref_);
+    //     else
+    //         name = cxToStr(cursor);
+
+    //     ctx.analyzer.addCall(ctx.func, name);
+
+    //     if (ctx.func.name == "realloc_line")
+    //         writeln("CALL: ", name);
+    // }
+
+        auto context = cast(CallContext*)data;
+        auto funcDecl = context.func;
+        
+        auto refCur = clang_getCursorReferenced(cursor);
+        auto refkind = clang_getCursorKind(refCur);
+
+        if (refkind == 8) { 
+            string name = cxToStr(refCur);
+            context.analyzer.addCall(context.func, name);
+            
+            return 1;
         }
-
-        auto ctx = cast(CallContext*)data;
-
-        if (clang_getCursorKind(cursor) == CXCursor_CallExpr) {
+        else 
+        if (refkind == CXCursor_CallExpr)
+        {
             auto ref_ = clang_getCursorReferenced(cursor);
 
-            if (clang_getCursorKind(ref_) == CXCursor_FunctionDecl) {
-                string name = cxToStr(ref_);
+            string name;
 
-                // auto call = new VrtsFunctionCall(
-                //     ctx.analyzer.collector.getNewId(),
-                //     ctx.func,
-                //     name);
+            if (!clang_Cursor_isNull(ref_))
+                name = cxToStr(ref_);
+            else
+                name = cxToStr(cursor);
 
-                ctx.analyzer.addCall(ctx.func, name);
+            context.analyzer.addCall(context.func, name);
 
-                writeln("CALL: ", name);
-            }
+            // if (ctx.func.name == "realloc_line")
+                // writeln("CALL: ", name);
         }
 
-        return 2;
-    }
+    return 2;
+}
 
     override void startStaticAnalyze(VrtsPackage pkg) {
         auto meta = pkg.getMetadata;

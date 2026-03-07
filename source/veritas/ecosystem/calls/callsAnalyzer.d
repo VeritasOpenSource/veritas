@@ -52,14 +52,11 @@ class VrtsCallsAnalyzer {
             foreach(func; collector.functionsCollector.storage.data) {
                 if(!call.isDefined && call.getCallName == func.name) {
                     call.defineTarget(func);
-					if(func !in collector.callsPerFunctions)
+					if(func !in collector.callsPerFunctions) {
 						collector.callsPerFunctions[func] = collector.FunctionCalls();
-						try {
-                    		collector.callsPerFunctions[func].ongoing ~= call;
-						}
-						catch(Exception e) {
-							writeln(e);
-						}
+					}
+						
+					collector.callsPerFunctions[func].ongoing ~= call;
 
                     break;
                 }

@@ -96,7 +96,7 @@ class Veritas {
         if(commands[0] == "analyze") {
 
             sourcePreparator.collectAllSourceFiles();
-            sourcePreparator.collector.storage.length.to!string.writeln();
+            // sourcePreparator.collector.storage.length.to!string.writeln();
 
 
             // packageAnalyzer.addPackage
@@ -119,12 +119,14 @@ class Veritas {
                 .callsPerFunctions
                 .byKeyValue())
                 {
+                    if(pair.key.name == "realloc_line") {
                     std.stdio.write(pair.key.name);
                     std.stdio.write(" Ongoing: ");
                     std.stdio.write(pair.value.ongoing.length.to!string);
                     std.stdio.write(" Outgoing: ");
                     std.stdio.writeln(pair.value.outgoing.length.to!string);
                     std.stdio.writeln("     ", pair.key.file.getPath);
+                    }
 
                 }
             // ringsAnalyzers.buildRingsIerarchy();
