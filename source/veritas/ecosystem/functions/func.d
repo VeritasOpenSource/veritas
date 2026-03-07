@@ -15,12 +15,6 @@ class VrtsFunction {
 
     VrtsSourceLocation      declarationLocation;
     VrtsSourceLocationRange definitionLocation;
-    ///Reports about function
-    VrtsReport[] reports;
-    Triggering[] triggers;
-
-    // VrtsFunctionCall[] calls;
-    // VrtsFunctionCall[] calledBy;
 
     this(uint id, string name) {
         this.id = id;
@@ -43,10 +37,6 @@ class VrtsFunction {
             declarationLocation = new VrtsSourceLocation(filename, startLine, startColumn);
         }
     }
-
-    // bool isAllCallsUndefined() {
-    //     return calls.all!(a => !a.isDefined);
-    // }
 
     // void collectTriggers(uint firstEmptyId) {
     //     import std.stdio;
@@ -74,6 +64,4 @@ class VrtsFunction {
 
     //     triggers ~= externalTriggers;
     // }
-
-    auto reportsCount() => reports.length;
 }
