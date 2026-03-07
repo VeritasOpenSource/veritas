@@ -3,16 +3,12 @@ module veritas.ecosystem.sourceFiles.sourceAnalyzer;
 import std.string;
 import std.path;
 
-import veritas.clang;
-import veritas.ecosystem;
 import veritas.common.collector;
-import veritas.common.dataStorage;
 import veritas.ecosystem.functions;
 import veritas.ecosystem.calls;
 import veritas.ecosystem.sourceFiles;
 import veritas.common.toolkit;
 import veritas.clang;
-import std.stdio;
 
 class VrtsSourceAnalyzer {
     VrtsToolkit toolkit;
@@ -21,9 +17,6 @@ class VrtsSourceAnalyzer {
 
     VrtsFunctionsAnalyzer  functionsAnalyzer;
     VrtsCallsAnalyzer      callsAnalyzer;
-
-    // VrtsSourceFile sourceFileContext;
-    // VrtsFunction funcContext;
 
     this(
         VrtsSourceCollector collector,
@@ -44,8 +37,6 @@ class VrtsSourceAnalyzer {
 
     void collectAllCalls() {
         foreach(func; functionsAnalyzer.collector.storage.data) {
-            // writeln(func.name);
-            // write("     ");
             toolkit.extractCallsFromFunction(callsAnalyzer, func);
         }
     }
