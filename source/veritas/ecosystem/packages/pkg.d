@@ -112,6 +112,10 @@ public:
         return id;
     }
 
+    void setId(uint id) {
+        this.id = id;
+    }
+
     auto getMetadata() {
         return metadata;
     }

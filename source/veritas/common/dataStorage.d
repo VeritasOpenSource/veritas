@@ -17,17 +17,11 @@ class VrtsDataStorage(VrtsType) {
 		return this;
 	}
 
-	// auto rebuildIds() {
-	// 	uint id = 0;
-	// 	data.each!((ref a) => a.setId(id++));
-	// 	return this;
-	// }
-
-	// auto getById(alias accesor)(uint id) {
-	// 	alias fun = unaryFun!accesor; 
-	// 	// alias pred = bindRight!equal(id);
-	// 	return data.filter!(a => fun(a)).map!(a => a.getId()).array;
-	// }
+	auto rebuildIds() {
+		uint id = 0;
+		data.each!((ref a) => a.setId(id++));
+		return this;
+	}
 
 	ref auto opIndex(size_t index) {
 		return data[index];

@@ -27,6 +27,10 @@ class VrtsFunction {
         this.name = name;
     }
 
+    void setId(uint id) {
+        this.id = id;
+    }
+
     string getTaggedName() {
         return file.getPath ~":"~name;
     }
