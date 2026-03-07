@@ -1,7 +1,6 @@
 module veritas.common.dataStorage;
 
 import std.algorithm;
-import std.functional;
 import std.array;
 
 class VrtsDataStorage(VrtsType) {
@@ -29,5 +28,20 @@ class VrtsDataStorage(VrtsType) {
 
 	auto length() const @property {
 		return data.length;
+	}
+
+	auto range() {
+		struct Range {
+			VrtsType[] data;
+
+			void popFront() {
+				data = data[1..$];
+			}
+
+			auto front() => data[0];
+			bool empty() => data.length == 0;
+		}
+
+		return Range(data);
 	}
 }
