@@ -1,7 +1,7 @@
 ///Module for call representation
 module veritas.ecosystem.calls.call;
 
-import veritas.ecosystem;
+import veritas.ecosystem.functions : VrtsFunction;
 
 ///Both-direction call class 
 class VrtsFunctionCall {
