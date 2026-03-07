@@ -4,7 +4,6 @@ import std.string;
 import std.path;
 import std.algorithm;
 import std.range;
-import std.array;
 
 import veritas.ipc;
 import veritas.clang;

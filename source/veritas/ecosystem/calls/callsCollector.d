@@ -19,16 +19,22 @@ import veritas.ecosystem.functions;
 
 class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
     VrtsEventBus eventBus;
-    VrtsEcosystem ecosystem;
-    VrtsSourceCollector sourceCollector;
+    // VrtsEcosystem ecosystem;
+    // VrtsSourceCollector sourceCollector;
+
     VrtsFunctionsCollector functionsCollector;
+    struct FunctionCalls {
+		VrtsFunctionCall[] ongoing;
+		VrtsFunctionCall[] outgoing;	
+	}
+    FunctionCalls[VrtsFunction] callsPerFunctions;
 
-    struct FunctionSourceAssoc {
-        VrtsPackage pkg;
-        VrtsSourceFile[] file;
-    }
+    // struct FunctionSourceAssoc {
+    //     VrtsPackage pkg;
+    //     VrtsSourceFile[] file;
+    // }
 
-    FunctionSourceAssoc[] associatedFunctions;
+    // FunctionSourceAssoc[] associatedFunctions;
 
     void setEventsBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
@@ -38,26 +44,13 @@ class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
         return cast(uint)storage.length;
     }
 
-    this(	VrtsEcosystem ecosystem,
-			VrtsSourceCollector collector,
-            VrtsFunctionsCollector functionsCollector) {
-        this.ecosystem = ecosystem;
-		this.sourceCollector = collector; 
-        this.functionsCollector = functionsCollector;
+    this(	VrtsEcosystem ecosystem) {
+        // this.ecosystem = ecosystem;
+		// this.sourceCollector = collector; 
+        this.functionsCollector = ecosystem.functionsCollector;
     }
 
-    void relinkFunctionsCalls() {
-        foreach(call; this.storage.data) {
-            foreach(func; functionsCollector.storage.data) {
-                if(!call.isDefined && call.getCallName == func.name) {
-                    call.defineTarget(func);
-                    func.calledBy ~= call;
 
-                    break;
-                }
-            }
-        }
-    }
 
     auto getFunctionsWithoutCalls() {
         return functionsCollector.storage.data.filter!((a) => a.calls.length == 0);

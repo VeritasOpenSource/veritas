@@ -10,6 +10,6 @@ import veritas.ecosystem.packages;
 
 abstract class VrtsToolkit {
 	abstract void extractFunctionsFromSourceFile(VrtsFunctionsAnalyzer funcsAnalyzer, VrtsSourceFile sourceFile);
-	abstract void extractCallsFromFunction(VrtsCallsCollector collector, VrtsFunction func);
+	abstract void extractCallsFromFunction(VrtsCallsAnalyzer analyzer, VrtsFunction func);
 	abstract void startStaticAnalyze(VrtsPackage pkg);
 }

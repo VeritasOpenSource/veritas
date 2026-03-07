@@ -39,7 +39,7 @@ class VrtsRingsAnalyzer {
 		collector = new VrtsRingsCollector;
 
 		callsCollector = ecosystem.callsCollector;
-		functionsCollector = ecosystem.funtionsCollector;
+		functionsCollector = ecosystem.functionsCollector;
 	}
 
 	void setEventBus(VrtsEventBus eventBus) {

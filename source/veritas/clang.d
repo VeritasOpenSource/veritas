@@ -159,7 +159,7 @@ class ClangToolkit : VrtsToolkit {
     }
 
     override void extractCallsFromFunction(
-        VrtsCallsCollector collector,
+        VrtsCallsAnalyzer analyzer,
         VrtsFunction func) {
         if (func !in functionCursors)
             return;
@@ -168,10 +168,10 @@ class ClangToolkit : VrtsToolkit {
 
         struct CallContext {
             VrtsFunction func;
-            VrtsCallsCollector collector;
+            VrtsCallsAnalyzer analyzer;
         }
 
-        auto ctx = new CallContext(func, collector);
+        auto ctx = new CallContext(func, analyzer);
 
         clang_visitChildren(cursor, &callVisitor, cast(void*)ctx);
     }
@@ -183,7 +183,7 @@ class ClangToolkit : VrtsToolkit {
 
         struct CallContext {
             VrtsFunction func;
-            VrtsCallsCollector collector;
+            VrtsCallsAnalyzer analyzer;
         }
 
         auto ctx = cast(CallContext*)data;
@@ -195,11 +195,11 @@ class ClangToolkit : VrtsToolkit {
                 string name = cxToStr(ref_);
 
                 auto call = new VrtsFunctionCall(
-                    ctx.collector.getNewId(),
+                    ctx.analyzer.collector.getNewId(),
                     ctx.func,
                     name);
 
-                ctx.collector.storage.add(call);
+                ctx.analyzer.collector.storage.add(call);
 
                 writeln("CALL: ", name);
             }

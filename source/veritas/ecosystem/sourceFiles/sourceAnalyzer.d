@@ -19,7 +19,7 @@ class VrtsSourceAnalyzer {
     VrtsSourceCollector     sourceCollector;
 
     VrtsFunctionsAnalyzer  functionsAnalyzer;
-    VrtsCallsCollector      callsCollector;
+    VrtsCallsAnalyzer      callsAnalyzer;
 
     // VrtsSourceFile sourceFileContext;
     // VrtsFunction funcContext;
@@ -27,12 +27,12 @@ class VrtsSourceAnalyzer {
     this(
         VrtsSourceCollector collector,
         VrtsFunctionsAnalyzer functionsAnalyzer,
-        VrtsCallsCollector callsCollector
+        VrtsCallsAnalyzer callsAnalyzer
     ) {
         this.toolkit = new ClangToolkit();
         this.sourceCollector = collector;
         this.functionsAnalyzer = functionsAnalyzer;
-        this.callsCollector = callsCollector;
+        this.callsAnalyzer = callsAnalyzer;
     }
 
     void collectAllFunctions() {
@@ -43,7 +43,7 @@ class VrtsSourceAnalyzer {
 
     void collectAllCalls() {
         foreach(func; functionsAnalyzer.collector.storage.data) {
-            toolkit.extractCallsFromFunction(callsCollector, func);
+            toolkit.extractCallsFromFunction(callsAnalyzer, func);
         }
     }
 }

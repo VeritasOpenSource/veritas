@@ -33,12 +33,13 @@ class Veritas {
     VrtsPackageAnalyzer     packageAnalyzer;
     VrtsSourcePreparator    sourcePreparator;
     VrtsFunctionsAnalyzer   functionsAnalyzer;
+    VrtsCallsAnalyzer       callsAnalyzer;
+    VrtsRingsAnalyzer       ringsAnalyzers;
     // VrtsPackagesCollector    packageCollector;
     // VrtsSourceCollector     sourceCollector;
     // VrtsFunctionsCollector  functionsCollector;
     // VrtsCallsCollector      callsCollector;
     // VrtsRingsCollector      ringsCollector;
-    // VrtsRingsAnalyzer       ringsAnalyzers;
 
 
     // VrtsPackageAnalyzer     packageAnalyzer;
@@ -63,20 +64,18 @@ class Veritas {
         ecosystem.packageCollector = packageAnalyzer.collector;
 
         sourcePreparator = new VrtsSourcePreparator(ecosystem);
+        ecosystem.sourcesCollector = sourcePreparator.collector;
 
         functionsAnalyzer = new VrtsFunctionsAnalyzer(ecosystem);
+        ecosystem.functionsCollector = functionsAnalyzer.collector;
 
-        // sourceCollector = new VrtsSourceCollector(ecosystem);
-        // ecosystem.sourcesCollector = sourceCollector;
+        callsAnalyzer = new VrtsCallsAnalyzer(ecosystem);
+        ecosystem.callsCollector = callsAnalyzer.collector;
 
-        // functionsCollector = new VrtsFunctionsCollector(ecosystem, sourceCollector);
-        // callsCollector = new VrtsCallsCollector(ecosystem, sourceCollector, functionsCollector);
+        sourceAnalyzer = new VrtsSourceAnalyzer(sourcePreparator.collector, functionsAnalyzer, callsAnalyzer);
 
-        sourceAnalyzer = new VrtsSourceAnalyzer(sourcePreparator.collector, functionsAnalyzer, null);
-
-
+        ringsAnalyzers = new VrtsRingsAnalyzer(ecosystem);
         // ringsCollector = new VrtsRingsCollector();
-        // ringsAnalyzers = new VrtsRingsAnalyzer(ecosystem);
 
 
         // ecosystem.initCollectors(
@@ -105,13 +104,15 @@ class Veritas {
             // sourceCollector.storage.length.to!string.writeln;
             
             sourceAnalyzer.collectAllFunctions();
-            // sourceAnalyzer.collectAllCalls();
-            // callsCollector.relinkFunctionsCalls();
+            sourceAnalyzer.collectAllCalls();
+            callsAnalyzer.relinkFunctionsCalls();
+            ringsAnalyzers.buildRingsIerarchy();
             // ringsAnalyzers.buildRingsIerarchy();
 
             // callsCollector.storage.data.length.to!string.writeln;
             writeln("DONE");
             // functionsCollectoranalyzer.analyzeSourceFilesByPackages(ecosystem.packages);
+
 
             // ecosystem.relinkCalls();
             // ecosystem.collectCalls();

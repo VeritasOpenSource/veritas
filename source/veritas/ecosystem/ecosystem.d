@@ -22,7 +22,7 @@ class VrtsEcosystem {
     VrtsEventBus eventBus;
     VrtsSourceCollector sourcesCollector;
     VrtsPackagesCollector packageCollector;
-    VrtsFunctionsCollector funtionsCollector;
+    VrtsFunctionsCollector functionsCollector;
     VrtsCallsCollector callsCollector;
 
     // VrtsPackage[]               packages;
@@ -34,9 +34,9 @@ class VrtsEcosystem {
     void initCollectors(VrtsPackagesCollector  pkgs,
         VrtsFunctionsCollector funcs,
         VrtsCallsCollector calls) {
-        this.packageCollector = pkgs;
-        this.funtionsCollector = funcs;
-        this.callsCollector = calls;
+        // this.packageCollector = pkgs;
+        // this.funtionsCollector = funcs;
+        // this.callsCollector = calls;
     }
 
     /// 
