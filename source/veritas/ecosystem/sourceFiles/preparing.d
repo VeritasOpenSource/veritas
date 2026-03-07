@@ -84,16 +84,16 @@ class VrtsSourcePreparator : VrtsAnalyzer {
 	}
 
 	VrtsSourceFile[] processSourceFiles(VrtsPackage pkg, string[] sources) {
-        auto assoc = VrtsSourceCollector.PkgSourceAssoc(pkg);
+        // auto assoc = collector.filesPerPackage[pkg];
 
         auto dirs = sources.
             map!(a => DirEntry(a));
 
         foreach(dir; dirs) {
-            assoc.file ~= new VrtsSourceFile(pkg, dir);
+            collector.filesPerPackage[pkg] ~= new VrtsSourceFile(pkg, dir);
         }
         
-        return assoc.file;
+        return collector.filesPerPackage[pkg];
     }
 
     string[] preparePackageSourceFiles(VrtsPackage pkg) {
