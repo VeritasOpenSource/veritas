@@ -1,14 +1,15 @@
 module veritas.ecosystem.rings.ringsAnalyzer;
 
+import std.algorithm;
+import std.array;
+import std.stdio;
+
+import veritas.common.analyzer;
 import veritas.ecosystem.rings;
 import veritas.ecosystem.calls;
 import veritas.ecosystem.functions;
 import veritas.ecosystem.ecosystem;
-import std.array;
-import std.algorithm;
 import veritas.ipc;
-import std.stdio;
-import veritas.common.analyzer;
 
 
 class VrtsRingsAnalyzer : VrtsAnalyzer {
@@ -29,10 +30,6 @@ class VrtsRingsAnalyzer : VrtsAnalyzer {
 	ref auto functions() inout @property {
 		return functionsCollector.storage.data;
 	}
-
-	// this(VrtsEcosystem ecosystem) {
-	// 	callsCollector = ecosystem.
-	// }
 
     // ///
 	this(VrtsEcosystem ecosystem) {
@@ -100,10 +97,6 @@ class VrtsRingsAnalyzer : VrtsAnalyzer {
             // eventBus.publish(new EventAddRing(0));
         }
 
-        // foreach(func; rings[0].functions) {
-        //     eventBus.publish(new EventFuncToRing(0, func.getTaggedName.baseName));
-        // }
-
         funcs = funcs.removeElements(ring0.functions);
 
         uint level = 1;
@@ -115,7 +108,6 @@ class VrtsRingsAnalyzer : VrtsAnalyzer {
 
                 if(checkAllCallsInRings(calls)) {
                     ring.functions ~= func_;
-                    // writeln(func_.getTaggedName);
                     // eventBus.publish(new EventFuncToRing(level, func_.getTaggedName.baseName));
                 }
             }
@@ -133,20 +125,6 @@ class VrtsRingsAnalyzer : VrtsAnalyzer {
             funcs = funcs.removeElements(ring.functions);
         }
     }
-
-    // /
-    // void processReports(VrtsReport[] reports) {
-    //     this.reports = reports;
-    //     foreach(report; reports) {
-    //         foreach(function_; functions.filter!(a => a.definitionLocation !is null)) {
-    //             if( report.location.filename == function_.definitionLocation.filename &&
-    //                 report.location.line > function_.definitionLocation.start.line &&
-    //                 report.location.line < function_.definitionLocation.end.line)
-
-    //                 function_.reports ~= report;
-    //         }
-    //     }
-    // }
 
     bool checkAllCallsInRings (VrtsFunctionCall[] calls) {
         bool allCallsInRings = true;
