@@ -7,6 +7,7 @@ import std.array;
 import std.algorithm;
 import std.file;
 import std.stdio;
+import std.string;
 
 // import veritas.model;
 
@@ -49,7 +50,7 @@ class VrtsMetaData {
     string path() @property {
         for(int i = 0; i < data.length; i++) {
             if(data[i] == "Path")
-                return data[i+1];
+                return data[i+1].strip;
         }
 
         assert(0, "Path string not found!");
