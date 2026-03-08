@@ -11,8 +11,10 @@ class VrtsDataStorage(VrtsType) {
 		return this;
 	}
 
-	auto remove(VrtsType element) {
-		data = data.filter!(a => a !is element).array;
+	auto remove(VrtsType[] element...) {
+		foreach(e; element) {
+			data = data.filter!(a => a !is e).array;
+		}
 		return this;
 	}
 
