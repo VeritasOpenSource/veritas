@@ -11,6 +11,7 @@ import veritas.ecosystem.sourceFiles;
 import veritas.ecosystem.functions;
 import veritas.ecosystem.calls;
 import veritas.ecosystem.rings;
+import veritas.ecosystem.reports;
 
 
 class Veritas {
@@ -22,6 +23,7 @@ class Veritas {
     VrtsFunctionsAnalyzer   functionsAnalyzer;
     VrtsCallsAnalyzer       callsAnalyzer;
     VrtsRingsAnalyzer       ringsAnalyzers;
+    VrtsReportsAnalyzer     reportsAnalyzer;
 
     VrtsSourceAnalyzer      sourceAnalyzer;
 
@@ -54,6 +56,8 @@ class Veritas {
         sourceAnalyzer = new VrtsSourceAnalyzer(sourcePreparator.collector, functionsAnalyzer, callsAnalyzer);
 
         ringsAnalyzers = new VrtsRingsAnalyzer(ecosystem);
+
+        reportsAnalyzer = new VrtsReportsAnalyzer(ecosystem);
     }
 
     void processCommand(string _command) {
@@ -72,6 +76,8 @@ class Veritas {
             sourceAnalyzer.collectAllCalls();
             callsAnalyzer.relinkFunctionsCalls();
             ringsAnalyzers.buildRingsIerarchy();
+            reportsAnalyzer.parseReports();
+            reportsAnalyzer.collector.length.to!string.writeln();
 
             
             writeln("DONE");
