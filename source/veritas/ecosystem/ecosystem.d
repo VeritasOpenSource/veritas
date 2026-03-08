@@ -6,152 +6,27 @@ import std.array;
 import std.path;
 import std.file;
 import std.stdio;
-import std.functional;
+// import std.functional;
 
 import veritas.reportparser;
 import veritas.ecosystem;
 import veritas.ipc.events;
-import veritas.triggering;
-import veritas.model;
-// import veritas.ecosystem.packages;
-import veritas.common.dataStorage;
+// import veritas.triggering;
+// import veritas.model;
+// import veritas.common.dataStorage;
 import veritas.ecosystem.packages.packageCollector;
 
 /// 
 class VrtsEcosystem {
     VrtsEventBus eventBus;
-    VrtsSourceCollector sourcesCollector;
-    VrtsPackagesCollector packageCollector;
-    VrtsFunctionsCollector functionsCollector;
-    VrtsCallsCollector callsCollector;
-
-    // VrtsPackage[]               packages;
+    VrtsSourceCollector     sourcesCollector;
+    VrtsPackagesCollector   packageCollector;
+    VrtsFunctionsCollector  functionsCollector;
+    VrtsCallsCollector      callsCollector;
 
     void setEventBus(VrtsEventBus eventBus) {
         this.eventBus = eventBus;
     }
-
-    void initCollectors(VrtsPackagesCollector  pkgs,
-        VrtsFunctionsCollector funcs,
-        VrtsCallsCollector calls) {
-        // this.packageCollector = pkgs;
-        // this.funtionsCollector = funcs;
-        // this.callsCollector = calls;
-    }
-
-    /// 
-    // void addPackage(VrtsPackage pkg) {
-    //     packages ~= pkg;
-
-    //     eventBus.publish(new EventProjectAdded(pkg.getPath));
-    //     // pkg.scanForSourceFiles();
-    // }
-
-    // void addPackage(string pathToMetadata) {
-    //     auto md = VrtsMetaData.load(pathToMetadata);
-    //     auto pkg = new VrtsPackage(cast(uint)packages.length, md);
-    //     packages ~= pkg;
-
-    //     eventBus.publish(new EventProjectAdded(pkg.getPath));
-    // }
-
-    ///
-    // auto getFunctionsWithoutCalls() {
-    //     return functions.filter!((a) => a.calls.length == 0);
-    // }
-
-    // ///
-    // void createFirstRing() {
-    //     VrtsRing ring0 = new VrtsRing();
-
-    //     ring0.functions = functions.filter!((a) => a.calls.length == 0).array;
-    // }
-
-    // ///
-    // bool isFunctionInRing(int ringLevel, VrtsFunction func) {
-    //     return rings[ringLevel]
-    //         .functions
-    //         .canFind!((a) =>
-    //             a == func
-    //         );
-    // }    
-
-    ///
-    // bool isAllCallingsinRing(int ringLevel, VrtsFunction[] funcs) {
-    //     return funcs
-    //         .all!((a) => this.isFunctionInRing(ringLevel, a));
-    // }
-
-    // ///
-    // VrtsRing getNextRing(uint level) {
-    //     if(rings.length - 1 < level) {
-    //         eventBus.publish(new EventAddRing(level));
-    //         return new VrtsRing();
-    //     }
-    //     else if(rings.length - 1 >= level) {
-    //         return rings[level];
-    //     }
-
-    //     assert(0);
-    // }
-
-    ///
-    // void buildRingsIerarchy() {
-    //     auto funcs = functions.dup;
-
-    //     rings.length = 0;
-
-    //     VrtsRing ring0;
-    //     if(rings.length == 0)
-    //         ring0 = new VrtsRing();
-    //     else
-    //         ring0 = rings[0];
-
-    //     foreach(func; functions) {
-    //         if(func.isAllCallsUndefined) {
-    //             ring0.functions ~= func;
-    //             // eventBus.publish(new EventFuncToRing(0, func.getTaggedName.baseName));
-    //         }
-    //     }
-
-    //     if(rings.length == 0) {
-    //         rings ~= ring0;
-    //         eventBus.publish(new EventAddRing(0));
-    //     }
-
-    //     foreach(func; rings[0].functions) {
-    //         eventBus.publish(new EventFuncToRing(0, func.getTaggedName.baseName));
-    //     }
-
-    //     funcs = funcs.removeElements(ring0.functions);
-
-    //     uint level = 1;
-    //     while(funcs.length > 0) {
-    //         auto ring = this.getNextRing(level);
-
-    //         foreach(func_; funcs) {
-    //             auto calls = func_.calls.filter!(a => a.isDefined).array;
-
-    //             if(checkAllCallsInRings(calls)) {
-    //                 ring.functions ~= func_;
-    //                 // writeln(func_.getTaggedName);
-    //                 eventBus.publish(new EventFuncToRing(level, func_.getTaggedName.baseName));
-    //             }
-    //         }
-
-    //         if(ring.functions.length == 0)
-    //             break;
-
-    //         ring.level = level;
-
-    //         if(rings.length - 1 < level)
-    //             rings ~= ring;
-
-    //         level++;
-
-    //         funcs = funcs.removeElements(ring.functions);
-    //     }
-    // }
 
     ///
     // void processReports(VrtsReport[] reports) {
@@ -167,37 +42,17 @@ class VrtsEcosystem {
     //     }
     // }
 
-    ///
-    // bool checkAllCallsInRings (VrtsFunctionCall[] calls) {
-    //     bool allCallsInRings = true;
-    //     foreach(call; calls) {
-    //         bool isCallInRing = false;
-    //         foreach(ring; rings) {  
-    //            if(ring.isFunctionInRing(call.getTargetFunction))
-    //                 isCallInRing = true;
-    //         }
 
-    //         if(!isCallInRing)
-    //             allCallsInRings = false;
-    //     }
+    // static auto loadLocalDatabase(string filepath) {
+    //     File fileL = File(filepath, "rb");
+    //     ubyte[] buffer;
 
-    //     return allCallsInRings;
+    //     size_t size = fileL.size();
+    //     buffer = fileL.rawRead(new ubyte[size]);
+    //     auto deser = deserialize(buffer);
+
+    //     // return VrtsEcosystem.buildFromModel(deser); 
     // }
-
-    // auto getPackages() {
-    //     return packages;
-    // }
-
-    static auto loadLocalDatabase(string filepath) {
-        File fileL = File(filepath, "rb");
-        ubyte[] buffer;
-
-        size_t size = fileL.size();
-        buffer = fileL.rawRead(new ubyte[size]);
-        auto deser = deserialize(buffer);
-
-        // return VrtsEcosystem.buildFromModel(deser); 
-    }
 
     // auto collectTriggers() {
     //     import std.stdio;
@@ -499,8 +354,6 @@ class VrtsEcosystem {
     // }
 
 }
-
-
 
 ///
 T[] removeElements(T)(ref T[] array, T[] needles) {
