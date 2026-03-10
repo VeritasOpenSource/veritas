@@ -7,9 +7,7 @@ public {
     import veritas.ecosystem;
     ///Clang binding
     import veritas.clang;
-    ///CodeChecker report parser
-    import veritas.reportparser;
     ///Source code parser
- import veritas.ecosystem.sourceFiles;
+    import veritas.ecosystem.sourceFiles;
     import veritas.ecosystem.sourceFiles;
 }

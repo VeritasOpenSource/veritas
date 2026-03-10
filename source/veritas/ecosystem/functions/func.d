@@ -3,7 +3,7 @@ module veritas.ecosystem.functions.func;
 import std.algorithm;
 
 import veritas.ecosystem;
-import veritas.reportparser;
+// import veritas.reportparser;
 import veritas.triggering;
 
 class VrtsFunction {

@@ -8,7 +8,7 @@ import std.file;
 import std.stdio;
 // import std.functional;
 
-import veritas.reportparser;
+import veritas.ecosystem.reports;
 import veritas.ecosystem;
 import veritas.ipc.events;
 // import veritas.triggering;

@@ -2,9 +2,13 @@ module veritas.ecosystem.reports.report;
 
 import std.algorithm;
 
-import veritas.ecosystem;
-import veritas.reportparser;
-import veritas.triggering;
+// import veritas.ecosystem;
+// import veritas.reportparser;
+import veritas.ecosystem.reports;
+import veritas.ecosystem.location;
+
+
+// import veritas.triggering;
 
 class VrtsReport {
     uint id;
