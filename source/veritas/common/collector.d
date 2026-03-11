@@ -2,7 +2,7 @@ module veritas.common.collector;
 
 import veritas.common.dataStorage;
 
-abstract class VrtsCollector(VrtsEntity) {
+abstract class VrtsStorage(VrtsEntity) {
 	VrtsDataStorage!VrtsEntity storage;
 
 	this() {

@@ -9,7 +9,7 @@ import veritas.ecosystem.sourceFiles;
 import veritas.common.collector;
 import veritas.ecosystem.functions;
 
-class VrtsReportsCollector : VrtsCollector!VrtsReport {
+class VrtsReportsCollector : VrtsStorage!VrtsReport {
 
     VrtsReport[][VrtsFunction]    reportsPerFunction;
 

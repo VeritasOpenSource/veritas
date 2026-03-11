@@ -10,7 +10,7 @@ import veritas.ecosystem.ecosystem;
 import veritas.common.collector;
 import veritas.ecosystem.functions;
 
-class VrtsCallsCollector : VrtsCollector!VrtsFunctionCall {
+class VrtsCallsCollector : VrtsStorage!VrtsFunctionCall {
     VrtsFunctionsCollector functionsCollector;
     struct FunctionCalls {
 		VrtsFunctionCall[] ongoing;

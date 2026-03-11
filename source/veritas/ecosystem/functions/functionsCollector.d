@@ -13,7 +13,7 @@ import veritas.common.collector;
 // import veritas.ecosystem.packages;
 // import veritas.ipc.events;
 
-class VrtsFunctionsCollector : VrtsCollector!VrtsFunction {
+class VrtsFunctionsCollector : VrtsStorage!VrtsFunction {
 
     VrtsFunction[][VrtsSourceFile]    functionsPerFile;
 

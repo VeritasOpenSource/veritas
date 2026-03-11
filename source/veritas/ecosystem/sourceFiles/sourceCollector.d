@@ -5,7 +5,7 @@ import veritas.ecosystem.ecosystem;
 import veritas.ecosystem.sourceFiles;
 import veritas.ecosystem.packages;
 
-class VrtsSourceCollector : VrtsCollector!VrtsSourceFile {
+class VrtsSourceCollector : VrtsStorage!VrtsSourceFile {
 
     VrtsPackagesCollector packages;
 
