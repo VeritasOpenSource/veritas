@@ -58,16 +58,16 @@ abstract class VrtsIPC : VrtsIPCConnection {
             case MsgType.Command:
                 header.subType =
                     (cast(VrtsCommand)msg).getType(); break;
+
+            case MsgType.Request:
+                header.subType =
+                    (cast(VrtsRequest)msg).getType(); break;
+            
+            case MsgType.Response:
+                header.subType =
+                    (cast(VrtsResponse)msg).getType(); break;
             default: break;
-
-            // case MsgType.Request:
-            //     header.subType =
-            //         (cast(VrtsRequest)msg).getType();
-
-            // case MsgType.Response:
-            //     header.subType =
-            //         (cast(VrtsResponse)msg).getType();
-
+            
             // case MsgType.Event:
             //     header.subType =
                     // (cast(VrtsEvent)msg).getType();

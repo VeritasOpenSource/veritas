@@ -29,11 +29,13 @@ void main(string[] args) {
 
     VrtsIPCServer server = new VrtsIPCServer("/tmp/veritas.sock");
     eventBus.events ~= new EventHandlerForClient(server);
-    // veritas.initAnalyzers();
 
     Veritas veritas = new Veritas(eventBus, args);
+    veritas.initAnalyzers();
     
     bool running = true;
+    veritas.processCommand("add ../../veritas-test/bash.vmd");
+    veritas.processCommand("analyze");
 
     while (running) {
         server.update();
@@ -49,11 +51,17 @@ void main(string[] args) {
                     }
                 }
             }
+            if(msg.type == MsgType.Request) {
+                if(auto req = cast(VrtsRequest)msg) {
+                    if(req.getType() == RequestType.GetPackagesList) {
+                        auto res = veritas.getPackagesList;
+                        server.sendMessage(res);
+                    }
+                }
+            }
         }
     }
 
-    veritas.processCommand("add ../../veritas-test/bash.vmd");
-    veritas.processCommand("analyze");
 
-    readln();
+    // readln();
 }

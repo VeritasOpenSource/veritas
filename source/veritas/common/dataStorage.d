@@ -40,7 +40,7 @@ class VrtsDataStorage(VrtsType) {
 				data = data[1..$];
 			}
 
-			auto front() => data[0];
+			ref auto front() => data[0];
 			bool empty() => data.length == 0;
 		}
 

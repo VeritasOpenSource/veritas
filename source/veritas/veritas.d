@@ -91,4 +91,16 @@ class Veritas {
             // file.close();
         }
     }
+
+    import veritas.ipc.messages;
+    import std.algorithm;
+    import std.array;
+
+    VrtsResponsePackagesList getPackagesList() {
+        auto names = packageAnalyzer.collector.storage.data.map!(a => a.getName()).array;
+        auto res = new VrtsResponsePackagesList();
+        res.packagesList = names;
+        return res;
+    }
 }
+

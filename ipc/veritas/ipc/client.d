@@ -29,8 +29,8 @@ class VrtsIPCClient : VrtsIPC {
             // case MsgType.Event:
             //     return deserializeEvent(subType, payload);
 
-            // case MsgType.Response:
-            //     return deserializeResponse(subType, payload);
+            case MsgType.Response:
+                return deserializeResponse(subType, payload); break;
 
             default:
                 throw new Exception("Invalid message for client");

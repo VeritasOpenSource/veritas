@@ -68,15 +68,9 @@ class VrtsIPCServer : VrtsIPC {
         {
             case MsgType.Command:
                 return deserializeCommand(subType, payload); break;
-            default:
-                
-                break;
-
-            // case MsgType.Request:
-            //     return deserializeRequest(subType, payload);
-
-            // default:
-            //     throw new Exception("Invalid message for server");
+            case MsgType.Request:
+                return deserializeRequest(subType, payload); break;
+            default: break;
         }
 
         assert(0);

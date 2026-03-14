@@ -4,7 +4,7 @@ enum MsgType {
 	Command,
 	Event,
 	Request,
-	Responce
+	Response
 }
 
 struct VrtsIPCHeader {

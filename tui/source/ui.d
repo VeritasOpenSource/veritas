@@ -117,6 +117,8 @@ class PackageScreen : Screen {
 
     List packageList;
 
+    string[] packagesNames;
+
     UIState state;
 
     Mode mode;
@@ -150,10 +152,10 @@ class PackageScreen : Screen {
 
     void updateInfoPanel() {
         if(state.selectedPackage != -1) {
-            packageInfoPanel.globalContext = false;
-            import std.stdio;
-            auto pkg = model.packages.find!(a => a.id == state.selectedPackage).front;
-            packageInfoPanel.changeContext(pkg);
+            // packageInfoPanel.globalContext = false;
+            // import std.stdio;
+            // auto pkg = model.packages.find!(a => a.id == state.selectedPackage).front;
+            // packageInfoPanel.changeContext(pkg);
         }
         else 
             packageInfoPanel.toMainContext();
@@ -162,11 +164,11 @@ class PackageScreen : Screen {
     override void update() {
         packageList.items.length = 1;
 
-        foreach(pkg; model.packages) {
-            packageList.addItem(pkg.name, pkg.id);
+        foreach(pkg; packagesNames) {
+            packageList.addItem(pkg, 0);
         }
 
-        updateInfoPanel();
+        // updateInfoPanel();
     }
 
     override void render() {
@@ -198,7 +200,9 @@ class VrtsTUI {
 
         this.ipc = ipc;
 
-        loadPackagesList();
+        // loadPackagesList();
+        ipc.sendMessage(new VrtsRequestGetPackageList);
+
         packagesScreen = new PackageScreen(ipc, &model);
 
         screens ~= packagesScreen;
@@ -277,13 +281,28 @@ class VrtsTUI {
 
     void pollEvent() {
         ipc.update;
+
+        foreach(msg; ipc) {
+            switch(msg.type) {
+                case MsgType.Response: processResponse(cast(VrtsResponse)msg); break;
+                default: break;
+            }
+        }
     }
 
-    void loadPackagesList() {
-        // ipc.send(new VrtsRequestGetPackageList);
+    void loadPackagesList(string[] packagesList) {
+        packagesScreen.packagesNames = packagesList;
+        currentScreen.update();
     }
 
-     void parseAndDispatch(VrtsIPCMessage msg) {
+    void processResponse(VrtsResponse res) {
+        switch(res.responseType) {
+            case ResponseType.PackageList: 
+                loadPackagesList((cast(VrtsResponsePackagesList)res).packagesList); 
+                break;
+            default:
+                break;
+        }
     }
 
     void processCommands(string command) {
