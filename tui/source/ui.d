@@ -51,25 +51,25 @@ class PackageInfoPanel : Panel {
 
     void changeContext(VrtsModelPackage pkg) {
         packageName = pkg.name;
-        functionsCount = cast(uint)pkg.functionsIds.length;
-        sourceFilesCount = cast(uint)pkg.sourceFilesIds.length;
+        // functionsCount = cast(uint)pkg.functionsIds.length;
+        // sourceFilesCount = cast(uint)pkg.sourceFilesIds.length;
 
-        auto functions = model.getById!("functions")(pkg.functionsIds);
+        // auto functions = model.getById!("functions")(pkg.functionsIds);
 
-        calls = 0;
+        // calls = 0;
 
-        functions.each!(a => calls += a.callsIds.length);
+        // functions.each!(a => calls += a.callsIds.length);
 
-        eCalls = 0;
-        auto fcids = functions.map!(a => a.callsIds).joiner.array;
-        auto fids = functions.map!(a => a.id).array;
-        auto pCalls = model.getById!"calls"(fcids);
+        // eCalls = 0;
+        // auto fcids = functions.map!(a => a.callsIds).joiner.array;
+        // auto fids = functions.map!(a => a.id).array;
+        // auto pCalls = model.getById!"calls"(fcids);
 
-        foreach(call; pCalls) {
-            if(!fids.canFind(call.targetId)) {
-                eCalls++;
-            }
-        }
+        // foreach(call; pCalls) {
+        //     if(!fids.canFind(call.targetId)) {
+        //         eCalls++;
+        //     }
+        // }
     }
 
     override void draw() {
@@ -181,9 +181,7 @@ class PackageScreen : Screen {
 }
 
 class VrtsTUI {
-    bool isSnapshot;
-
-    VrtsIPC ipc;
+    VrtsIPCClient ipc;
 
     PackageScreen packagesScreen;
 
@@ -195,12 +193,12 @@ class VrtsTUI {
     int screenIndex;
     Screen currentScreen;
 
-    this(VrtsIPC ipc) {
+    this(VrtsIPCClient ipc) {
         tb_init();
 
         this.ipc = ipc;
-        ipc.connect();
 
+        loadPackagesList();
         packagesScreen = new PackageScreen(ipc, &model);
 
         screens ~= packagesScreen;
@@ -232,6 +230,11 @@ class VrtsTUI {
                         mode = Mode.Navigation;
 
                     if(ev.key == TB_KEY_ENTER) {
+                        if(command.split[0] == "write") {
+                            auto msg = new CommandWrite();
+                            msg.setText(command.split[1]);
+                            ipc.sendMessage(msg);
+                        }
                         if(command == "analyze") {
                             model.rings.length = 0;
                         }
@@ -273,52 +276,21 @@ class VrtsTUI {
     }
 
     void pollEvent() {
-        ipc.pollEvent();
-
-        while(ipc.hasEvent) {
-            parseAndDispatch(ipc.pop);
-        }
+        ipc.update;
     }
 
-     void parseAndDispatch(string event) {
-        auto parts = event.split(" ");
+    void loadPackagesList() {
+        // ipc.send(new VrtsRequestGetPackageList);
+    }
 
-        if(parts.length < 2)
-            return;
-
-        if(parts[1] == "snapshotStart") {
-
-            if(parts.length < 3)
-                return;
-
-            auto data = Base64.decode(parts[2]);
-            model = deserializeIon!VrtsModel(data);
-
-            currentScreen.update();
-            return;
-        }
-
-        if(parts[1] == "addedPackage") {
-            currentScreen.update();
-            return;
-        }
-
-        if(parts[1] == "newRing") {
-            currentScreen.update();
-            return;
-        }
-
-        if(parts[1] == "sendFunc") {
-            currentScreen.update();
-            return;
-        }
+     void parseAndDispatch(VrtsIPCMessage msg) {
     }
 
     void processCommands(string command) {
         if(command.split[0] == "exit") {
-            ipc.sendCommand("exit");
+            ipc.sendMessage(new CommandExit());
         }
-        else 
-            ipc.sendCommand(command);
+        // else
+            // ipc.sendMsg(command);
     }
 }

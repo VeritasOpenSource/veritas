@@ -6,10 +6,8 @@ import ui;
 import veritas.ipc;
 
 void main() {
-    VrtsIPC ipc = new VrtsIPC(VrtsIPCType.Client);
+    VrtsIPCClient ipc = new VrtsIPCClient("/tmp/veritas.sock");
     VrtsTUI tui = new VrtsTUI(ipc);
 
     tui.loop();
-
-    ipc.disconnect();
 }

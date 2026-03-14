@@ -16,17 +16,17 @@ struct VrtsModelPackage {
     ///Name of Package
     string name;
     ///Internal functions ids
-    uint[] functionsIds;
+    // uint[] functionsIds;
 
-    uint[] sourceFilesIds;
+    // uint[] sourceFilesIds;
 
     string path;
 }
 
 struct VrtsModelSourceFile {
-    uint id;
+    uint    id;
 
-    string path;
+    string  path;
     uint    packageId;
 }
 

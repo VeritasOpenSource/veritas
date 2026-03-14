@@ -1,7 +1,11 @@
 module veritas.ipc;
 
-// public import veritas.ipc.events;
 public {
-    import veritas.ipc.core;
-    import veritas.ipc.events;
+    import veritas.ipc.ipc;
+
+    import veritas.ipc.client;
+    import veritas.ipc.server;
+    import veritas.ipc.connection;
+
+    import veritas.ipc.messages;
 }

@@ -3,7 +3,7 @@ module widgets;
 import std.algorithm;
 
 import tb2;
-import veritas.ipc.core;
+import veritas.ipc;
 import veritas.model;
 
 class Screen {

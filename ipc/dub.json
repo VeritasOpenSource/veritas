@@ -7,5 +7,8 @@
 	"copyright": "Copyright © 2026, Roman Vlasov aka Doctor",
 	"name": "ipc",
 	"sourcePaths": ["./"],
-	"importPaths": ["./"]
+	"importPaths": ["./"],
+	"dependencies": {
+		"mir-ion": "~>2.3.5"
+	}
 }

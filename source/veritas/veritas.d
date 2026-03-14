@@ -4,7 +4,7 @@ import std.stdio;
 import std.string;
 import std.conv;
 
-import veritas.ipc.events;
+import veritas.ipc;
 import veritas.ecosystem.ecosystem;
 import veritas.ecosystem.packages;
 import veritas.ecosystem.sourceFiles;

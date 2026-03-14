@@ -1,6 +1,6 @@
 module veritas.common.analyzer;
 
-import veritas.ipc.events;
+import veritas.ipc.messages.events;
 
 class VrtsAnalyzer {
 	VrtsEventBus eventBus_;
