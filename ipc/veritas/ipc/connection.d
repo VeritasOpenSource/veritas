@@ -22,6 +22,11 @@ public:
         return socket !is null;
     }
 
+    void disconnect() {
+        socket.close;
+        socket = null;
+    }
+
     void readSocket() {
         ubyte[4096] tmp;
 
@@ -30,6 +35,9 @@ public:
 
             if(n > 0)
                 readBuffer ~= tmp[0 .. n];
+            else if(n == 0) {
+                disconnect();
+            }
         }
         catch(SocketException e) {
             if(wouldHaveBlocked())

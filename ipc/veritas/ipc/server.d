@@ -44,16 +44,23 @@ class VrtsIPCServer : VrtsIPC {
             if (wouldHaveBlocked())
                 return;
 
+            socket = server;
         }
     }
 
     override void update() {
         acceptClient();
 
-        if (socket is null)
+        if (client is null)
             return;
 
         super.update();
+    }
+
+    override void disconnect() {
+        client.close();
+        client = null;
+        socket = server;
     }
 
     protected override VrtsIPCMessage deserializeMessage(
